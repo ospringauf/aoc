@@ -1,6 +1,7 @@
 package aoc2018;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -20,7 +21,7 @@ public class Day6 {
 		
 		@Override
 		public String toString() {			
-			return "area " + x + "/" + y + "  size=" + area + " / inf:" + infinite;
+			return "area " + x + "/" + y + "  size=" + area + "  inf:" + infinite;
 		}
 	}
 	
@@ -33,22 +34,26 @@ public class Day6 {
 	private static int my;
 
 	public static void main(String[] args) throws Exception {
-	    input = Util.lines("aoc2018/day6.txt").stream().map(s -> new Day6Area(s)).collect(Collectors.toList());
+	    input = Util.stringStreamOf("aoc2018/day6.txt").map(Day6Area::new).collect(Collectors.toList());
 		mx = input.stream().mapToInt(a -> a.x).max().getAsInt();
 		my = input.stream().mapToInt(a -> a.y).max().getAsInt();
 
+		System.out.println("=== part 1 ===");
+		part1();
+		System.out.println("=== part 2 ===");
 		part2();
 	}
 
 	
 	static Day6Area closest(int px, int py) {
-		List<Integer> c = IntStream.range(0, input.size())
+		Integer[] c = IntStream.range(0, input.size())
 				.mapToObj(i -> i)
 				.sorted((i1, i2) -> input.get(i1).dist(px, py) - input.get(i2).dist(px, py))
-				.collect(Collectors.toList());
+				.toArray(l -> new Integer[l]);
 		// tie?
-		Day6Area a1 = input.get(c.get(0));
-		Day6Area a2 = input.get(c.get(1));
+		Day6Area a1 = input.get(c[0]);
+		Day6Area a2 = input.get(c[1]);
+
 		return (a1.dist(px, py) == a2.dist(px, py)) ? dummy : a1;
 	}
 	
@@ -63,19 +68,22 @@ public class Day6 {
 			}
 		}
 		
+//		IntStream.range(0,  mx).forEach(x -> IntStream.range(0, my).forEach(y -> closest(x, y).area++));
+		
 		// mark infinite areas
 		IntStream.range(-10000, 10000).forEach(i -> closest(i, -10000).infinite = true);
-		IntStream.range(-10000, 10000).forEach(i -> closest(i, 10000).infinite = true);
+		IntStream.range(-10000, 10000).forEach(i -> closest(i,  10000).infinite = true);
 		IntStream.range(-10000, 10000).forEach(i -> closest(-10000, i).infinite = true);
-		IntStream.range(-10000, 10000).forEach(i -> closest(10000, i).infinite = true);
+		IntStream.range(-10000, 10000).forEach(i -> closest( 10000, i).infinite = true);
 
 	
-		input.stream().forEach(a -> System.out.println(a));
+		input.stream().forEach(System.out::println);
 		
-		Day6Area result = input.stream()
+		// max finite area?
+		Optional<Day6Area> result = input.stream()
 			.filter(a -> !a.infinite)
 			.max((a1, a2) -> a1.area - a2.area)
-			.get();
+			;
 		System.out.println("--> result: " + result);
 	}
 

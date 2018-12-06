@@ -7,11 +7,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class Util {
 
     static List<String> lines(String fname) throws IOException {
         return Files.readAllLines(Paths.get("bin", fname));
+    }
+    
+    static Stream<String> stringStreamOf(String fname) throws IOException {
+        return Files.lines(Paths.get("bin", fname));
     }
 
     static List<Integer> ints(String fname) throws IOException {
