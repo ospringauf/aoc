@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 public class Util {
 
     static List<String> lines(String fname) throws IOException {
-        return Files.readAllLines(Paths.get("bin", fname));
+        return Files.readAllLines(Paths.get("src", fname));
     }
     
     static Stream<String> stringStreamOf(String fname) throws IOException {

@@ -12,6 +12,7 @@ import java.util.function.Predicate;
 
 
 /**
+ * Task graph / task sequence
  * https://adventofcode.com/2018/day/7
  * uses https://github.com/jOOQ/jOOL
  *
