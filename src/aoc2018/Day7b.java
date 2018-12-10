@@ -74,7 +74,7 @@ public class Day7b {
 		Set<String> todo = new HashSet<>(nodes);		
 		List<String> assigned = new ArrayList<>();
 		
-		// end times
+		// end time for each task
 		Map<String, Integer> end = seq(todo).toMap(n -> n, n -> 0);
 		
 		int t = 0;
