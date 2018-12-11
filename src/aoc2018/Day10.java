@@ -1,10 +1,15 @@
 package aoc2018;
 
+import static org.jooq.lambda.Seq.range;
+import static org.jooq.lambda.Seq.rangeClosed;
 import static org.jooq.lambda.Seq.seq;
 
 import java.awt.Rectangle;
 import java.util.List;
-import java.util.stream.IntStream;
+import java.util.function.BiPredicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 /**
  * lights in the sky
@@ -16,16 +21,27 @@ public class Day10 {
 	static class Dot {
         int px, py, vx, vy;
 
-        public Dot(String s) {
-			px = Integer.parseInt(s.substring(s.indexOf('<')+1, s.indexOf(',')).trim());
-			py = Integer.parseInt(s.substring(s.indexOf(',')+1, s.indexOf('>')).trim());
-			vx = Integer.parseInt(s.substring(s.lastIndexOf('<')+1, s.lastIndexOf(',')).trim());
-			vy = Integer.parseInt(s.substring(s.lastIndexOf(',')+1, s.lastIndexOf('>')).trim());
+        static Dot parse(String s) {
+        	Dot d = new Dot();
+        	Matcher m = Pattern.compile("[\\-0-9]+").matcher(s);
+        	m.find();
+        	
+        	d.px = Integer.parseInt(m.group());
+        	m.find();
+        	d.py = Integer.parseInt(m.group());
+        	m.find();
+        	d.vx = Integer.parseInt(m.group());
+        	m.find();
+        	d.vy = Integer.parseInt(m.group());
+        	return d;
 		}
 		
 		public Dot(int i, int j) {
 			px = i;
 			py = j;
+		}
+
+		private Dot() {
 		}
 
 		public Dot pos(int t) {
@@ -48,25 +64,28 @@ public class Day10 {
 	}
 	
 	static void printSky(int t) {
-		List<Dot> img = seq(dots).map(d -> d.pos(t)).toList();		
-		Rectangle r = bbox(t);
-		
-		IntStream.rangeClosed(r.y, r.y + r.height)
-		.forEach(y -> {
-			IntStream.rangeClosed(r.x, r.x + r.width)
-			.forEach(x -> {
-				boolean set = seq(img).anyMatch(d -> d.px==x && d.py==y);				
-				System.out.print(set ? "#" : ".");
-			});	
-			System.out.println();
-		});
-	}
+        List<Dot> img = seq(dots).map(d -> d.pos(t)).toList();      
+        Rectangle r = bbox(t);
+        
+        // is there a dot at (x,y)?
+        BiPredicate<Integer, Integer> isSet = (x,y) -> seq(img).anyMatch(d -> d.px==x && d.py==y);
+        
+        String s = rangeClosed(r.y, r.y + r.height)
+	        .map(y -> 
+	        	// build one scanline
+	            rangeClosed(r.x, r.x + r.width)
+	                .map(x -> isSet.test(x,y) ? "█" : "·")
+	                .toString() + "\n"
+	        ).toString();
+        
+        System.out.println(s);
+    }
 	
 	public static void main(String[] args) throws Exception {
 	    
-		dots = seq(Util.lines("aoc2018/day10.txt")).map(Dot::new).toList();
+		dots = seq(Util.lines("aoc2018/day10.txt")).map(Dot::parse).toList();
 
-		Integer t0 = seq(IntStream.range(0, 1000000)).limitWhile(i -> area(bbox(i)) <= area(bbox(i-1))).findLast().orElse(0);
+		Integer t0 = range(0, 1000000).limitWhile(i -> area(bbox(i)) <= area(bbox(i-1))).findLast().orElse(0);
 //		Integer t0 = seq(IntStream.range(0, 100000)).minBy(i -> area(bbox(i))).orElse(0);
 		System.out.println(t0);
 		System.out.println(bbox(t0));
