@@ -50,31 +50,27 @@ public class Day11 {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		part1();		
-		part2();
+		part1(1723);		
+		part2(1723);
 		System.out.println("time: " + (System.currentTimeMillis() - start + "ms"));
 	}
 
-	protected static void part1() {
-		int ser = 1723;
-		
+	protected static void part1(int serial) {
 //		System.out.println(power(122,79, 57));
 //		System.out.println(power(217,196, 39));
 //		System.out.println(power(101,153, 71));
 		
 		Optional<Pos> r = range(1, 300-2)
 			.flatMap(x -> range(1, 300-2).map(y -> new Pos(x,y)))
-			.maxBy(p -> powerN(p.x, p.y, ser, 3));
+			.maxBy(p -> powerN(p.x, p.y, serial, 3));
 		
 		System.out.println("=== part 1 ===");
 		System.out.println(r);
 	}
 
 
-	protected static void part2naive() {
-		final int ser = 1723;
-		
-		Function<Pos, Integer> powN = (p) -> powerN(p.x, p.y, ser, p.n);
+	protected static void part2naive(int serial) {
+		Function<Pos, Integer> powN = (p) -> powerN(p.x, p.y, serial, p.n);
 
 		Optional<Pos> r = Seq.rangeClosed(1, 300)
 				.peek(n -> System.out.println(n))
@@ -89,13 +85,12 @@ public class Day11 {
 	static Pos maxp = new Pos(0,0);
 	static int max = 0;
 
-	protected static void part2() {
-		final int ser = 1723;
-		
+	protected static void part2(int serial) {
 		// init: 1x1 grid values
 		final int[][] grid = new int[301][301];
-		rangeClosed(1, 300).forEach(x -> rangeClosed(1, 300).forEach(y -> grid[x][y] = power(x, y, ser)));
+		rangeClosed(1, 300).forEach(x -> rangeClosed(1, 300).forEach(y -> grid[x][y] = power(x, y, serial)));
 		
+		// larger sub-grids n=2..300
 		rangeClosed(2, 300).forEach(n -> { // n
 			System.out.println(n);
 			rangeClosed(1, 300-n+1).forEach(x -> // x  
@@ -103,9 +98,9 @@ public class Day11 {
 				{
 					// expand sub-grid in x and y direction
 					grid[x][y] +=  
-							range(x, x+n-1).sum(dx -> power(dx, y+n-1, ser)).get() +
-							range(y, y+n-1).sum(dy -> power(x+n-1, dy, ser)).get() +
-							power(x+n-1, y+n-1, ser);
+							range(x, x+n-1).sum(dx -> power(dx, y+n-1, serial)).get() +
+							range(y, y+n-1).sum(dy -> power(x+n-1, dy, serial)).get() +
+							power(x+n-1, y+n-1, serial);
 					
 					if (grid[x][y] > max) {
 						maxp = new Pos(x, y, n);
