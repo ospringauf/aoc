@@ -44,7 +44,7 @@ public class Day13 {
 			if (dir=='>') {
 				x++;
 				switch(tracks[x][y]) {
-				case  '-': break;
+//				case  '-': break;
 				case '\\': dir='v'; break;
 				case  '/': dir='^'; break;
 				case  '+': turnAtCrossing(); break;
@@ -54,7 +54,7 @@ public class Day13 {
 			else if (dir=='<') {
 				x--;
 				switch(tracks[x][y]) {
-				case  '-': break;
+//				case  '-': break;
 				case '\\': dir='^'; break;
 				case  '/': dir='v'; break;
 				case  '+': turnAtCrossing(); break;
@@ -64,7 +64,7 @@ public class Day13 {
 			else if (dir=='^') {
 				y--;
 				switch(tracks[x][y]) {
-				case  '|': break;
+//				case  '|': break;
 				case '\\': dir='<'; break;
 				case  '/': dir='>'; break;
 				case  '+': turnAtCrossing(); break;
@@ -74,7 +74,7 @@ public class Day13 {
 			else if (dir=='v') {
 				y++;
 				switch(tracks[x][y]) {
-				case  '|': break;
+//				case  '|': break;
 				case '\\': dir='>'; break;
 				case  '/': dir='<'; break;
 				case  '+': turnAtCrossing(); break;
