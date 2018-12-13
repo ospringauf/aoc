@@ -1,12 +1,3 @@
-/*********************************************************************
-* Copyright (c) 2018 Angelika Wittek, Oliver Springauf.
-*
-* This program and the accompanying materials are made
-* available under the terms of the Eclipse Public License 2.0
-* which is available at https://www.eclipse.org/legal/epl-2.0/
-*
-* SPDX-License-Identifier: EPL-2.0
-**********************************************************************/
 package aoc2018;
 
 import java.util.ArrayList;
@@ -39,68 +30,69 @@ public class Day13 {
 		int turn = 0; // 0=left, 1=straight, 2=right repeat
 		
 		
-		void turnNext() {
-			switch (turn) {
-				case 0: dir = map(dir, "><^v", "^v<>"); break;
-				case 2: dir = map(dir, "><^v", "v^><"); break;
-			}
+		char crossing() {		
+			dir = 
+					(turn == 0)? map(dir, "><^v", "^v<>") : // left
+					(turn == 2)? map(dir, "><^v", "v^><") : // right
+					dir;
 			turn = (turn + 1) % 3;
+			return dir;
 		}
 		
 		void move() {
-			// >- >\ >/ >+ 			
 			if (dir=='>') {
-				switch(tracks[x+1][y]) {
+				x++;
+				switch(tracks[x][y]) {
 				case '-':
-					x++; break;
+					break;
 				case '\\':
-					x++; dir='v'; break;
+					dir='v'; break;
 				case '/':
-					x++; dir='^'; break;
+					dir='^'; break;
 				case '+':
-					x++; turnNext(); break;
+					crossing(); break;
 				case '|': throw new IllegalStateException();
 				}
 			}
-			// >- >\ >/ >+ 			
 			else if (dir=='<') {
-				switch(tracks[x-1][y]) {
+				x--;
+				switch(tracks[x][y]) {
 				case '-':
-					x--; break;
+					break;
 				case '\\':
-					x--; dir='^'; break;
+					dir='^'; break;
 				case '/':
-					x--; dir='v'; break;
+					dir='v'; break;
 				case '+':
-					x--; turnNext(); break;
+					crossing(); break;
 				case '|': throw new IllegalStateException();
 				}
 			}
-			// | + / \  			
 			else if (dir=='^') {
-				switch(tracks[x][y-1]) {
+				y--;
+				switch(tracks[x][y]) {
 				case '|':
-					y--; break;
+					break;
 				case '\\':
-					y--; dir='<'; break;
+					dir='<'; break;
 				case '/':
-					y--; dir='>'; break;
+					dir='>'; break;
 				case '+':
-					y--; turnNext(); break;
+					crossing(); break;
 				case '-': throw new IllegalStateException();
 				}
 			}
-			// | + / \  			
 			else if (dir=='v') {
-				switch(tracks[x][y+1]) {
+				y++;
+				switch(tracks[x][y]) {
 				case '|':
-					y++; break;
+					break;
 				case '\\':
-					y++; dir='>'; break;
+					dir='>'; break;
 				case '/':
-					y++; dir='<'; break;
+					dir='<'; break;
 				case '+':
-					y++; turnNext(); break;
+					crossing(); break;
 				case '-': throw new IllegalStateException();
 				}
 			}
@@ -114,6 +106,7 @@ public class Day13 {
 		height = l.size();
 		tracks = new char[width][height];
 		
+		// extract carts
 		range(0, width).forEach(x -> range(0, height).forEach(y -> {
 			char c = l.get(y).charAt(x);
 			if (seq("^v><".chars()).contains((int) c)) {
@@ -126,10 +119,13 @@ public class Day13 {
 		
 		printTrack();		
 		
-		while (true) {
+		while (carts.size() > 1) {
 			tick(); 
 //			printTrack();
 		}
+		
+		Cart last = carts.get(0);
+		System.out.println("last cart: " + last.x + "," +last.y); 
 	}
 	
 	static void tick() {
@@ -144,8 +140,11 @@ public class Day13 {
 	}
 	
 	static void crashCheck(Cart c) {
-	if (seq(carts).count(z -> z.x==c.x && z.y==c.y) > 1) 
-		throw new IllegalStateException("crash at " + c.x + "," + c.y); 
+		if (seq(carts).count(z -> z.x==c.x && z.y==c.y) > 1) { 
+			//throw new IllegalStateException("crash at " + c.x + "," + c.y);
+			System.err.println("crash at " + c.x + "," + c.y);
+			carts.removeIf(k -> k.x==c.x && k.y==c.y);
+		}
 	}
 
 	private static void printTrack() {
