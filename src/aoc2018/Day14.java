@@ -10,7 +10,9 @@ public class Day14 {
 	static int elf1 = 0;
 	static int elf2 = 1;
 	static List<Integer> score = new ArrayList<>();
+	static long start = System.currentTimeMillis();
 	
+	static int input = 293801;
 	
 	static void next() {
 		int res = score.get(elf1) + score.get(elf2);
@@ -31,10 +33,11 @@ public class Day14 {
 		part1();
 		System.out.println("=== part 2 ===");
 		part2();
+		
+		System.out.println("time: " + (System.currentTimeMillis() - start + "ms"));
 	}
 
 	static void part1() {
-		int input = 293801;
 		while (score.size() < input + 10) {
 //			System.out.println(seq(score).toString(" "));
 			next();
@@ -44,9 +47,7 @@ public class Day14 {
 	}
 
 	static void part2() throws Exception {
-		String input = "293801";
-//		String input = "59414";
-		int[] sub = seq(input.chars()).mapToInt(i -> i-'0').toArray();
+		int[] sub = seq(Integer.toString(input).chars()).mapToInt(i -> i-'0').toArray();
 		int p = 0;
 		int matched = 0;
 		
