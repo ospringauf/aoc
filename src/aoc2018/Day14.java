@@ -15,8 +15,9 @@ public class Day14 {
 	static void next() {
 		int res = score.get(elf1) + score.get(elf2);
 		
-		List<Integer> digits = seq(Integer.toString(res).chars()).map(i -> i - '0').toList();
-		score.addAll(digits);
+		seq(Integer.toString(res).chars())
+			.map(i -> i - '0')
+			.forEach(score::add);
 		
 		elf1 = (elf1 + 1 + score.get(elf1)) % score.size();
 		elf2 = (elf2 + 1 + score.get(elf2)) % score.size();
@@ -63,8 +64,7 @@ public class Day14 {
 				}
 			}
 		}
-		
-		//20280190
-		System.out.println(p-sub.length);
+				
+		System.out.println(p-sub.length); // 20280190
 	}
 }
