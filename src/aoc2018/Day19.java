@@ -17,6 +17,7 @@ public class Day19 {
 	
 	static class Op {
 		String opcode;
+		Consumer<Op> op;
 		int a, b, c;
 		
 		static Op parse(String op) {
@@ -94,13 +95,32 @@ public class Day19 {
 //			range(0,4).forEach(i -> reg[i] = 0);
 			
 			long i=0;
-			while (ip < prog.size() && i <1000000) {
+			while (ip < prog.size()) {
 				exec(prog.get(ip));
 				
 				i++;
-				if (i % 1 == 0) {
+				if (i % 1000000 == 0) {
 					System.out.println("" + i + "  ip=" + ip + "  [ " + seq(Arrays.stream(reg)).toString(", ") + " ]");
 				}
+			}
+		}
+		
+		public void exec2(Op[] prog) {
+//			range(0,4).forEach(i -> reg[i] = 0);
+			
+			long i=0;
+			while (ip < prog.length /*&& i < 1000000*/) {
+				reg[ipr] = ip;
+				Op instr = prog[ip];
+				instr.op.accept(instr);
+				ip = (int) reg[ipr];
+				ip++;
+				
+				i++;
+//				if (i % 1000000 == 0) 
+//				{
+//					System.out.println("" + i + "  ip=" + ip + "  [ " + seq(Arrays.stream(reg)).toString(", ") + " ]");
+//				}
 			}
 		}
 		
@@ -112,9 +132,12 @@ public class Day19 {
 		Cpu cpu = new Cpu();
 		cpu.ipr = 5;
 		cpu.reg[0] = 1;
-		List<Op> prog = seq(input).skip(1).map(l -> Op.parse(l)).toList();
+		Op[] prog = (Op[]) seq(input).skip(1).map(l -> Op.parse(l)).toList().toArray(new Op[0]);
+		for(Op x : prog) {
+			x.op = cpu.ops.get(x.opcode);
+		}
 		
-		cpu.exec(prog);
+		cpu.exec2(prog);
 		System.out.println(cpu.reg[0]);
 		
 	}
