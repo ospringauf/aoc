@@ -171,10 +171,10 @@ public class Day19 {
 			case 12:
 				// 12 - addi 2 1 2		
 				r2 = r2+1;
-			case 13:
+//			case 13:
 				// 13 - gtrr 2 4 3		
 				r3 = (r2>r4) ? 1 : 0;
-			case 14:
+//			case 14:
 				// 14 - addr 3 5 5		# 14	r5 = r5+r3	if (r2>r4) goto 16/exit
 				r5 = 14 + r3;
 				break;
@@ -186,64 +186,66 @@ public class Day19 {
 				// 16 - mulr 5 5 5		# 16	r5 = r5*r5	exit
 				r5 = 16*16;
 				break;
+				
+			// subroutine
 			case 17:
-				// 17 - addi 4 2 4		# 17	r4 = r4+2				r4 = (r4+2)^2*19*11
+				// 17 - addi 4 2 4
 				r4 = r4+2;
-			case 18:
-				// 18 - mulr 4 4 4		# 18	r4 = r4*r4
+//			case 18:
+				// 18 - mulr 4 4 4
 				r4 = r4*r4;
-			case 19:
-				// mulr 5 4 4		# 19	r4 = r4*r5(19)
+//			case 19:
+				// mulr 5 4 4
 				r4 = r4*19;
-			case 20:
-				// 20 - muli 4 11 4		# 20	r4 = r4*11
+//			case 20:
+				// 20 - muli 4 11 4
 				r4 = 11*r4;
-			case 21:
-				// 21 - addi 3 2 3		# 21	r3 = r3+2				r3= (r3+2)*22+13
+//			case 21:
+				// 21 - addi 3 2 3
 				r3 = r3+2;
-			case 22:
-				// 22 - mulr 3 5 3		# 22	r3 = r3*r5(22)			.
+//			case 22:
+				// 22 - mulr 3 5 3
 				r3 = r3*22;
-			case 23:
-				// 23 - addi 3 13 3		# 23 	r3 = r3+13				.
+//			case 23:
+				// 23 - addi 3 13 3
 				r3 = r3+13;
-			case 24:
-				// addr 4 3 4		# 24 	r4 = r4+r3				r4 += r3
+//			case 24:
+				// addr 4 3 4
 				r4 = r4+r3;
-			case 25:
-				// addr 5 0 5		# 25	r5 = r5+r0	goto ...	if (r0==1) return
+//			case 25:
+				// addr 5 0 5
 				r5 = 25+r0;
 				break;
 			case 26:
-				// seti 0 8 5		# 26	r5 = 0		goto 1		.
+				// seti 0 8 5
 				r5 = 0;
 				break;
 			case 27:
-				// setr 5 5 3		# 27	r3 = r5(27)				r3 = (27*28+29)*30*14*32
+				// setr 5 5 3
 				r3 = 27;
-			case 28:
-				// mulr 3 5 3		# 28	r3 = r3*r5(28)			.
+//			case 28:
+				// mulr 3 5 3
 				r3 = r3*28;
-			case 29:
-				// addr 5 3 3		# 29	r3 = r5(29)+r3			.
+//			case 29:
+				// addr 5 3 3
 				r3 = r3+29;
-			case 30:
-				// mulr 5 3 3		# 30	r3 = r5(30)*r3			.
+//			case 30:
+				// mulr 5 3 3
 				r3 = r3*30;
-			case 31:
-				// muli 3 14 3		# 31	r3 = r3*14				.
+//			case 31:
+				// muli 3 14 3
 				r3 = r3*14;
-			case 32:
-				// mulr 3 5 3		# 32	r3 = r3*r5(32)			.
+//			case 32:
+				// mulr 3 5 3
 				r3 = r3*32;
-			case 33:
-				// addr 4 3 4		# 33	r4 = r4+r3				r4 += r3
+//			case 33:
+				// addr 4 3 4
 				r4 = r4+r3;
-			case 34:
-				// seti 0 9 0		# 34	r0 = 0					r0=0
+//			case 34:
+				// seti 0 9 0
 				r0 = 0;
-			case 35: 
-				// seti 0 9 5		# 35	r5 = 0	goto 1			return
+//			case 35: 
+				// seti 0 9 5
 				r5 = 0;
 				break;
 			default:
