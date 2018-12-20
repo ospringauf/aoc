@@ -85,9 +85,6 @@ public class Day20 {
 	// found doors
 	static Set<Door> doors = new HashSet<>();
 	
-	// distance map for each room (shortest path) 
-	static Map<Room, Integer> dist = new HashMap<>();
-	
 	// initial regex
 	static String regex = "^WSSEESWWWNW(S|NENNEEEENN(ESSSSW(NWSW|SSEN)|WSWWN(E|WWS(E|SS))))$";
 	
@@ -99,7 +96,7 @@ public class Day20 {
 		System.out.println("doors: " + doors.size());
 //		print();
 		
-		shortestPaths();
+		Map<Room, Integer> dist = shortestPaths();
 		
 		System.out.println("=== part 1 ===");
 		Integer result1 = seq(dist.values()).max().get();
@@ -142,8 +139,8 @@ public class Day20 {
 	
 	// process the regex, walking from initial set of rooms to 
 	private static Set<Room> walk(Set<Room> initial) {
-		Set<Room> head = new HashSet<>(initial);
-		Set<Room> branch = new HashSet<>();
+		Set<Room> branch = new HashSet<>(initial);
+		Set<Room> alternatives = new HashSet<>();
 		
 		while (regex.length() > 0) {
 			char dir = regex.charAt(0);
@@ -152,48 +149,49 @@ public class Day20 {
 				case 'W':
 				case 'N':
 				case 'S':
-					head = seq(head).map(p -> p.go(dir)).toSet();
+					branch = seq(branch).map(p -> p.go(dir)).toSet();
 					break;
 				case '|':
 					// next branch alternative
-					branch.addAll(head); 
-					head = new HashSet<>(initial);
+					alternatives.addAll(branch); 
+					branch = new HashSet<>(initial);
 					break;
 				case '(':
 					regex = regex.substring(1);
-					head = walk(head);
+					branch = walk(branch);
 					break;
 				case ')':
-					branch.addAll(head);
-					return branch;
+					alternatives.addAll(branch);
+					return alternatives;
 				case '$':				
-					return head;
+					return branch;
 			}
 			regex = regex.substring(1);
 		}
-		return head;
+		return branch;
 	}
 	
-	
-	static void shortestPaths() {
-		List<Room> curr = new ArrayList<>();
+	// distance map for each room (shortest path) 
+	static Map<Room, Integer> shortestPaths() {
+		Map<Room, Integer> dist = new HashMap<>();
+
+		List<Room> head = Seq.of(new Room(0, 0)).toList();
+		dist.put(head.get(0), 0);		
 		
-		Room p0 = new Room(0,0);
-		dist.put(p0, 0);		
-		curr.add(p0);
-		
-		while (!curr.isEmpty()) {
+		while (!head.isEmpty()) {
 			List<Room> next = new ArrayList<>();
-			for (Room p : curr) {
-				int d = dist.get(p);
-				for (Room r : nextRooms(p)) {
-					if (!dist.containsKey(r) || (dist.get(r) > (d+1))) {
-						dist.put(r, d+1);
-						next.add(r);
+			for (Room r : head) {
+				int d = dist.get(r);
+				for (Room n : nextRooms(r)) {
+					if (!dist.containsKey(n) || (dist.get(n) > (d+1))) {
+						dist.put(n, d+1);
+						next.add(n);
 					}
 				}				
 			}
-			curr = next;
-		}		
+			head = next;
+		}
+		
+		return dist;
 	}
 }
