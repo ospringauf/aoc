@@ -1,10 +1,14 @@
 package aoc2018;
 
-import static org.jooq.lambda.Seq.seq;
-import static org.jooq.lambda.Seq.range;
 import static org.jooq.lambda.Seq.rangeClosed;
+import static org.jooq.lambda.Seq.seq;
 
 import java.util.List;
+
+/**
+ * falling/spreading water in sand or clay
+ * https://adventofcode.com/2018/day/17
+ */
 
 public class Day17 {
 
@@ -66,7 +70,9 @@ public class Day17 {
 		
 		printGrid();
 		
+		// drop from spring
 		drop(500, 0);
+		
 		printGrid();
 		
 		Long result1 = rangeClosed(ymin, ymax).sum(y -> rangeClosed(xmin, xmax).count(x -> grid[x][y]=='|' || grid[x][y]=='~')).get();
@@ -76,7 +82,8 @@ public class Day17 {
 		System.out.println(result2);
 	}
 
-	// false = stau, true = läuft durch
+	// drop vertically
+	// false = water blocked, true = water keeps flowing
 	private static boolean drop(int x, int y) {
 		if (y > ymax) return true;
 		if (grid[x][y] == '#' || grid[x][y] == '~') return false;
@@ -97,6 +104,20 @@ public class Day17 {
 		}
 	}
 
+	// spread horizontally in given direction (left/right)
+	// false = water blocked, true = water keeps flowing
+	private static boolean spread(int x, int y, int dir) {
+		if (grid[x][y] == '#') 
+			// stopped by a wall
+			return false;
+		else {
+			// drop down or continue to spread 
+			grid[x][y] = '|';
+			printGrid();
+			return drop(x,y+1) || spread(x+dir, y, dir);
+		}
+	}
+
 	private static void turnToWater(int x0, int y) {
 		grid[x0][y] = '~';
 		int x = x0-1;
@@ -107,18 +128,7 @@ public class Day17 {
 		while (grid[x][y]=='|') {
 			grid[x++][y]='~';
 		}
-		printGrid();
-		
+		printGrid();		
 	}
 
-	private static boolean spread(int x, int y, int dir) {
-		if (grid[x][y] == '#') 
-			return false;
-		else {
-			grid[x][y] = '|';
-			printGrid();
-			return drop(x,y+1) || spread(x+dir, y, dir);
-		}
-	}
-			
 }

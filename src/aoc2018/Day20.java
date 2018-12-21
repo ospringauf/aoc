@@ -107,6 +107,7 @@ public class Day20 {
 		System.out.println(result2);
 	}
 	
+	// for debugging: print maze
 	static void print() {
 		Set<Room> rooms = seq(doors).flatMap(d -> Seq.of(d.p1, d.p2)).toSet();
 		int xmin = seq(rooms).min(p -> p.x).get();
@@ -178,6 +179,7 @@ public class Day20 {
 		List<Room> head = Seq.of(new Room(0, 0)).toList();
 		dist.put(head.get(0), 0);		
 		
+		// fix point iteration: heads of shortest paths to adjacent rooms
 		while (!head.isEmpty()) {
 			List<Room> next = new ArrayList<>();
 			for (Room r : head) {
