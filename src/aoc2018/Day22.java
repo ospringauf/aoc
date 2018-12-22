@@ -3,46 +3,60 @@ package aoc2018;
 import static org.jooq.lambda.Seq.rangeClosed;
 import static org.jooq.lambda.Seq.range;
 
+/**
+ * rock/wet/narrow labyrinth & shortest paths 
+ * https://adventofcode.com/2018/day/22
+ */
+
 public class Day22 {
 
 	static char[][] cave;
 	static int[][] geo;
 	
-	// shortest paths
+	// shortest paths for each gear
 	static int[][] torch;
 	static int[][] climb;
 	static int[][] none;
 	
-//	static int tx=10, ty=10, depth = 510, mx=20, my=20;
-	static int tx=14, ty=778, depth = 11541, mx=30, my=1000;
+//	static int tx=10, ty=10, depth=510, mx=tx+10, my=ty+10;
+	static int tx=14, ty=778, depth=11541, mx=30, my=1000;
 	
-	static final int MAX = 1000000;
-	
+	static final int MAX = 1000000; // "infinite" distance
+	static final char rock='.', wet='=', narrow='|';
 
+	static long start = System.currentTimeMillis();
+
+	
 	public static void main(String[] args) {
+		System.out.println("=== part 1 ===");
 		geo = new int[mx+1][my+1];
+		rangeClosed(0, my).forEach(y -> rangeClosed(0, mx).forEach(x -> geo[x][y] = geoIndex(x,y)));
+
+		cave = new char[mx+1][my+1];
+		rangeClosed(0, my).forEach(y -> rangeClosed(0, mx).forEach(x -> cave[x][y] = type(x,y)));
+		
+		printCave();
+
+		Integer level = rangeClosed(0, ty).sum(y -> rangeClosed(0, tx).sumInt(x -> risk(x,y))).get();
+		System.out.println(level);
+		
+		
+		System.out.println("=== part 2 ===");
 		torch = new int[mx+1][my+1];
 		climb = new int[mx+1][my+1];
 		none = new int[mx+1][my+1];
-		
-		cave = new char[mx+1][my+1];
-		rangeClosed(0, my).forEach(y -> rangeClosed(0, mx).forEach(x -> geo[x][y] = geoIndex(x,y)));
-		rangeClosed(0, my).forEach(y -> rangeClosed(0, mx).forEach(x -> cave[x][y] = type(x,y)));
-				
 		rangeClosed(0, my).forEach(y -> rangeClosed(0, mx).forEach(x -> torch[x][y] = climb[x][y] = none[x][y] = MAX));
-		torch[0][0] = 0;
-		
-		printCave();
+		torch[0][0] = 0; // start with torch at 0,0
+
+		// M and T are "rock"
 		cave[0][0] = '.';
 		cave[tx][ty] = '.';
 		
-		
-		Integer level = rangeClosed(0, ty).sum(y -> rangeClosed(0, tx).sumInt(x -> risk(x,y))).get();
-		System.out.println(level);
-
 		calcPaths();
-		print(torch);
-		System.out.println(torch[tx][ty]);
+		printDist(torch);
+		System.out.println(torch[tx][ty]); // min dist to reach T with the torch
+		
+		System.out.println("time: " + (System.currentTimeMillis() - start + "ms"));
 	}
 
 	static void calcPaths() {
@@ -50,22 +64,10 @@ public class Day22 {
 		int lastBest = MAX;
 		while (best == MAX || best < lastBest) {
 			lastBest = best;
-			System.out.println("better");
-			calcTorch();
-			calcClimb();
-			calcNone();
-			calcTorch();
+			System.out.println("iterate");
+			updateDistances();
 			best = torch[tx][ty];
 		}
-		
-	}
-
-	static int min(int a, int b) {
-		return Math.min(a, b); 
-	}
-
-	static int min(int a, int b, int c) {
-		return Math.min(a, Math.min(b, c)); 
 	}
 	
 	static int min(int a, int b, int c, int d) {
@@ -74,204 +76,84 @@ public class Day22 {
 	
 	static boolean update;
 	
-	// . torch/climb
-	// = climb/none
-	// | torch/none
-	
-	static boolean calcTorch() {
-		// torch can be used in rocky (.) or narrow (|)
-		// not in wet (=)
+	static boolean updateDistances() {
 		update = true;
-		boolean better = false;
+		boolean improve = false;
 		while (update) {
 			update = false;
-			range(0, my).forEach(y -> range(0, mx).forEach(x -> {
-				char t = cave[x][y];
-				if (t != '=') {
-					int u = (y == 0) ? MAX : torch[x][y-1];
-					int l = (x == 0) ? MAX : torch[x-1][y];
-					int d = torch[x][y+1];
-					int r = torch[x+1][y];
-					
-					int best = min(u,l,r,d)+1;
-					if (best < torch[x][y]) {
-						torch[x][y] = best;
-						update = true;
-					}
-					if (t == '.' && climb[x][y]>torch[x][y]+7) {
-						climb[x][y] = torch[x][y] + 7;
-						update = true;
-					}
-					if (t == '|' && none[x][y]>torch[x][y]+7) {
-						none[x][y] = torch[x][y] + 7;
-						update = true;
-					}
-				}
-			}));
-			better |= update;
+			range(0, my).forEach(y -> range(0, mx).forEach(x -> update |= updateCell(x, y)));
+			improve |= update;
 		}
-		return better;
+		return improve;
 	}
 	
-	static boolean calcClimb() {
-		// climb can be used in rocky (.) or wet (=)
-		// not in narrow (|)
-		update = true;
-		boolean better = false;
-		while (update) {
-			update = false;
-			range(0, my).forEach(y -> range(0, mx).forEach(x -> {
-				char t = cave[x][y];
-				if (t != '|') {
-					int u = (y == 0) ? MAX : climb[x][y-1];
-					int l = (x == 0) ? MAX : climb[x-1][y];
-					int d = climb[x][y+1];
-					int r = climb[x+1][y];
-					
-					int best = min(u,l,r,d)+1;
-					if (best < climb[x][y]) {
-						climb[x][y] = best;
-						update = true;
-					}
-					if (t == '.' && torch[x][y]>climb[x][y]+7) {
-						torch[x][y] = climb[x][y] + 7;
-						update = true;
-					}
-					if (t == '=' && none[x][y]>climb[x][y]+7) {
-						none[x][y] = climb[x][y] + 7;
-						update = true;
-					}
-				}
-			}));
-			better |= update;
+	// try to improve the distance at x,y by looking at the adjacent cells 
+	// or consider changing gear here
+	private static boolean updateCell(int x, int y) {
+		char t = cave[x][y];
+		boolean improve = false;
+		switch (t) {
+			case rock: // rock (.) - torch / climb
+				// keep torch
+				improve |= walkFromAdjacent(torch, x, y);
+				// keep climb
+				improve |= walkFromAdjacent(climb, x, y);
+				// change torch->climb
+				improve |= changeGear(torch, climb, x, y);
+				// change climb->torch
+				improve |= changeGear(climb, torch, x, y);
+				break;
+			case wet: // wet (=) - climb / none
+				// keep none or climb
+				improve |= walkFromAdjacent(none, x, y);
+				improve |= walkFromAdjacent(climb, x, y);
+				// change none<->climb
+				improve |= changeGear(none, climb, x, y);
+				improve |= changeGear(climb, none, x, y);
+				break;
+			case narrow: // narrow (|) - torch / none
+				// keep none or torch
+				improve |= walkFromAdjacent(none, x, y);
+				improve |= walkFromAdjacent(torch, x, y);
+				// change none<->torch
+				improve |= changeGear(none, torch, x, y);
+				improve |= changeGear(torch, none, x, y);
+				break;
 		}
-		return better;
+		return improve;
 	}
 
-	static boolean calcNone() {
-		// none can be used in narrow (|) or wet (=)
-		// not in rocky (.)
-		update = true;
-		boolean better = false;
-		while (update) {
-			update = false;
-			range(0, my).forEach(y -> range(0, mx).forEach(x -> {
-				char t = cave[x][y];
-				if (t != '.') {
-					int u = (y == 0) ? MAX : none[x][y-1];
-					int l = (x == 0) ? MAX : none[x-1][y];
-					int d = none[x][y+1];
-					int r = none[x+1][y];
-					
-					int best = min(u,l,r,d)+1;
-					if (best < none[x][y]) {
-						none[x][y] = best;
-						update = true;
-					}
-					if (t == '=' && climb[x][y]>none[x][y]+7) {
-						climb[x][y] = none[x][y] + 7;
-						update = true;
-					}
-					if (t == '|' && torch[x][y]>none[x][y]+7) {
-						torch[x][y] = none[x][y] + 7;
-						update = true;
-					}
-				}
-			}));
-			better |= update;
+	// walk into cell from "cheapest" adjacent cell without changing gear
+	// return true if cell value has improved
+	private static boolean walkFromAdjacent(int[][] dist, int x, int y) {
+		int u = (y == 0) ? MAX : dist[x][y-1];
+		int l = (x == 0) ? MAX : dist[x-1][y];
+		int d = dist[x][y+1];
+		int r = dist[x+1][y];
+		
+		int best = min(u,l,r,d) + 1;
+		if (best < dist[x][y]) {
+			dist[x][y] = best;
+			return true;
 		}
-		return better;
+		return false;
 	}
+
+	// change gear at this cell (only if allowed by terrain)
+	// return true if cell value for new gear has improved
+	private static boolean changeGear(int[][] oldGear, int[][] newGear, int x, int y) {
+		if (newGear[x][y] > oldGear[x][y] + 7) {
+			newGear[x][y] = oldGear[x][y] + 7;
+			return true;
+		}
+		return false;
+	}
+
 	
-	
-//	static boolean calcTorch() {
-//		// torch can be used in rocky (.) or narrow (|)
-//		// not in wet (=)
-//		update = true;
-//		boolean better = false;
-//		while (update) {
-//			update = false;
-//			range(0, my).forEach(y -> range(0, mx).forEach(x -> {
-//				if (x!=0 || y!=0)
-//				if (cave[x][y] != '=') {
-//					int u = (y == 0) ? MAX : min(torch[x][y-1], climb[x][y-1]+7, none[x][y-1]+7);
-//					int l = (x == 0) ? MAX : min(torch[x-1][y], climb[x-1][y]+7, none[x-1][y]+7);
-//					int d = min(torch[x][y+1], climb[x][y+1]+7, none[x][y+1]+7);
-//					int r = min(torch[x+1][y], climb[x+1][y]+7, none[x+1][y]+7);
-//					
-//					int best = min(u,l,r,d)+1;
-//					best = min(best, climb[x][y]+7, none[x][y]+7);
-//					if (best < torch[x][y]) {
-//						torch[x][y] = best;
-//						update = true;
-//					}
-//				}
-//			}));
-//			better |= update;
-//		}
-//		return better;
-//	}
-//	
-//	static boolean calcClimb() {
-//		// climb can be used in rocky (.) or wet (=)
-//		// not in narrow (|)
-//		update = true;
-//		boolean better = false;
-//		while (update) {
-//			update = false;
-//			range(0, my).forEach(y -> range(0, mx).forEach(x -> {
-//				if (x!=0 || y!=0)
-//				if (cave[x][y] != '|') {
-//					int u = (y == 0) ? MAX : min(torch[x][y-1]+7, climb[x][y-1], none[x][y-1]+7);
-//					int l = (x == 0) ? MAX : min(torch[x-1][y]+7, climb[x-1][y], none[x-1][y]+7);
-//					int d = min(torch[x][y+1]+7, climb[x][y+1], none[x][y+1]+7);
-//					int r = min(torch[x+1][y]+7, climb[x+1][y], none[x+1][y]+7);
-//					
-//					int best = min(u,l,r,d)+1;
-//					best = min(best, torch[x][y]+7, none[x][y]+7);
-//					if (best < climb[x][y]) {
-//						climb[x][y] = best;
-//						update = true;
-//					}
-//				}
-//			}));
-//			better |= update;
-//		}
-//		return better;
-//	}
-//
-//	static boolean calcNone() {
-//		// none can be used in narrow (|) or wet (=)
-//		// not in rocky (.)
-//		update = true;
-//		boolean better = false;
-//		while (update) {
-//			update = false;
-//			range(0, my).forEach(y -> range(0, mx).forEach(x -> {
-//				if (x!=0 || y!=0)
-//				if (cave[x][y] != '.') {
-//					int u = (y == 0) ? MAX : min(torch[x][y-1]+7, climb[x][y-1]+7, none[x][y-1]);
-//					int l = (x == 0) ? MAX : min(torch[x-1][y]+7, climb[x-1][y]+7, none[x-1][y]);
-//					int d = min(torch[x][y+1]+7, climb[x][y+1]+7, none[x][y+1]);
-//					int r = min(torch[x+1][y]+7, climb[x+1][y]+7, none[x+1][y]);
-//					
-//					int best = min(u,l,r,d)+1;
-//					best = min(best, climb[x][y]+7, torch[x][y]+7);
-//					if (best < none[x][y]) {
-//						none[x][y] = best;
-//						update = true;
-//					}
-//				}
-//			}));
-//			better |= update;
-//		}
-//		return better;
-//	}
-//	
-	static void print(int[][] len) {
+	static void printDist(int[][] len) {
 		rangeClosed(0, my).forEach(y -> System.out.println(rangeClosed(0, mx).map(x ->  {
 			int l = len[x][y];
-			return (l == MAX ? "    X" : String.format("%5d", l));
+			return (l == MAX ? "    -" : String.format("%5d", l));
 		})));
 		System.out.println();
 	}
@@ -279,11 +161,10 @@ public class Day22 {
 	static char type(int x, int y) {
 		if (x==0 && y==0) return 'M';
 		if (x==tx && y==ty) return 'T';
-		int e = erosion(x, y);
-		switch (e%3) {
-		case 0: return '.'; // rocky
-		case 1: return '='; // wet
-		case 2: return '|'; // narrow
+		switch (erosion(x, y) % 3) {
+			case 0: return rock; // rocky
+			case 1: return wet; // wet
+			case 2: return narrow; // narrow
 		}
 		return '?';
 	}
@@ -295,12 +176,10 @@ public class Day22 {
 	}
 	
 	static void printCave() {
-		//rangeClosed(0, my).forEach(y -> System.out.println(rangeClosed(0, mx).map(x -> type(x,y))));		
 		rangeClosed(0, my).forEach(y -> System.out.println(rangeClosed(0, mx).map(x -> cave[x][y])));
 	}
 	
 	static int erosion(int x, int y) {
-		//return (geoIndex(x, y) + depth) % 20183;
 		return (geo[x][y] + depth) % 20183;
 	}
 	
@@ -311,5 +190,4 @@ public class Day22 {
 		if (y==0) return x*16807;
 		return erosion(x-1, y) * erosion(x, y-1);		
 	}
-	
 }
