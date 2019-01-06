@@ -63,6 +63,7 @@ public class Day23 {
 //		part1();
 		
 		part2();
+		System.out.println("end");
 	}
 	
 	static int botsInRange(int x) {
@@ -102,12 +103,36 @@ public class Day23 {
 		List<Bot> clique = new ArrayList<Bot>();
 		
 		while (!todo.isEmpty()) {
-			Bot bmax = seq(todo).maxBy(b -> b.r).get();
-//			Bot bmax = todo.get((int) (Math.random() * todo.size()));
+			//Bot bmax = seq(todo).maxBy(b -> b.r).get();
+			//Bot bmax = todo.get(0);
+			Bot bmax = seq(todo).minBy(b -> b.r).get();
 			if (clique.isEmpty() || seq(clique).allMatch(c -> c.intersect(bmax))) {
 				clique.add(bmax);
 			}
 			todo.remove(bmax);
+		}
+
+//		todo = new ArrayList<Bot>(bots);
+//		while (!todo.isEmpty()) {
+//			//Bot bmax = seq(todo).maxBy(b -> b.r).get();
+//			
+//			if (clique.contains(bmax)) {
+//				todo.remove(bmax);
+//				continue;
+//			}
+//
+//			if (clique.isEmpty() || seq(clique).allMatch(c -> c.intersect(bmax))) {
+//				clique.add(bmax);
+//			}
+//			todo.remove(bmax);
+//		}
+
+		for (int i=0; i<clique.size(); ++i) {
+			for (int j=0; j<clique.size(); ++j) {
+				if (!clique.get(i).intersect(clique.get(j))) {
+					System.out.println("no overlap " + i + "/" + j);
+				}
+			}
 		}
 		
 //		clique.forEach(c -> System.out.println(c));
@@ -128,19 +153,36 @@ public class Day23 {
 //		y-range 22217614 ... 34152347
 //		z-range 48378141 ... 59774048
 		
-		int x = x1 + (x2-x1)/2;
-		int y = y1 + (y2-y1)/2;
+//		int x = x1 + (x2-x1)/2;
+//		int y = y1 + (y2-y1)/2;
 //		int z = z1 + (z2-z1)/2;
 
-		Optional<Integer> q = rangeClosed(z1, z2).findFirst(z -> seq(clique).allMatch(c -> c.inRange(x, y, z)));
+//		Optional<Integer> q = rangeClosed(z1, z2).findFirst(z -> seq(clique).allMatch(c -> c.inRange(x, y, z)));
 //		Optional<Integer> q = rangeClosed(y1, y2).findFirst(y -> seq(clique).allMatch(c -> c.inRange(x, y, z)));
 //		Optional<Integer> q = rangeClosed(x1, x2).findFirst(x -> seq(clique).allMatch(c -> c.inRange(x, y, z)));
-		System.out.println(q);
+//		System.out.println(q);
 		
 //		Optional<Bot> b0 = seq(bots).findFirst(b -> seq(clique).allMatch(c -> c.inRange(b.x, b.y, b.z)));
 //		System.out.println(b0);
 		
-		System.out.println(seq(clique).minBy(c -> c.r));
+//		System.out.println(seq(clique).minBy(c -> c.r));
+		
+		for (int i=0; i<100; ++i) {
+			int x = (int) (x1 + (Math.random() * (double)(1+x2-x1)));
+			int y = (int) (y1 + (Math.random() * (double)(1+y2-y1)));
+			int z = (int) (z1 + (Math.random() * (double)(1+z2-z1)));
+			
+			if (seq(clique).allMatch(c -> c.inRange(x, y, z))) {
+				System.out.println("found: " + x + ", " + y + ", " + z); 
+			}
+		}
+		
+		
+		
+		
+		int d0 = seq(clique).max(b -> b.dist(0,0,0) - b.r).get();
+		List<Bot> c0 = seq(clique).filter(b -> b.dist(0,0,0)-b.r == d0).toList();
+		System.out.println(c0);
 	}
 
 	private static void part1() {
