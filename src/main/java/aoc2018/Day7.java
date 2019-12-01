@@ -1,21 +1,23 @@
 package aoc2018;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Day7 {
 	
-	static class Day7Edge {
+	static class Edge {
 		String src;
 		String tgt;
 
-		public Day7Edge(String s) {
+		public Edge(String s) {
 			src = s.substring(5, 6);
 			tgt = s.substring(36, 37);
 		}
@@ -26,18 +28,13 @@ public class Day7 {
 		}
 	}
 	
-	private static List<Day7Edge> edges;
+	private static List<Edge> edges;
 	private static Set<String> nodes;
 
 	public static void main(String[] args) throws Exception {
-	    edges = Util.lines("aoc2018/day7.txt").stream().map(s -> new Day7Edge(s)).collect(Collectors.toList());
-//	    edges.stream().forEach(System.out::println);
-	    
-	    nodes = Stream
-	    	.concat(edges.stream().map(e -> e.src), edges.stream().map(e -> e.tgt))
-	    	.distinct()
-	    	.collect(Collectors.toSet());
-	    	    
+		edges = Files.lines(Paths.get("src/aoc2018/day7.txt")).map(s -> new Edge(s)).collect(Collectors.toList());
+	    nodes = edges.stream().flatMap(e -> Stream.of(e.src, e.tgt)).collect(Collectors.toSet());
+
 	    System.out.println("=== part 1 ===");
 		part1();
 		System.out.println("=== part 2 ===");
@@ -49,10 +46,13 @@ public class Day7 {
 		Set<String> todo = new HashSet<>(nodes);	
 		List<String> done = new ArrayList<>();
 			
+		// all preconditions (sources) for target n are done 
+		Predicate<String> ready = n -> edges.stream().filter(e -> e.tgt.equals(n)).allMatch(e -> done.contains(e.src));
+
 		while (!todo.isEmpty()) {
 			
 			String next = todo.stream()
-				.filter(n -> edges.stream().allMatch(e -> !n.equals(e.tgt) || done.contains(e.src)))
+				.filter(ready)
 				.sorted()
 				.findFirst().get();
 			

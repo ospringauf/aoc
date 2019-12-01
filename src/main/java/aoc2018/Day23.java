@@ -60,7 +60,7 @@ public class Day23 {
 	public static void main(String[] args) throws Exception {
 		bots = seq(Util.lines("aoc2018/day23.txt")).map(s -> Bot.parse(s)).toList();
 		
-//		part1();
+		part1();
 		
 		part2();
 		System.out.println("end");
