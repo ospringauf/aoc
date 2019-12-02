@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 class Util {
@@ -20,11 +21,15 @@ class Util {
     }
 
     static List<Integer> intListOf(String fname) throws IOException {
-        return lines(fname).stream().map(s -> Integer.parseInt(s)).collect(Collectors.toList());
+        return lines(fname).stream().map(Integer::parseInt).collect(Collectors.toList());
     }
     
     static IntStream intStreamOf(String fname) throws IOException {
-        return lines(fname).stream().mapToInt(s -> Integer.parseInt(s));
+        return lines(fname).stream().mapToInt(Integer::parseInt);
+    }
+
+    static LongStream longStreamOf(String fname) throws IOException {
+        return lines(fname).stream().mapToLong(Long::parseLong);
     }
 
     static List<String> splitLine(String s) {
