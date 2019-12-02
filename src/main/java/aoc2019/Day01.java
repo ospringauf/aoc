@@ -15,24 +15,24 @@ public class Day01 {
         new Day01().part1();
         new Day01().part2();
     }
-    
-    void part1() throws Exception {      
-    	var input = Util.intStreamOf("input01.txt");
-    	
-        IntUnaryOperator fuel = mass -> mass/3 - 2;
-        
-		var result = input.map(fuel).sum();
+
+    void part1() throws Exception {
+        var input = Util.intStreamOf("input01.txt");
+
+        IntUnaryOperator fuel = mass -> mass / 3 - 2;
+
+        var result = input.map(fuel).sum();
         System.out.println(result);
     }
 
     void part2() throws Exception {
-    	var input = Util.intStreamOf("input01.txt");
-    	
-    	IntUnaryOperator fuel = mass -> max(0, mass/3 - 2);
-    	IntUnaryOperator totalFuel = mass -> IntStream.iterate(mass, x -> x>0, fuel).skip(1).sum();
-    	
-    	assertEquals(50346, totalFuel.applyAsInt(100756));
-    	
+        var input = Util.intStreamOf("input01.txt");
+
+        IntUnaryOperator fuel = mass -> max(0, mass / 3 - 2);
+        IntUnaryOperator totalFuel = mass -> IntStream.iterate(mass, x -> x > 0, fuel).skip(1).sum();
+
+        assertEquals(50346, totalFuel.applyAsInt(100756));
+
         var result = input.map(totalFuel).sum();
         System.out.println(result);
     }
