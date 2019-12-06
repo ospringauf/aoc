@@ -3,6 +3,7 @@ package aoc2019;
 import java.util.Arrays;
 
 /*
+ * Day 2: 1202 Program Alarm
  * https://adventofcode.com/2019/day/2
  */
 public class Day02 {

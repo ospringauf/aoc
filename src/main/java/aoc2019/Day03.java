@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 /*
+ * Day 3: Crossed Wires
  * https://adventofcode.com/2019/day/3
  */
 public class Day03 {
@@ -25,7 +26,7 @@ public class Day03 {
 			this.y = y;
 		}
 
-		public int manhanttan() {
+		public int manhattan() {
 			return abs(x) + abs(y);
 		}
 
@@ -80,14 +81,14 @@ public class Day03 {
 		var wire2 = path(input2);
 		
 		var intersections = intersect(wire1, wire2);
-		var min = intersections.stream().mapToInt(Pos::manhanttan).skip(1).min();
+		var min = intersections.stream().mapToInt(Pos::manhattan).skip(1).min();
 		System.out.println(min.getAsInt());
 	}
 
 	void part2() {
 		var wire1 = path(input1);
 		var wire2 = path(input2);
-
+		
 		var intersections = intersect(wire1, wire2);
 		var min = intersections.stream().mapToInt(p -> wire1.indexOf(p) + wire2.indexOf(p)).skip(1).min();
 		System.out.println(min.getAsInt());

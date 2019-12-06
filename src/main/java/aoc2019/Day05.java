@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.function.IntSupplier;
 
 /*
- * https://adventofcode.com/2019/day/3
+ * https://adventofcode.com/2019/day/5
  */
 public class Day05 {
 

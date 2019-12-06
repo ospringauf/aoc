@@ -3,6 +3,7 @@ package aoc2019;
 import org.junit.jupiter.api.Assertions;
 
 /*
+ * Day 1: The Tyranny of the Rocket Equation
  * https://adventofcode.com/2019/day/1
  */
 public class Day01Classic {
