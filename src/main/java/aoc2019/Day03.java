@@ -81,7 +81,7 @@ public class Day03 {
 		var wire2 = path(input2);
 		
 		var intersections = intersect(wire1, wire2);
-		var min = intersections.stream().mapToInt(Pos::manhattan).skip(1).min();
+		var min = intersections.stream().mapToInt(Pos::manhattan).sorted().skip(1).findFirst();
 		System.out.println(min.getAsInt());
 	}
 
@@ -90,7 +90,7 @@ public class Day03 {
 		var wire2 = path(input2);
 		
 		var intersections = intersect(wire1, wire2);
-		var min = intersections.stream().mapToInt(p -> wire1.indexOf(p) + wire2.indexOf(p)).skip(1).min();
+		var min = intersections.stream().mapToInt(p -> wire1.indexOf(p) + wire2.indexOf(p)).sorted().skip(1).findFirst();
 		System.out.println(min.getAsInt());
 	}
 
