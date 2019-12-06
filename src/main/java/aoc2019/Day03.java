@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /*
  * Day 3: Crossed Wires
@@ -107,6 +108,8 @@ public class Day03 {
 			var dir = segment.charAt(0);  // R13 -> 'R'
 			int steps = Integer.parseInt(segment.substring(1)); // R13 -> 13
 
+//			Stream.iterate(p, x -> x.next(dir)).skip(1).limit(steps).peek(System.out::println).forEach(locations::add);
+//			p = locations.get(locations.size()-1);
 			for (int i = 0; i < steps; ++i) {
 				locations.add(p = p.next(dir));
 			}

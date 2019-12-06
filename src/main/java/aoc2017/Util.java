@@ -11,7 +11,7 @@ import java.util.stream.IntStream;
 public class Util {
 
     public static List<String> lines(String fname) throws IOException {
-        return Files.readAllLines(Paths.get("bin", fname));
+        return Files.readAllLines(Paths.get("src/main/java", fname));
     }
 
     public static List<Integer> ints(String fname) throws IOException {
