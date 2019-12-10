@@ -16,6 +16,10 @@ class Util {
         return Files.readAllLines(Paths.get("src/main/java/aoc2019", fname));
     }
     
+    static String[] linesArray(String fname) throws IOException {
+        var l = Files.readAllLines(Paths.get("src/main/java/aoc2019", fname));
+        return l.toArray(new String[0]);
+    }
     static Stream<String> stringStreamOf(String fname) throws IOException {
         return Files.lines(Paths.get("src/main/java/aoc2019", fname));
     }
