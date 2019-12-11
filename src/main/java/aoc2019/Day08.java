@@ -51,7 +51,7 @@ public class Day08 {
         
         // all layer arrays in reversed order
         var allLayers = IntStream.range(0, layers).mapToObj(n -> layer(layers-n-1).toArray());
-        var img = allLayers.reduce(new int[LAYER_SIZE], (lower, upper) -> merge(lower, upper));
+        var img = allLayers.reduce(new int[LAYER_SIZE], this::merge);
         
         printImage(img);
     }
