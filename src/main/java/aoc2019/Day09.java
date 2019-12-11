@@ -115,15 +115,12 @@ public class Day09 {
                  long instr = mem[adr];
                  int opcode = (int) (instr % 100);
 
-//                long p1 = mem[adr + 1];
-//                long p2 = mem[adr + 2];
-//                long p3 = mem[adr + 3];
-
                  boolean imm[] =  { false, (instr / 100 % 10) == 1, (instr / 1000 % 10) == 1, (instr / 10000 % 10) == 1 };
                  boolean rel[] =  { false, (instr / 100 % 10) == 2, (instr / 1000 % 10) == 2, (instr / 10000 % 10) == 2 };
+                 long[] p = { 0, mem[adr+1], mem[adr+2], mem[adr+3] };
 
-                 IntFunction<Long> arg = n -> imm[n] ? mem[adr+n] : rel[n] ? mem[(int) (mem[adr+n]+relBase)] : mem[(int) mem[adr+n]];
-                 IntFunction<Integer> tgt = n -> (int) (rel[n] ? mem[adr + n] + relBase : mem[adr+n]);
+                 IntFunction<Long> arg = n -> imm[n] ? p[n] : rel[n] ? mem[(int) (p[n]+relBase)] : mem[(int) p[n]];
+                 IntFunction<Integer> tgt = n -> (int) (rel[n] ? p[n] + relBase : p[n]);
 
                  switch (opcode) {
                  case ADD:
