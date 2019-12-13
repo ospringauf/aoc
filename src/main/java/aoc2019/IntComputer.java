@@ -1,5 +1,6 @@
 package aoc2019;
 
+import java.util.Arrays;
 import java.util.function.IntFunction;
 import java.util.function.IntSupplier;
 
@@ -21,8 +22,8 @@ public abstract class IntComputer {
 
 	public IntSupplier input;
 
-	public IntComputer() {
-		super();
+	public IntComputer(long[] program) {
+	    mem = Arrays.copyOf(program, 1000000);
 	}
 
 	boolean halted() {
@@ -104,7 +105,6 @@ public abstract class IntComputer {
 			default:
 				throw new RuntimeException("invalid opcode " + opcode + " at adr " + adr);
 			}
-	
 		}
 	}
 
