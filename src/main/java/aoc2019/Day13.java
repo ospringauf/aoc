@@ -103,7 +103,8 @@ public class Day13 {
         static final int BLOCK = 2;
         static final int PADDLE = 3;
         static final int BALL = 4;
-        static final String[] PIXELS = { " ", "+", "#", "=", "O" };
+//        static final String[] PIXELS = { " ", "+", "#", "=", "O" };
+        static final char[] PIXELS = { ' ', '+', '#', '=', 'O' };
         static final Point DISPLAY = new Point(-1, 0);
 
         int score = 0;
@@ -134,7 +135,7 @@ public class Day13 {
         }
 
         void display() {
-            Function<Point, String> pointColor = p -> PIXELS[screen.getOrDefault(p, EMPTY)];
+            Function<Point, Character> pointColor = p -> PIXELS[screen.getOrDefault(p, EMPTY)];
             var bb = BoundingBox.of(screen.keySet());
             bb.print(pointColor);
             System.out.printf("score: %d%n", score);

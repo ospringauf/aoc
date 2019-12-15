@@ -16,25 +16,25 @@ public class BoundingBox {
     static BoundingBox of(Point... points) {
         var bb = new BoundingBox();
 
-        bb.xMin = Arrays.stream(points).mapToInt(p -> p.x).min().getAsInt();
-        bb.xMax = Arrays.stream(points).mapToInt(p -> p.x).max().getAsInt();
-        bb.yMin = Arrays.stream(points).mapToInt(p -> p.y).min().getAsInt();
-        bb.yMax = Arrays.stream(points).mapToInt(p -> p.y).max().getAsInt();
+        bb.xMin = Arrays.stream(points).mapToInt(p -> p.x).min().orElse(0);
+        bb.xMax = Arrays.stream(points).mapToInt(p -> p.x).max().orElse(0);
+        bb.yMin = Arrays.stream(points).mapToInt(p -> p.y).min().orElse(0);
+        bb.yMax = Arrays.stream(points).mapToInt(p -> p.y).max().orElse(0);
 
         return bb;
     }
 
-    Iterable<Integer> xValues() {
+    Iterable<Integer> xRange() {
         return IntStream.rangeClosed(xMin, xMax).boxed()::iterator;
     }
 
-    Iterable<Integer> yValues() {
+    Iterable<Integer> yRange() {
         return IntStream.rangeClosed(yMin, yMax).boxed()::iterator;
     }
 
-    void print(Function<Point, String> point2String) {
-        for (int y : yValues()) {
-            for (int x : xValues()) {
+    void print(Function<Point, Character> point2String) {
+        for (int y : yRange()) {
+            for (int x : xRange()) {
                 System.out.print(point2String.apply(new Point(x, y)));
             }
             System.out.println();

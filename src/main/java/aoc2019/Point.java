@@ -1,9 +1,12 @@
 package aoc2019;
 
+import java.util.stream.Stream;
 
 public class Point {
     int x;
     int y;
+    
+    static final Point ZERO = of(0,0);
 
     public Point(int x, int y) {
         this.x = x;
@@ -17,7 +20,24 @@ public class Point {
     int manhattan(Point a) {
         return Math.abs(a.x - x) + Math.abs(a.y - y);
     }
-   
+    
+    public Point north() {
+    	return Point.of(x,  y-1);
+    }
+    public Point south() {
+    	return Point.of(x,  y+1);
+    }
+    public Point east() {
+    	return Point.of(x+1,  y);
+    }
+    public Point west() {
+    	return Point.of(x-1,  y);
+    }
+    
+    public Stream<Point> neighbors() {
+		return Stream.of(north(), south(), east(), west());
+	}
+    
     @Override
     public String toString() {
         return String.format("P[%d,%d]", x, y);

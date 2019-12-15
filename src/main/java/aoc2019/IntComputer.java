@@ -3,8 +3,9 @@ package aoc2019;
 import java.util.Arrays;
 import java.util.function.IntFunction;
 import java.util.function.IntSupplier;
+import java.util.function.LongConsumer;
 
-public abstract class IntComputer {
+public class IntComputer {
 
 	private static final int HCF = 99;
 	private static final int ADD = 1;
@@ -21,22 +22,30 @@ public abstract class IntComputer {
 	protected long[] mem;
 
 	public IntSupplier input;
+//	public LongConsumer output;
 
 	public IntComputer(long[] program) {
 	    mem = Arrays.copyOf(program, 1000000);
+//	    output = v ->{};
+	}
+
+	void output(long value) {
+		System.out.println("output: " + value);
 	}
 
 	boolean halted() {
 		return mem[adr] == HCF;
 	}
-
-	abstract void output(long value);
 	
+	boolean complete() {
+		return false;
+	}
+
 	protected void run() {
 		if (halted())
 			throw new RuntimeException("already halted - cannot run");
 	
-		while (!halted()) {
+		while (!halted() && !complete()) {
 	
 			long instr = mem[adr];
 			int opcode = (int) (instr % 100);
@@ -102,10 +111,12 @@ public abstract class IntComputer {
 			case HCF:
 				System.out.println("halt");
 				break;
+				
 			default:
 				throw new RuntimeException("invalid opcode " + opcode + " at adr " + adr);
 			}
 		}
 	}
 
+	
 }

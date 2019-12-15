@@ -104,7 +104,7 @@ public class Day11 {
         robo.paint = hull::put;
         robo.run();
 
-        Function<Point, String> pointColor = p -> hull.getOrDefault(p, BLACK) == WHITE ? "#" : " ";
+        Function<Point, Character> pointColor = p -> hull.getOrDefault(p, BLACK) == WHITE ? '#' : ' ';
         
         var bb = BoundingBox.of(hull.keySet());
         bb.print(pointColor);
