@@ -198,7 +198,7 @@ public class Day15 {
 		
 		// test with prepared map
 //		map = new PointMap<Integer>();
-//		map.read(Util.linesArray("day15.txt"), c -> PIXELS.indexOf(c));
+//		map.read(Util.linesArray("output15.txt"), c -> PIXELS.indexOf(c));
 
 		var start = map.findPoint(START);		
 		var oxygen = map.findPoint(OXYGEN);

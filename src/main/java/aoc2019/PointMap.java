@@ -3,6 +3,7 @@ package aoc2019;
 import java.util.HashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class PointMap<T> extends HashMap<Point, T> {
 
@@ -18,9 +19,12 @@ public class PointMap<T> extends HashMap<Point, T> {
 	}
 
 	public Point findPoint(T value) {
-		return keySet().stream().filter(p -> get(p) == value).findFirst().get();
+		return findPoints(value).findFirst().get();
 	}
 	
+	public Stream<Point> findPoints(T value) {
+		return keySet().stream().filter(p -> get(p) == value);
+	}
 	
 	public PointMap<Integer> minDistances(Point start, Predicate<T> allowed) {
 		final int INF = Integer.MAX_VALUE -1;
