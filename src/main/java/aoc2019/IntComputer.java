@@ -3,7 +3,6 @@ package aoc2019;
 import java.util.Arrays;
 import java.util.function.IntFunction;
 import java.util.function.IntSupplier;
-import java.util.function.LongConsumer;
 
 public class IntComputer {
 
@@ -22,13 +21,11 @@ public class IntComputer {
 	protected long[] mem;
 
 	public IntSupplier input;
-//	public LongConsumer output;
 
 	public IntComputer(long[] program) {
 	    mem = Arrays.copyOf(program, 1000000);
-//	    output = v ->{};
 	}
-
+	
 	void output(long value) {
 		System.out.println("output: " + value);
 	}
@@ -75,7 +72,6 @@ public class IntComputer {
 	
 			case OUT:
 				output(arg.apply(1));
-				
 				adr += 2;
 				break;
 	

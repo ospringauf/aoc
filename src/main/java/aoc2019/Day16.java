@@ -31,38 +31,39 @@ public class Day16 {
 //        part2("02935109699940807407585447034323", 10000, 293510);
         
         time(() -> part2(my_input, 10000, my_offset));
-        //
+        
         System.out.println("=== end ===");
     }
 
-    private static void part2(String s, int repeat, int offset) {
-        int n = 600000;
-        int[] v = new int[n];
-        for (int i=0; i<n; ++i) v[i] = i+1;
         
-        for (int j = 2; j<100; ++j)
-            for (int i=1; i<n; ++i) v[i] = (v[i-1] + v[i])%10;  
+    
+    static void part2(String s, int repeat, int offset) {
+        int n = 1000000;
         
-        int len = s.length()*repeat; 
+        // calc coefficients for last 1000000 input digits
+        // = M^100 for the pattern matrix
+        int[] coeff = new int[n];
+        for (int i=0; i<n; ++i) coeff[i] = 1;
+        
+        for (int j = 1; j<100; ++j)
+            for (int i=1; i<n; ++i) coeff[i] = (coeff[i-1] + coeff[i])%10;  
+        
+        int len = s.length() * repeat;
+        
         for (int off = offset; off < offset+8; ++off) {
             int t = 0;
-            for (int i=len-1; i>=off; --i) {
-                
-                int vx = v[i-off];
-                int c = getchar(i,s)-'0';
-                t += (vx * c);
-                t = t % 10;
+            for (int i=len-1; i>=off; --i) {                
+                t += coeff[i-off] * getDigit(i,s);
+                t %= 10;
             }
             System.out.print(t);
         }
         System.out.println();
     }
 
-    private static char getchar(int i, String s) {
-        return s.charAt(i % s.length()) ;
+    static int getDigit(int i, String s) {
+        return s.charAt(i % s.length()) - '0';
     }
-
-
 
     static void time(Runnable r) {
         long t0 = System.currentTimeMillis();
@@ -82,21 +83,13 @@ public class Day16 {
                 next[j] = Math.abs(IntStream.range(0, len).map(k -> s[k] * p[k]).sum()) % 10;
             }
 
-            for (int x = 0; x < len; ++x)
-                s[x] = next[x];
+            System.arraycopy(next, 0, s, 0, len);
         }
         print(s, 0);
     }
 
     static int patFac(final int phase, final int pos) {
         return basePat[((pos + 1) / phase) % 4];
-    }
-
-    void printall(int[] a) {
-        for (int i = 0; i < a.length; ++i) {
-            System.out.print(a[i]);
-        }
-        System.out.println();
     }
 
     static void print(int[] a, int offset) {

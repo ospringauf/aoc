@@ -41,6 +41,17 @@ class Util {
         return Arrays.asList(s.split("\\s+"));
     }
     
+    static long[] readIntProg(String filename) {
+        try {
+            var l = lines(filename);
+            return Arrays.stream(l.get(0).split(",")).mapToLong(Long::parseLong).toArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
+        }
+        
+    }
+    
     // least common multiple
     // https://www.geeksforgeeks.org/lcm-of-given-array-elements/
     public static long lcm(int... numbers) 
