@@ -19,7 +19,7 @@ public class PointMap<T> extends HashMap<Point, T> {
 	}
 
 	public Point findPoint(T value) {
-		return findPoints(value).findFirst().get();
+		return findPoints(value).findFirst().orElse(null);
 	}
 	
 	public Stream<Point> findPoints(T value) {
@@ -54,5 +54,13 @@ public class PointMap<T> extends HashMap<Point, T> {
 
 	public BoundingBox boundingBox() {
 		return BoundingBox.of(keySet());
+	}
+	
+	void print() {
+		boundingBox().print(p -> String.valueOf(get(p)).charAt(0));
+	}
+	
+	void print(Function<Point, Character> point2String) {
+		boundingBox().print(point2String);
 	}
 }
