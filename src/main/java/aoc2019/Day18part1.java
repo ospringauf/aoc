@@ -14,14 +14,14 @@ import aoc2019.PointMap.PathResult;
  * https://adventofcode.com/2019/day/18
  *
  */
-public class Day18 {
+public class Day18part1 {
 
 	static final String inputFile = "input18.txt";
 
 	public static void main(String[] args) throws Exception {
 		long t0 = System.currentTimeMillis();
 		System.out.println("=== part 1 ===");
-		new Day18().part1();
+		new Day18part1().part1();
 		System.out.printf("=== end (%d ms) ===%n", System.currentTimeMillis() - t0);
 	}
 	
@@ -66,10 +66,7 @@ public class Day18 {
 		// reduce map: remove walls, keep only points on shortest paths between keys
 		map.findPoints(WALL).collect(Collectors.toList()).forEach(w -> map.remove(w));
 		printMap("without walls: ", entrance);
-
 		shortestPathsBetweenKeys();
-//		map.keySet().stream().filter(p -> !pathpoints.contains(p)).collect(Collectors.toList())
-//				.forEach(p -> map.remove(p));
 		printMap("shortest paths only: ", entrance);
 
 		steps = collectKeys('@', keys);
@@ -94,7 +91,7 @@ public class Day18 {
 		}
 		
 		
-		var locked = keys.stream().map(Day18::doorOf).collect(Collectors.toSet());
+		var locked = keys.stream().map(Day18part1::doorOf).collect(Collectors.toSet());
 		Predicate<Character> via = c -> !keys.contains(c);
 		var pos = poi.get(currentKey);
 		var dist = map.minDistances(pos, c -> !locked.contains(c), via);
@@ -123,7 +120,7 @@ public class Day18 {
 		start.add('@');
 		
 		for (var k : start) {
-			var result = map.calPaths(poi.get(k));
+			var result = map.calPaths(poi.get(k), x->true, x->true);
 			shortest.put(k, result);
 			for (var k2 : keys) {
 				var p = poi.get(k2);

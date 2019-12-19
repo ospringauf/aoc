@@ -17,14 +17,14 @@ import aoc2019.PointMap.PathResult;
  * https://adventofcode.com/2019/day/18
  *
  */
-public class Day18_2 {
+public class Day18part2 {
 
 	static final String inputFile = "input18_2.txt";
 
 	public static void main(String[] args) throws Exception {
 		long t0 = System.currentTimeMillis();
 		System.out.println("=== part 2 ===");
-		new Day18_2().part2();
+		new Day18part2().part2();
 		System.out.printf("=== end (%d ms) ===%n", System.currentTimeMillis() - t0);
 	}
 	
@@ -72,14 +72,8 @@ public class Day18_2 {
 
 		shortestPathsBetweenKeys();
 		printMap("shortest paths only: ");
-
-		Set<Character> keys1 = shortest.get('1').distance.keySet().stream().filter(p -> allKeys.contains(map.get(p))).map(p -> map.get(p)).collect(Collectors.toSet());
-		Set<Character> keys2 = shortest.get('2').distance.keySet().stream().filter(p -> allKeys.contains(map.get(p))).map(p -> map.get(p)).collect(Collectors.toSet());
-		Set<Character> keys3 = shortest.get('3').distance.keySet().stream().filter(p -> allKeys.contains(map.get(p))).map(p -> map.get(p)).collect(Collectors.toSet());
-		Set<Character> keys4 = shortest.get('4').distance.keySet().stream().filter(p -> allKeys.contains(map.get(p))).map(p -> map.get(p)).collect(Collectors.toSet());
 		
 		var steps = collectKeys('1', '2', '3', '4', allKeys);
-//		var steps = 0;
 
 		System.out.println(steps);
 	}
@@ -107,8 +101,8 @@ public class Day18_2 {
 		var reach4 = reachableKeys(ck4, remainingKeys);
 
 		var best = 1000000;
-		var opt = Generator.cartesianProduct(reach1, reach2, reach3, reach4);
-		for (var x : opt) {
+		var options = Generator.cartesianProduct(reach1, reach2, reach3, reach4);
+		for (var x : options) {
 			System.out.println(x);
 			
 			char k1 = x.get(0); 
@@ -134,7 +128,7 @@ public class Day18_2 {
 
 	private List<Character> reachableKeys(char currentKey, Set<Character> remainingKeys) {
 		Predicate<Character> via = c -> !remainingKeys.contains(c);
-		var locked = remainingKeys.stream().map(Day18_2::doorOf).collect(Collectors.toSet());
+		var locked = remainingKeys.stream().map(Day18part2::doorOf).collect(Collectors.toSet());
 		var pos = poi.get(currentKey);
 		var dist = map.minDistances(pos, c -> !locked.contains(c), via);
 		var reachKeys = remainingKeys.stream().filter(k -> dist.containsKey(poi.get(k))).collect(Collectors.toList());
@@ -153,7 +147,7 @@ public class Day18_2 {
 		start.add('4');
 		
 		for (var k : start) {
-			var result = map.calPaths(poi.get(k));
+			var result = map.calPaths(poi.get(k), x->true, x->true);
 			shortest.put(k, result);
 			for (var k2 : allKeys) {
 				var p = poi.get(k2);
