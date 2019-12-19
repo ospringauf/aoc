@@ -87,9 +87,6 @@ public class Day14 {
         Assertions.assertEquals(180697, new Day14("input14d.txt").part1());
         Assertions.assertEquals(2210736, new Day14("input14e.txt").part1());
         
-        System.out.println("=== tests AW ===");
-        new Day14("input14_aw.txt").part1();
-
         System.out.println("=== tests 2 ===");
         Assertions.assertEquals(82892753, new Day14("input14c.txt").part2());
         Assertions.assertEquals(5586022, new Day14("input14d.txt").part2());

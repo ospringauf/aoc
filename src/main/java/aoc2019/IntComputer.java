@@ -16,6 +16,7 @@ public class IntComputer {
 	private static final int LES = 7;
 	private static final int EQU = 8;
 	private static final int RBO = 9;
+
 	int adr = 0;
 	int relBase = 0;
 	protected long[] mem;
@@ -25,6 +26,8 @@ public class IntComputer {
 	public IntComputer(long[] program) {
 	    mem = Arrays.copyOf(program, 1000000);
 	}
+	
+	public IntComputer() {}
 	
 	void output(long value) {
 		System.out.println("output: " + value);

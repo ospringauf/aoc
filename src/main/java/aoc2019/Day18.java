@@ -1,8 +1,13 @@
 package aoc2019;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import aoc2019.PointMap.PathResult;
 
 /*
  * Day 18: Many-Worlds Interpretation
@@ -11,103 +16,144 @@ import java.util.stream.Collectors;
  */
 public class Day18 {
 
-    public static void main(String[] args) throws Exception {
-        System.out.println("=== part 1 ===");
-        new Day18().part1();
+	static final String inputFile = "input18.txt";
 
-//        System.out.println("=== part 2 ===");
-//        new Day18().part2();
-    }
-
-    static final char WALL = '#'; 
-    static final char CLEAR = '.';
-	
-    PointMap<Character> map;
-
-    void part1() throws Exception {
-        map = new PointMap<>();
-        map.read(Util.linesArray("input18a.txt"), c->c);
-
-        map.print();
-        
-        var entrance = map.findPoint('@');
-        var pos = entrance;
-        map.put(pos, CLEAR);
-        var keys = map.values().stream().filter(v -> v >= 'a' && v <= 'z').collect(Collectors.toSet());
-//        var doors = map.values().stream().filter(v -> v >= 'A' && v <= 'Z').collect(Collectors.toSet());
-//        System.out.println(keys);
-//        System.out.println(doors);
-//        System.out.println(pos);
-        
-//        var collectedKeys = new HashSet<Character>();
-//        var openDoors = new HashSet<Character>();
-        
-        var steps = bestPath(pos, keys, 0); 
-        
-        map.print();
-        System.out.println(steps);        
-    }
-
-    int bound = Integer.MAX_VALUE / 2;
-    
-	private int bestPath(Point pos, Set<Character> keys, int fre) {
-//		var steps = 0;
-        if (keys.isEmpty()) {
-            if (fre < bound) bound = fre;
-            return fre;
-        }
-        
-    	var locked = keys.stream().map(Day18::doorOf).collect(Collectors.toSet());
-    	var dist = map.minDistances(pos, c -> c != WALL && !locked.contains(c));
-    	var reachKeys = keys.stream().filter(k -> dist.containsKey(map.findPoint(k))).collect(Collectors.toList());
-    	
-    	var best = 1000000; //Integer.MAX_VALUE;
-    	for (var key : reachKeys) {
-//                System.out.println("select key: " + key + " from " + reachKeys);
-            var nextPos = map.findPoint(key);
-            int dn = dist.get(nextPos);
-            if (fre + dn > bound) continue;
-            var s = bestPath(nextPos, except(keys, key), fre + dn);
-            best = Math.min(best, s);
-    	}
-        var steps = fre + best;                
-    
-		return steps;
+	public static void main(String[] args) throws Exception {
+		long t0 = System.currentTimeMillis();
+		System.out.println("=== part 1 ===");
+		new Day18().part1();
+		System.out.printf("=== end (%d ms) ===%n", System.currentTimeMillis() - t0);
 	}
 	
-	private int bestPath0(Point pos, Set<Character> keys) {
-        var steps = 0;
-        if ( ! keys.isEmpty())  
-        {
-            var locked = keys.stream().map(k -> doorOf(k)).collect(Collectors.toSet());
-            var dist = map.minDistances(pos, c -> c!=WALL && !locked.contains(c));
-            var reachKeys = keys.stream().filter(k -> dist.containsKey(map.findPoint(k))).collect(Collectors.toList());
-            
-//          for (var key : )
-            var key = reachKeys.get(0);
-            System.out.println("select key: " + key + " from " + reachKeys);
-//          pos = map.findPoint(key); 
-//          steps += dist.get(pos);
-//          keys.remove(key);
-            var next = map.findPoint(key);
-            var s = bestPath0(next, except(keys, key));
-            steps += dist.get(next) + s;
+	long keyMask(char key) {
+		return (key=='@')? 1L : 1L<<(key-'a'+1);
+	}
+	
+	long keyMask(Set<Character> keys) {
+		long m = 0;
+		for (var k : keys) m = m | keyMask(k);
+		return m;
+	}
+	
+	static final char WALL = '#';
+	static final char CLEAR = '.';
+	static final int INF = 1000000;
 
-//          map.put(pos, '.');
-//          var dk = map.findPoint(doorOf(key));
-//          if (dk != null) map.put(dk, '.');
-        }
-        return steps;
-    }
+	PointMap<Character> map;
 
-	Set<Character> except(Set<Character> keys, Character key) {
+	int bound = Integer.MAX_VALUE / 2;
+	Map<Character, Point> poi;
+	Point entrance;
+	Set<Character> keys;
+	Map<Character, PathResult> shortest = new HashMap<>();
+
+	void part1() throws Exception {
+		map = new PointMap<>();
+		map.read(Util.linesArray(inputFile), c -> c);
+		map.print();
+
+		entrance = map.findPoint('@');
+		map.put(entrance, CLEAR);
+		keys = map.values().stream().filter(v -> v >= 'a' && v <= 'z').collect(Collectors.toSet());
+		System.out.println(keys);
+		var steps = 0;
+
+		// key/door => point of interest
+		poi = map.entrySet().stream().filter(e -> e.getValue() != WALL && e.getValue() != CLEAR)
+				.collect(Collectors.toMap(e -> e.getValue(), e -> e.getKey()));
+		poi.put('@', entrance);
+
+		// reduce map: remove walls, keep only points on shortest paths between keys
+		map.findPoints(WALL).collect(Collectors.toList()).forEach(w -> map.remove(w));
+		printMap("without walls: ", entrance);
+
+		shortestPathsBetweenKeys();
+//		map.keySet().stream().filter(p -> !pathpoints.contains(p)).collect(Collectors.toList())
+//				.forEach(p -> map.remove(p));
+		printMap("shortest paths only: ", entrance);
+
+		steps = collectKeys('@', keys);
+
+		System.out.println(steps);
+	}
+	
+	Map<Character, Map<Long, Integer>> cache = new HashMap<Character, Map<Long,Integer>>();
+
+	
+	int collectKeys(Character currentKey, Set<Character> keys) {
+		if (keys.isEmpty()) {
+			return 0;
+		}
+
+		// cache lookup
+		var m = keyMask(keys);
+		var c1 = cache.get(currentKey);
+		if (c1 != null) {
+			var c2 = c1.get(m);
+			if (c2 != null) return c2;
+		}
+		
+		
+		var locked = keys.stream().map(Day18::doorOf).collect(Collectors.toSet());
+		Predicate<Character> via = c -> !keys.contains(c);
+		var pos = poi.get(currentKey);
+		var dist = map.minDistances(pos, c -> !locked.contains(c), via);
+		var reachKeys = keys.stream().filter(k -> dist.containsKey(poi.get(k))).collect(Collectors.toList());
+
+
+		var best = 1000000;
+		for (var k : reachKeys) {
+			var nextPos = poi.get(k);
+			int dn = dist.get(nextPos);
+			var s = dn + collectKeys(k, except(keys, k));
+			best = Math.min(best, s);
+		}
+		
+		c1 = (c1 == null) ? new HashMap<Long, Integer>() : c1;
+		cache.putIfAbsent(currentKey, c1);
+		c1.put(m, best);
+
+		return best;
+	}
+
+	void shortestPathsBetweenKeys() {
+		System.out.println("calculating shortest paths between keys");
+		var pathpoints = new HashSet<Point>();
+		var start = new HashSet<Character>(keys);
+		start.add('@');
+		
+		for (var k : start) {
+			var result = map.calPaths(poi.get(k));
+			shortest.put(k, result);
+			for (var k2 : keys) {
+				var p = poi.get(k2);
+				while (p != null) {
+					pathpoints.add(p);
+					p = result.predecessor.get(p);
+				}
+			}
+		}
+
+		map.keySet().stream()
+		.filter(p -> !pathpoints.contains(p))
+		.collect(Collectors.toList())
+		.forEach(p -> map.remove(p));
+	}
+
+	void printMap(String header, Point pos) {
+		System.out.println(header + " @" + pos);
+		map.boundingBox().print(p -> (p.equals(pos) ? '@' : map.getOrDefault(p, ' ')));
+	}
+
+	Set<Character> except(Set<Character> keys, Character... remove) {
 		var s = new HashSet<Character>(keys);
-		s.remove(key);
+		for (var k : remove)
+			s.remove(k);
 		return s;
 	}
 
 	static char doorOf(char key) {
-		return (char) (key + ('A'-'a'));
+		return (char) (key + ('A' - 'a'));
 	}
-}
 
+}
