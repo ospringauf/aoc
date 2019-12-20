@@ -9,6 +9,8 @@ import java.util.stream.Stream;
 public class PointMap<T> extends HashMap<Point, T> {
 
 	private static final long serialVersionUID = 1L;
+	
+	Function<Point, Stream<Point>> neigbors = p -> p.neighbors();
 
 	public static class PathResult {
 		public PointMap<Integer> distance;
@@ -37,7 +39,7 @@ public class PointMap<T> extends HashMap<Point, T> {
 	}
 
 	public Stream<Point> findPoints(T value) {
-		return keySet().stream().filter(p -> get(p) == value);
+		return keySet().stream().filter(p -> get(p).equals(value));
 	}
 
 	public Stream<Point> findPoints(Predicate<T> filter) {
@@ -50,11 +52,11 @@ public class PointMap<T> extends HashMap<Point, T> {
 	
 
 	public PointMap<Integer> minDistances(Point start, Predicate<T> allowed, Predicate<T> via) {
-		return calPaths(start, allowed, via).distance;
+		return calcPaths(start, allowed, via).distance;
 	}
 
 	// calc paths and distances in one go
-	public PathResult calPaths(Point start, Predicate<T> allowed, Predicate<T> via) {
+	public PathResult calcPaths(Point start, Predicate<T> allowed, Predicate<T> via) {
 		final int INF = Integer.MAX_VALUE - 1;
 		var points = this.keySet();
 
@@ -73,17 +75,20 @@ public class PointMap<T> extends HashMap<Point, T> {
 					continue;
 
 				// best neighbor distance?
-				Point bestNeighbor = p.neighbors()
+				var bestNeighbor =
+						neigbors.apply(p)
 						.filter(x -> via.test(get(x)))
-						.min(Comparator.comparing(n -> dist.getOrDefault(n, INF)))
-						.get();
+						.min(Comparator.comparing(n -> dist.getOrDefault(n, INF)));
+//						.get();
 
-				int dn = dist.getOrDefault(bestNeighbor, INF);
+				if (!bestNeighbor.isPresent()) continue;
+				
+				int dn = dist.getOrDefault(bestNeighbor.get(), INF);
 				int dp = dist.getOrDefault(p, INF);
 				if (dn + 1 < dp) {
 					better = true;
 					dist.put(p, dn + 1);
-					pred.put(p, bestNeighbor);
+					pred.put(p, bestNeighbor.get());
 				}
 			}
 		}

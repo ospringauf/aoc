@@ -20,6 +20,14 @@ public class Pose extends Point {
     void turnLeft() {
         heading = Direction.values()[(heading.ordinal() + 3) % 4];
     }
+    
+    Pose left() {
+    	return new Pose(x + heading.dy, y - heading.dx, heading);
+    }
+
+    Pose right() {
+    	return new Pose(x - heading.dy, y + heading.dx, heading);
+    }
 
     Pose next() {
         return new Pose(x + heading.dx, y + heading.dy, heading);

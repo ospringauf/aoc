@@ -120,7 +120,7 @@ public class Day18part1 {
 		start.add('@');
 		
 		for (var k : start) {
-			var result = map.calPaths(poi.get(k), x->true, x->true);
+			var result = map.calcPaths(poi.get(k), x->true, x->true);
 			shortest.put(k, result);
 			for (var k2 : keys) {
 				var p = poi.get(k2);

@@ -147,7 +147,7 @@ public class Day18part2 {
 		start.add('4');
 		
 		for (var k : start) {
-			var result = map.calPaths(poi.get(k), x->true, x->true);
+			var result = map.calcPaths(poi.get(k), x->true, x->true);
 			shortest.put(k, result);
 			for (var k2 : allKeys) {
 				var p = poi.get(k2);

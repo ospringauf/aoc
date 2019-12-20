@@ -40,4 +40,8 @@ public class BoundingBox {
             System.out.println();
         }
     }
+
+	Point center() {
+		return Point.of((xMin+xMax)/2, (yMin+yMax)/2);
+	}
 }
