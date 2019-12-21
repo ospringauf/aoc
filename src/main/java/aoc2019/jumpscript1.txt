@@ -1,0 +1,16 @@
+NOT A T
+NOT C J
+AND D J
+OR T J
+
+NOT D J
+NOT J J
+NOT C T
+AND T J
+NOT A T
+OR T J
+
+.xxx
+xx.#
+
+~CD + ~A

@@ -41,7 +41,7 @@ public class IntComputer {
 		return false;
 	}
 
-	protected void run() {
+	void run() {
 		if (halted())
 			throw new RuntimeException("already halted - cannot run");
 	
