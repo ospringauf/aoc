@@ -70,7 +70,8 @@ public class Day21p1 {
 		droid.run();
 
 		for (int p = 0; p < (1 << ahead); ++p) {
-			if (solve(p,0) && jump(p)) 
+			//if (solve(p,0) && jump(p)) 
+			if (solve(p,0) && (myjump(p) != (jump(p) || mustJump(p))))
 			print(p);
 		}
 
@@ -92,6 +93,25 @@ public class Day21p1 {
 		return (ground(p, 3) && solve(p, 4)) && !(ground(p, 0) && solve(p, 1)); // must jump
 	}
 
+	boolean myjump(int p) {
+		boolean a = (p & (1<<0)) > 0;
+		boolean b = (p & (1<<1)) > 0;
+		boolean c = (p & (1<<2)) > 0;
+		boolean d = (p & (1<<3)) > 0;
+		boolean e = (p & (1<<4)) > 0;
+		boolean f = (p & (1<<5)) > 0;
+		boolean g = (p & (1<<6)) > 0;
+		boolean h = (p & (1<<7)) > 0;
+		boolean i = (p & (1<<8)) > 0;
+
+		//return !a || ( !b && !e && d ) || (!c && !e && d) || (d && !c && !f && !g);
+		
+		return !a ||
+				(d && !b && !e) || (d && !b && !f && !i) ||
+				(d && !c && (!f || !g)) 
+				;
+	}
+	
 	boolean ground(int p, int i) {
 		return (i >= ahead) || (p & (1 << i)) > 0;
 	}
@@ -100,7 +120,7 @@ public class Day21p1 {
 		System.out.printf("%4d ", p);
 		for (int i = 0; i < ahead; ++i)
 			System.out.print(ground(p, i) ? "#" : ".");
-		System.out.println("  " + solve(p, 0) + "  " + jump(p) + "  " + mustJump(p));
+		System.out.println("\t " + solve(p, 0) + "\t  " + jump(p) + "\t  " + mustJump(p) + "\t " + myjump(p));
 //		System.out.println("  " + solve(p,0));
 	}
 
