@@ -64,7 +64,7 @@ public class Day25 {
 		// collect items
 		Util.lines("walk25.txt").forEach(droid::command);
 
-		// try combinations
+		// try combinations -->
 		// asterisk + astronaut ice cream + space heater + klein bottle
 		// 2105377
 		for (var c : Generator.subset(ITEMS).simple()) {

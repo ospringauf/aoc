@@ -24,23 +24,27 @@ public class Day22 {
 	static int MAX1 = LEN1 - 1;
 
 
-	static class Mat {
+	static class ShuffleMatrix {
+		
+		// represents the matrix with shuffle coefficients
+		// [ a b ]
+		// [ 0 1 ]
 
 		BigInteger a;
 		BigInteger b;
 
-		public Mat(long a, long b) {
+		public ShuffleMatrix(long a, long b) {
 			this.a = BigInteger.valueOf(a);
 			this.b = BigInteger.valueOf(b);
 		}
 
-		public Mat(BigInteger a, BigInteger b) {
+		public ShuffleMatrix(BigInteger a, BigInteger b) {
 			this.a = a;
 			this.b = b;
 		}
 
-		Mat mult(Mat m) {
-			return new Mat(a.multiply(m.a).mod(BL), a.multiply(m.b).add(b).mod(BL));
+		ShuffleMatrix mult(ShuffleMatrix m) {
+			return new ShuffleMatrix(a.multiply(m.a).mod(BL), a.multiply(m.b).add(b).mod(BL));
 		}
 
 		long transform(long i) {
@@ -48,7 +52,7 @@ public class Day22 {
 			return t.longValue();
 		}
 
-		Mat pot(long n) {
+		ShuffleMatrix pot(long n) {
 			if (n == 1)
 				return this;
 			var mh = pot(n / 2L);
@@ -60,9 +64,10 @@ public class Day22 {
 		}
 	}
 	
-	long pow(long a, long b, long mod) {
-		if (b == 1) return a % mod;
-		var p = BigInteger.valueOf(pow(a, b/2, mod));
+	// calc a^b [mod L]
+	long powMod(long a, long b) {
+		if (b == 1) return a % L;
+		var p = BigInteger.valueOf(powMod(a, b/2));
 		if (b % 2 == 0)
 			return p.multiply(p).mod(BL).longValue();
 		else
@@ -104,7 +109,7 @@ public class Day22 {
 
 	
 	void part2(String[] deal0, boolean invert) {
-		var m = new Mat(1, 0);
+		var m = new ShuffleMatrix(1, 0);
 		
 		var deal = new ArrayList<String>();
 		if (invert)
@@ -116,15 +121,15 @@ public class Day22 {
 		for (String s : deal) {
 			if (s.startsWith("cut ")) {
 				var x = Integer.parseInt(s.substring("cut ".length()));
-				var t = invert ? new Mat(1, L + x) : new Mat(1, L - x);
+				var t = invert ? new ShuffleMatrix(1, L + x) : new ShuffleMatrix(1, L - x);
 				m = t.mult(m);
 			} else if (s.startsWith("deal with increment ")) {
 				var x = Integer.parseInt(s.substring("deal with increment ".length()));
-				var f = pow(x, L-2, L); // fermat: "division" i/x == i*x^(L-2) [mod L]
-				var t = invert ? new Mat(f, 0) : new Mat(x, 0);
+				var f = powMod(x, L-2); // fermat: "division" i/x == i*x^(L-2) [mod L]
+				var t = invert ? new ShuffleMatrix(f, 0) : new ShuffleMatrix(x, 0);
 				m = t.mult(m);
 			} else if (s.startsWith("deal into new stack")) {
-				var t = invert ? new Mat(-1, L - 1) : new Mat(-1, L - 1);
+				var t = invert ? new ShuffleMatrix(-1, L - 1) : new ShuffleMatrix(-1, L - 1);
 				m = t.mult(m);
 			}
 		}

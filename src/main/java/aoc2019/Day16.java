@@ -36,7 +36,8 @@ public class Day16 {
     }
 
         
-    
+    // idea: lower-right quadrant of the coefficient matrix (to the 100) is a symmetric triangular matrix
+    // these coefficients can be easily calculated
     static void part2(String s, int repeat, int offset) {
         int n = 1000000;
         

@@ -64,7 +64,7 @@ public class Day11 {
             case TURN_LEFT:
                 pos.turnLeft();
             }
-            pos = pos.next();
+            pos = pos.ahead();
         }
 
         @Override

@@ -3,7 +3,7 @@ package aoc2019;
 import java.util.ArrayList;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
+import static aoc2019.Direction.*;
 /*
  * Day 17: Set and Forget
  * https://adventofcode.com/2019/day/17
@@ -112,17 +112,17 @@ public class Day17 {
 		System.out.println("extract path");
 		var start = map.findPoints(c -> "^v><".indexOf(c) >= 0).findFirst().get();
 		var d = map.get(start);
-		var p = new Pose(start.x, start.y, (d == '^') ? Direction.NORTH
-				: (d == '>') ? Direction.EAST : (d == 'v') ? Direction.SOUTH : Direction.WEST);
+		var p = new Pose(start.x, start.y, (d == '^') ? NORTH
+				: (d == '>') ? EAST : (d == 'v') ? SOUTH : WEST);
 
 		int steps = 0;
 		Predicate<Point> scaff = pt -> map.getOrDefault(pt, ' ') == '#';
 
 		var cmd = new ArrayList<String>();
-		while (scaff.test(p.next()) || scaff.test(p.left()) || scaff.test(p.right())) {
-			if (scaff.test(p.next())) {
+		while (scaff.test(p.ahead()) || scaff.test(p.left()) || scaff.test(p.right())) {
+			if (scaff.test(p.ahead())) {
 				steps++;
-				p = p.next();
+				p = p.ahead();
 			} else {
 				if (steps > 0)
 					cmd.add(Integer.toString(steps));

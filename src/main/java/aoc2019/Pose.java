@@ -29,8 +29,12 @@ public class Pose extends Point {
     	return new Pose(x - heading.dy, y + heading.dx, heading);
     }
 
-    Pose next() {
+    Pose ahead() {
         return new Pose(x + heading.dx, y + heading.dy, heading);
+    }
+
+    Pose behind() {
+        return new Pose(x - heading.dx, y - heading.dy, heading);
     }
 
 }

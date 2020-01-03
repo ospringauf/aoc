@@ -169,13 +169,13 @@ public class Day24 {
 		var seen = new HashSet<Long>();
 		
 		while (true) {
-			var b = m.biodiversity();
-			if (seen.contains(b)) {
+			var bio = m.biodiversity();
+			if (seen.contains(bio)) {
 				m.print();
-				System.out.println(b);
+				System.out.println(bio);
 				break;
 			}
-			seen.add(b);
+			seen.add(bio);
 			m = m.next1();
 		}		
 	}
