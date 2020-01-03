@@ -1,19 +1,14 @@
 package aoc2019;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /*
  * Day 21: Springdroid Adventure
  * https://adventofcode.com/2019/day/21
  *
  */
-public class Day21p1 {
+public class Day21 {
 
 	static final long[] PROGRAM = Util.readIntProg("input21.txt");
 	Springdroid droid;
@@ -48,10 +43,10 @@ public class Day21p1 {
 		long t0 = System.currentTimeMillis();
 
 		System.out.println("=== part 1 ===");
-		new Day21p1().part1();
+		new Day21().part1();
 
 		System.out.println("=== part 2 ===");
-		new Day21p1().part2();
+		new Day21().part2();
 
 		System.out.printf("=== end (%d ms) ===%n", System.currentTimeMillis() - t0);
 	}

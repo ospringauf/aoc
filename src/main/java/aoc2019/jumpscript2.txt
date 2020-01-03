@@ -1,29 +1,24 @@
-OR F J
-OR I J
-AND E J
-OR B J
-AND C J
-OR B T
-AND F T
-AND G T
+NOT C J 
+AND D J 
+AND H J
+NOT B T 
+AND D T 
 OR T J
-NOT D T
+NOT A T 
 OR T J
-AND A J
-NOT J J
-
 
 
 
 @ D H
 A E I
 B F 
+C G
 
   _ _ _ x _ _ _ x _
 @ A B C D E F G H I 
 
 
-a && (b || ! d || e) && (b || ! d || f || i) && (c || ! d || f)
-!
-
+!a + 
+!b * d +
+!c * d * h
 
