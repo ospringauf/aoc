@@ -1,7 +1,6 @@
 package main
 
 import (
-	"aoc2019/utl"
 	"fmt"
 	"time"
 
@@ -25,7 +24,7 @@ func Run07() {
 }
 
 func day07Part1() {
-	a := utl.IntCode(utl.ReadInputStrings("input07.txt")[0])
+	a := IntCode(ReadInputStrings("input07.txt")[0])
 
 	phases := []int{0, 1, 2, 3, 4}
 	p := prmt.New(prmt.IntSlice(phases))
@@ -50,7 +49,7 @@ func day07Part1() {
 }
 
 func day07Part2() {
-	a := utl.IntCode(utl.ReadInputStrings("input07.txt")[0])
+	a := IntCode(ReadInputStrings("input07.txt")[0])
 	phases := []int{5, 6, 7, 8, 9}
 	amps := make([]IntComputer, 5)
 
@@ -82,7 +81,7 @@ func day07Part2() {
 }
 
 func day07Part2Async() {
-	a := utl.IntCode(utl.ReadInputStrings("input07.txt")[0])
+	a := IntCode(ReadInputStrings("input07.txt")[0])
 
 	phases := []int{5, 6, 7, 8, 9}
 	amps := make([]IntComputer, 5)
@@ -98,15 +97,7 @@ func day07Part2Async() {
 
 		for i := range amps {
 			i := i
-			// amps[i].out = func(v int64) {
-			// 	// log.Printf("amp %d output %d\n", i, v)
-			// 	// tgt := &amps[(i+1)%5]
-			// 	// tgt.inchan <- v
-			// 	amps[(i+1)%5].inchan <- v
-			// 	if v > best {
-			// 		best = v
-			// 	}
-			// }
+
 			amps[i].outchan = amps[(i+1)%5].inchan
 			go amps[i].run()
 			amps[i].inchan <- int64(phases[i])

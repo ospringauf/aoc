@@ -1,7 +1,6 @@
 package main
 
 import (
-	"aoc2019/utl"
 	"fmt"
 	"strconv"
 	"strings"
@@ -40,7 +39,7 @@ func wirePoints(w []string) []Point {
 }
 
 func day03Part1() {
-	s := utl.ReadInputStrings("input03.txt")
+	s := ReadInputStrings("input03.txt")
 	w1 := wirePoints(strings.Split(s[0], ","))
 	w2 := wirePoints(strings.Split(s[1], ","))
 

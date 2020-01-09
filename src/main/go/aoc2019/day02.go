@@ -1,7 +1,6 @@
 package main
 
 import (
-	"aoc2019/utl"
 	"fmt"
 	"time"
 )
@@ -17,7 +16,7 @@ func Run02() {
 }
 
 func day02Part1() {
-	a := utl.IntCode(utl.ReadInputStrings("input02.txt")[0])
+	a := IntCode(ReadInputStrings("input02.txt")[0])
 
 	comp := IntComputer{}
 	comp.init(a)
@@ -30,7 +29,7 @@ func day02Part1() {
 }
 
 func day02Part2() {
-	a := utl.IntCode(utl.ReadInputStrings("input02.txt")[0])
+	a := IntCode(ReadInputStrings("input02.txt")[0])
 
 	comp := IntComputer{}
 	comp.init(a)

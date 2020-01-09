@@ -16,12 +16,15 @@ const (
 	JUMP_IF_FALSE OpCode = 6
 	LESS_THAN     OpCode = 7
 	EQUALS        OpCode = 8
+	RELBASE       OpCode = 9
 )
 
 // IntComputer executes AOC 2019 IntCode
 type IntComputer struct {
-	mem  [10000]int64
-	iptr int
+	mem      [10000]int64
+	iptr     int
+	relBase  int64
+	cntInstr int64
 
 	data       []int64
 	in         func() int64
@@ -54,34 +57,41 @@ func (c *IntComputer) halted() bool {
 }
 
 func (c *IntComputer) run1() {
+	c.cntInstr++
 	instr := c.mem[c.iptr]
 	op := OpCode(instr % 100)
 	p := c.mem[c.iptr : c.iptr+4]
 	mode := []int{0, (int(instr) / 100) % 10, (int(instr) / 1000) % 10, (int(instr) / 10000) % 10}
 
-	pos := func(i int) int64 {
-		return c.mem[p[i]]
-	}
-	imm := func(i int) int64 {
-		return p[i]
+	param := func(i int) int64 {
+		switch mode[i] {
+		case 1: // immediate
+			return p[i]
+		case 2: // relative
+			return c.mem[p[i]+c.relBase]
+		default: // position
+			return c.mem[p[i]]
+		}
 	}
 
-	param := func(i int) int64 {
-		if mode[i] == 1 {
-			return imm(i)
+	tgt := func(i int) int64 {
+		switch mode[i] {
+		case 2: // relative
+			return p[i] + c.relBase
+		default: // position
+			return p[i]
 		}
-		return pos(i)
 	}
 
 	switch op {
 	case ADD:
-		c.mem[p[3]] = param(1) + param(2)
+		c.mem[tgt(3)] = param(1) + param(2)
 		c.iptr += 4
 	case MULT:
-		c.mem[p[3]] = param(1) * param(2)
+		c.mem[tgt(3)] = param(1) * param(2)
 		c.iptr += 4
 	case INPUT:
-		c.mem[p[1]] = c.input()
+		c.mem[tgt(1)] = c.input()
 		c.iptr += 2
 	case OUTPUT:
 		c.output(param(1))
@@ -100,18 +110,21 @@ func (c *IntComputer) run1() {
 		}
 	case LESS_THAN:
 		if param(1) < param(2) {
-			c.mem[p[3]] = 1
+			c.mem[tgt(3)] = 1
 		} else {
-			c.mem[p[3]] = 0
+			c.mem[tgt(3)] = 0
 		}
 		c.iptr += 4
 	case EQUALS:
 		if param(1) == param(2) {
-			c.mem[p[3]] = 1
+			c.mem[tgt(3)] = 1
 		} else {
-			c.mem[p[3]] = 0
+			c.mem[tgt(3)] = 0
 		}
 		c.iptr += 4
+	case RELBASE:
+		c.relBase += param(1)
+		c.iptr += 2
 	case HALT:
 		c.done <- c.lastOutput
 		// fmt.Println("HALT")

@@ -12,7 +12,7 @@ func wake(zeit time.Duration, grund string) {
 	fmt.Println("Zeit abgelaufen: ", grund)
 }
 
-func main() {
+func main00() {
 	// go wake(180*time.Second, "Tee!")
 	// go wake(200*time.Second, "Wichtiger Termin!")
 	// time.Sleep(500 * time.Second)
