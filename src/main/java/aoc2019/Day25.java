@@ -30,6 +30,7 @@ public class Day25 {
 		}
 
 		synchronized void command(String cmd) {
+//			System.out.println("sending: " + cmd);
 			cmd = cmd + "\n";
 			cmd.chars().forEach(data::add);
 			notify();
@@ -39,7 +40,9 @@ public class Day25 {
 			try {
 				if (data.isEmpty())
 					wait();
-				return (long) data.remove(0);
+				var d = data.remove(0);
+				System.out.print((char)(int)d);
+				return (long) d;
 			} catch (Exception e) {
 				e.printStackTrace();
 				return (long) '\n';
@@ -54,7 +57,6 @@ public class Day25 {
 
 	public static void main(String[] args) throws Exception {
 		new Day25().part1();
-
 	}
 
 	void part1() throws Exception {
@@ -73,12 +75,10 @@ public class Day25 {
 			droid.command("south");
 		}
 
-		BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
+		var console = new BufferedReader(new InputStreamReader(System.in));
 		while (true) {
 			var cmd = console.readLine();
-			System.out.println("sending: " + cmd);
 			droid.command(cmd);
 		}
-
 	}
 }
