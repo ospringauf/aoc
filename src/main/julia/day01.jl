@@ -12,7 +12,5 @@ end
 
 fuel2(1969)
 
-@printf "part 1: %10.0f\n" sum(map(x->fuel(x), masses))
-@printf "part 2: %10.0f\n" sum(map(x->fuel2(x), masses))
-# exit()
-
+@printf "part 1: %10.0f\n" sum(fuel.(masses))
+@printf "part 2: %10.0f\n" sum(fuel2.(masses))
