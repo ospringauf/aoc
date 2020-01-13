@@ -1,19 +1,23 @@
-function pdigits(n)
-    return [n÷100000, n÷10000, n÷1000, n÷100, n÷10, n] .% 10
-end
+# part 1
 
 mono(a) = all(i -> a[i]<=a[i+1], [1:5;])
 
-pair(a) = any(i -> a[i]==a[i+1], [1:5;])
+repeated(a) = any(i -> a[i]==a[i+1], [1:5;])
 
-# pdigits(654321)
-# mono(pdigits(123456))
-# mono(pdigits(123465))
+function passwd1(n) 
+    a = reverse(digits(n))
+    mono(a) && repeated(a)
+end    
 
-# pair(pdigits(123456))
-# pair(pdigits(124456))
-# pair(pdigits(124446))
+@time length(filter(passwd1, [156218:652527;]))
 
-passwd(n) = mono(pdigits(n)) && pair(pdigits(n))
+# part 2
 
-length(filter(p -> passwd(p), [156218:652527;]))
+# pair(a) = any(i -> count(x -> x==a[i], a) == 2, [1:6;])
+pair(a) = 2 ∈ map(d -> count(x -> x==d, a), a)
+
+passwd2(n) = ( a = reverse(digits(n)) ; mono(a) && pair(a) )
+
+@time [156218:652527;] |> x->passwd2.(x) |> count
+
+
