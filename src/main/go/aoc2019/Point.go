@@ -11,9 +11,18 @@ func (p Point) manhattan() int {
 			return -x
 		}
 		return x
-
 	}
 	return abs(p.x) + abs(p.y)
+}
+
+func (p Point) mdist(p0 Point) int {
+	abs := func(x int) int {
+		if x < 0 {
+			return -x
+		}
+		return x
+	}
+	return abs(p.x-p0.x) + abs(p.y-p0.y)
 }
 
 func (p Point) hash() int {

@@ -100,12 +100,15 @@ func day10Part2() {
 	// fmt.Println(vis[0])
 
 	// zap asteroids, nearest first, by increasing angle
-	for i, zapped := 0, 0; zapped <= 200; i = (i + 1) % len(keys) {
+	for i, zapped := 0, 0; len(vis) > 0; i = (i + 1) % len(keys) {
 		alpha := keys[i]
 		if _, ex := vis[alpha]; ex {
 			zapped++
 			fmt.Println("kill ", zapped, ": ", vis[alpha][0])
 			vis[alpha] = vis[alpha][1:]
+			if len(vis[alpha]) == 0 {
+				delete(vis, alpha)
+			}
 		}
 
 	}
