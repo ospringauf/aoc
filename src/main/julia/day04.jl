@@ -13,7 +13,6 @@ end
 
 # part 2
 
-# pair(a) = any(i -> count(x -> x==a[i], a) == 2, [1:6;])
 pair(A) = 2 ∈ map(d -> count(x -> x==d, A), A)
 
 passwd2(n) = ( A = reverse(digits(n)) ; mono(A) && pair(A) )
