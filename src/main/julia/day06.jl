@@ -1,57 +1,45 @@
 data = [("COM", "B"),("B", "C"),("C", "D"),("D", "E"),("E", "F"),("B", "G"),("G", "H"),("D", "I"),("E", "J"),("J", "K"),("K", "L")] # ,("K", "YOU"),("I", "SAN")]
 
-outer(i) = map(x->x[2], filter(x->x[1] == i, data))
+data = map(x->(x[1], x[2]), map(x->split(x,')'), readlines("input06.txt")))
 
-# filter(x->x[1] == "B", data)|>(x->x[2])
-# outer("B")
-# outer("K")
-# length(outer("K"))
+outer(p) = map(x->x[2], filter(x->x[1] == p, data))
+inner(p) = map(x->x[1], filter(x->x[2] == p, data))
 
 function norbits(i, n)::Int
     o = outer(i)
     map(x -> n + 1 + norbits(x, n + 1), o) |> sum
 end
 
+@time norbits("COM", 0)
 
-# norbits("K", 0)
-norbits("COM", 0)
-
-# part 2
+# part 2 --------------------------------
 
 data = [("COM", "B"),("B", "C"),("C", "D"),("D", "E"),("E", "F"),("B", "G"),("G", "H"),("D", "I"),("E", "J"),("J", "K"),("K", "L") ,("K", "YOU"),("I", "SAN")]
 
-inner(p) = map(x->x[1], filter(x->x[2] == p, data))
-inner("YOU")
-inner("COM")
-
-a =  [1,2]
-[a...,3]
-
-function path(from, to, way)::Int
+function path(from, to, way)::Number
     if from==to 
         println(way)
         return 0
     end
     via = [inner(from)..., outer(from)...]
-    via = filter(x->!(x ∈ way), via)
-    # println(via)
+    via = filter(x-> !(x ∈ way), via)
     if length(via)==0
-        return 0
+        return Inf
     end
-    min(map(x -> 1 + path(x, to, [way..., x]), via)...)
+    pathx(x) = 1 + path(x, to, [way..., x])
+    paths = map(pathx, via)
+    return min(paths...)
 end
 
-path("B", "B", [])
-path("B", "D", [])
-path("G", "C", [])
-path("YOU", "SAN", [])
+function path(from, to) 
+    from = inner(from)[1]
+    to = inner(to)[1]
+    path(from, to, [from])
+end
 
-min([1,2,3]...)
-
-[inner("B")..., outer("B")...] - ["C"]
-
-[inner("B")..., outer("B")...] .!= "C"
-
-filter(x->x!="C", [inner("B")..., outer("B")...])
-!(1∈[2])
+path("B", "B")
+path("G", "C")
+path("C", "K")
+path("X", "COM")
+@time path("YOU", "SAN")
 

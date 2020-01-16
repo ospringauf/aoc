@@ -8,7 +8,7 @@ c = IntComputer(prog)
 
 function part1()
     c.mem[2:3] = [12,02]
-    run(c)
+    run!(c)
     c.mem[1]
 end
 
@@ -18,7 +18,7 @@ function part2()
         c.mem[2:3] = [p...]
         c.iptr = 1
 
-        run(c)
+        run!(c)
         if (c.mem[1] == 19690720)
             return p
         end
