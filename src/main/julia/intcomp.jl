@@ -61,8 +61,21 @@ function run1!(c::IntComputer)
     end
 end
 
+nextop(c::IntComputer) = c.mem[c.iptr]
+halted(c::IntComputer) = nextop(c) == HALT
+
 function run!(c::IntComputer)
-    while c.mem[c.iptr] != HALT
+    while !halted(c)
         run1!(c)
     end
 end
+
+function runToOutput!(c::IntComputer)
+    while (nextop(c) != OUTPUT) && !halted(c)
+        run1!(c)
+    end
+    if !halted(c)
+        run1!(c)
+    end
+end
+
