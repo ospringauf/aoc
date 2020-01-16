@@ -22,6 +22,7 @@ end
 part1() = max(map(x->part1(x), permutations([0,1,2,3,4]))...)
 # part1([1,3,2,4,0])
 
+
 @time part1()
 
 # part 2
@@ -30,6 +31,7 @@ function part2(settings)
     val = 0
     amp = [IntComputer(prog) for _ = 1:5]
     for i = 1:5
+        # setup and read settings
         c = amp[i]
         c.output = x -> val=x
         c.input = () -> settings[i]
