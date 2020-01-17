@@ -15,3 +15,5 @@ north(p::Point) = Point(p.x, p.y-1)
 south(p::Point) = Point(p.x, p.y+1)
 east(p::Point) = Point(p.x+1, p.y)
 west(p::Point) = Point(p.x-1, p.y)
+
+

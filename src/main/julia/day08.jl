@@ -1,3 +1,5 @@
+include("util.jl")
+
 data = map( c -> c-'0', collect(readlines("input08.txt")[1]))
 
 LSIZE = 25*6
@@ -7,10 +9,6 @@ layer(i) = data[(i-1)*LSIZE+1 : (i)*LSIZE]
 
 ncount(n, A) = count(x->x==n, A)
 
-function minby(f, A) 
-    _,index = findmin(f.(A))
-    return A[index]
-end
 
 l0 = minby(i -> ncount(0, layer(i)), [1:100;])
 ncount(1, layer(l0)) * ncount(2, layer(l0))
