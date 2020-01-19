@@ -1,6 +1,3 @@
-using Printf
-using IterTools
-
 include("point.jl")
 
 in1, in2 = map(s->split(s, ","), readlines("input03.txt"))[1:2]

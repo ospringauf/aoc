@@ -1,6 +1,3 @@
-using Printf
-using IterTools
-
 include("intcomp.jl")
 
 prog = map(x->parse(Int64, x), split(readlines("input02.txt")[1], ","))

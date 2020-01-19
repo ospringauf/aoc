@@ -85,3 +85,14 @@ function runToOutput!(c::IntComputer)
     end
 end
 
+# buffer i output values, then call f
+function bufferAndSplat(i::Int, f::Function) 
+    B = [] # buffer for output values
+    return function (val)
+        append!(B, val)
+        if length(B) == i
+            f(B...) # call f with splatted buffer
+            empty!(B) # clear buffer
+        end
+    end
+end

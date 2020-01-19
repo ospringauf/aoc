@@ -5,7 +5,7 @@ include("point.jl")
 include("util.jl")
 
 M = pmscan(c->c == '#', readlines("input10.txt"))
-# pmprint(M, v->v ? '#' : '.')
+# print(M, v->v ? '#' : '.')
 
 # delete empty positions (value == false)
 M = Dict(filter(p -> p.second, M))
@@ -30,9 +30,9 @@ compass(x,y) = (atand(-x,y)+180) % 360 # north=0, clockwise
 function byangle(from::Point)
     angle(p::Point) = compass(p.x-from.x, p.y-from.y)
     sameangle(θ) = filter(p -> angle(p)==θ, asteroids)
-
-    targets(θ) = sort(sameangle(θ); by = p->manhattan(station,p), rev=true)
+    
     angles = unique(map(p -> angle(p), asteroids))
+    targets(θ) = sort(sameangle(θ); by = p->manhattan(station,p), rev=true)
     
     return Dict(θ => targets(θ) for θ = angles)
 end
