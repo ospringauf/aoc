@@ -123,7 +123,7 @@ public class Day15 {
 			case OXYGEN:
 				pos = nextPos(pos, currentMove);
 				map.put(pos, OXYGEN);
-				System.out.println("found oxygen!");
+				System.out.println("found oxygen! at " + pos);
 				display();
 				break;
 

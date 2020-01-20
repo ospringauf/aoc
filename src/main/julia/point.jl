@@ -21,10 +21,12 @@ south(p::Point) = Point(p.x, p.y+1)
 east(p::Point) = Point(p.x+1, p.y)
 west(p::Point) = Point(p.x-1, p.y)
 
+neighbors(p::Point) = [north(p), east(p), south(p), west(p)]
+
 
 # pose
 
-@enum Direction NORTH=0 EAST=1 SOUTH=2 WEST=3
+@enum Direction NORTH=1 EAST=4 SOUTH=2 WEST=3  # values from day15
 
 struct Pose
     pos::Point
@@ -43,10 +45,18 @@ function turnright(p::Pose)
     Pose(p.pos, r[p.dir])
 end
 
-function forward(p::Pose)
+function ahead(p::Point, d::Direction)::Point
     f = Dict(NORTH=>north, EAST=>east, SOUTH=>south, WEST=>west)
-    Pose(f[p.dir](p.pos), p.dir)
+    f[d](p)
 end
+
+ahead(p::Pose)::Point = ahead(p.pos, p.dir)
+
+function forward(p::Pose)
+    Pose(ahead(p), p.dir)
+end
+
+
 
 
 
@@ -82,3 +92,19 @@ function print(m::Dict, pixel::Function)
     end
 end
 
+function minDistance(M::Dict, p0::Point, allowed::Function)
+    dst = Dict{Point,Int}(p0 => 0)
+    better = true
+    while better
+        better = false
+        for p = filter(allowed, keys(M))
+            dp = get(dst, p, Inf)
+            dn = minimum(n -> get(dst, n, Inf), neighbors(p))
+            if dp > (dn+1)
+                dst[p]=dn+1
+                better=true
+            end
+        end
+    end
+    return dst    
+end
