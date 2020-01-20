@@ -13,11 +13,10 @@ run!(c)
 
 print(screen, x->" :#-*"[x + 1])
 
-part1 = count(x->x == 2, values(screen))
+part1 = count(x==2 for x=values(screen))
 
 # part 2
 
-# findonscreen(n)::Point = first(filter(p->screen[p] == n, keys(screen)))
 findonscreen(n)::Point = findfirst(v->v==n, screen)
 ball() = findonscreen(4)
 paddle() = findonscreen(3)
