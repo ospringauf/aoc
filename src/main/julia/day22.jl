@@ -40,12 +40,12 @@ n = 101741582076661
 #     (N%2==0) ? p*p % L : x*p*p % L
 # end
 
-function matpowermod(A::Array, N)::Array
-    if N==1
+function matpowermod(A::Array, b, m)::Array
+    if b==1
         return A
     end
-    P = matpowermod(A, N÷2) .% L
-    (N%2 == 0) ? (P*P).%L : ((P*P.%L)*A).%L
+    P = matpowermod(A, b÷2, m) .% m
+    (b%2 == 0) ? (P*P).%m : ((P*P.%m)*A).%m
 end
 
 function parseruleInverse(s)::Array{Int128,2} 
@@ -66,6 +66,6 @@ function parseruleInverse(s)::Array{Int128,2}
 end
 
 T = foldl(combine, reverse(parseruleInverse.(rules)))
-T = matpowermod(T, n)
+T = matpowermod(T, n, L)
 
 part2 = first(T*[2020; 1]) .%L 
