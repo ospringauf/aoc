@@ -19,3 +19,9 @@ a[ a .∈ b ]   # does not work?
 
 
 min(4,5,9, Inf32)
+
+typeof(a)
+
+a=1:1e9
+a.stop
+b=a.start+2:a.stop

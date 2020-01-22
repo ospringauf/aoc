@@ -72,14 +72,16 @@ end
 
 
 # binary search for maximum parameter for predicate f
-function binse(f::Function, (l,u)) 
+function binse(f::Function, r::UnitRange) 
+    l,u = r.start, r.stop
     if (u <= l+1) return l; end
     m = (u+l) ÷ 2
-    return f(m) ? binse(f, (m,u)) : binse(f, (l,m))
+    return f(m) ? binse(f, m:u) : binse(f, l:m)
 end
-# binse(x->x<398, (0,1e9))
+# binse(x->x<398, 0:Int(1e9))
+
 
 qore = 1000000000000
 enoughOre(x) = produce(x, "FUEL") <= qore
 
-@time part2 = binse(enoughOre, (0, qore))
+@time part2 = binse(enoughOre, 0:qore)
