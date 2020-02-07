@@ -62,6 +62,20 @@ end
 
 # pointmap functions (Dict{Point,Any})
 
+struct Bbox
+    x::UnitRange
+    y::UnitRange    
+end
+
+center(b::Bbox) = Point((b.x.start+b.x.stop) ÷ 2, (b.y.start+b.y.stop) ÷ 2 )
+
+function pmbox(m::Dict)
+    Bbox(
+        minimum(p.x for p=keys(M)) : maximum(p.x for p=keys(M)),
+        minimum(p.y for p=keys(M)) : maximum(p.y for p=keys(M))
+     )    
+end
+
 function pmscan(f::Function, A::Array{<:String})
     # m = Dict{Point,Any}()
     # for y=1:length(A)
@@ -74,13 +88,9 @@ function pmscan(f::Function, A::Array{<:String})
 end
 
 function print(m::Dict, pixel::Function)
-    k = collect(keys(m))
-    xmin = min(map(p->p.x, k)...)
-    xmax = max(map(p->p.x, k)...)
-    ymin = min(map(p->p.y, k)...)
-    ymax = max(map(p->p.y, k)...)
-    for y = ymin:ymax
-        for x = xmin:xmax
+    bb = pmbox(m)
+    for y = bb.y
+        for x = bb.x
             p = Point(x, y)
             if haskey(m, p)
                 print(pixel(m[p]))
@@ -92,14 +102,20 @@ function print(m::Dict, pixel::Function)
     end
 end
 
-function minDistance(M::Dict, p0::Point, allowed::Function)
+print(m::Dict) = print(m, identity)
+
+points(m::Dict) = keys(m)
+
+
+function minDistance(M::Dict, p0::Point, allowed::Function, neigh::Function)
     dst = Dict{Point,Int}(p0 => 0)
     better = true
+    allowedPoints = collect(filter(allowed, keys(M)))
     while better
         better = false
-        for p = filter(allowed, keys(M))
+        for p = allowedPoints
             dp = get(dst, p, Inf)
-            dn = minimum(n -> get(dst, n, Inf), neighbors(p))
+            dn = minimum(n -> get(dst, n, Inf), neigh(p))
             if dp > (dn+1)
                 dst[p]=dn+1
                 better=true
@@ -108,3 +124,5 @@ function minDistance(M::Dict, p0::Point, allowed::Function)
     end
     return dst    
 end
+
+minDistance(M::Dict, p0::Point, allowed::Function) = minDistance(M, p0, allowed, neighbors)    
