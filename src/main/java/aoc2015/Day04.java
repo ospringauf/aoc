@@ -4,7 +4,7 @@ import java.security.MessageDigest;
 
 import aoc2017.Util;
 
-public class Day4 {
+public class Day04 {
 
 	public static void main(String[] args) throws Exception {
 		String key = "yzbqklnj";

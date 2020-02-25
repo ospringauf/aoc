@@ -3,7 +3,7 @@ package aoc2015;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Day3 {
+public class Day03 {
 
 	static class House {
 
