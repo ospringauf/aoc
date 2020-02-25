@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Day8AllInASingleNight {
+public class Day08AllInASingleNight {
 
 	static String[] input0 = {
 		"London to Dublin = 464", 

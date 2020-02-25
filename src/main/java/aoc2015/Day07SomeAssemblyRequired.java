@@ -3,15 +3,17 @@ package aoc2015;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.IntSupplier;
 
 import aoc2017.Util;
 
-public class Day7SomeAssemblyRequiredClassic {
+public class Day07SomeAssemblyRequired {
 
 	static class Gate {
 		String name;
-		String gateFunction;
 		String in1, in2;
+
+		IntSupplier gateFunction;
 
 		static int valueOf(String input) {
 			if (input.matches("\\d+")) {
@@ -20,25 +22,7 @@ public class Day7SomeAssemblyRequiredClassic {
 				return eval(input);
 			}
 		}
-
-		int calc() {
-			switch (gateFunction) {
-			case "ID":
-				return valueOf(in1);
-			case "NOT":
-				return ~valueOf(in1);
-			case "AND":
-				return valueOf(in1) & valueOf(in2);
-			case "OR":
-				return valueOf(in1) | valueOf(in2);
-			case "LSHIFT":
-				return valueOf(in1) << Integer.parseInt(in2);
-			case "RSHIFT":
-				return valueOf(in1) >> Integer.parseInt(in2);
-			default:
-				throw new IllegalArgumentException(gateFunction);
-			}
-		}
+		
 
 		Gate(String s) {
 			name = s.split(" -> ")[1];
@@ -46,16 +30,32 @@ public class Day7SomeAssemblyRequiredClassic {
 
 			if (tokens.length == 1) {
 				in1 = tokens[0];
-				gateFunction = "ID";
+				gateFunction = () -> valueOf(in1);
 			} else if (tokens.length == 2) {
 				// must be NOT
 				in1 = tokens[1];
-				gateFunction = tokens[0];
+				gateFunction = () -> ~ valueOf(in1);
 			} else if (tokens.length == 3) {
 				in1 = tokens[0];
 				in2 = tokens[2];
-				gateFunction = tokens[1];
+				
+				switch (tokens[1]) {
+				case "AND":
+					gateFunction = () -> valueOf(in1) & valueOf(in2);
+					break;
+				case "OR":
+					gateFunction = () -> valueOf(in1) | valueOf(in2);
+					break;
+				case "LSHIFT":
+					gateFunction = () -> valueOf(in1) << Integer.parseInt(in2);
+					break;
+				case "RSHIFT":
+					gateFunction = () -> valueOf(in1) >> Integer.parseInt(in2);
+					break;
 
+				default:
+					throw new IllegalArgumentException(s);
+				}
 			}
 		}
 	}
@@ -64,12 +64,12 @@ public class Day7SomeAssemblyRequiredClassic {
 	static Map<String, Integer> result = new HashMap<>();
 
 	public static void main(String[] args) throws Exception {
-		List<String> l = Util.lines("../src/aoc2015/day7.txt");
+		List<String> l = Util.lines("../src/aoc2015/day07.txt");
 		for (String s : l) {
 			Gate w = new Gate(s);
 			wire.put(w.name, w);
 		}
-
+		
 		// part 2
 //		wire.put("b", new Gate("16076 -> b"));
 
@@ -88,8 +88,8 @@ public class Day7SomeAssemblyRequiredClassic {
 		if (result.containsKey(s))
 			return result.get(s);
 		Gate w = wire.get(s);
-		Integer r = w.calc();
-		result.put(s, r);
+		Integer r = w.gateFunction.getAsInt();
+		result.put(s,  r);
 		return r;
 	}
 }
