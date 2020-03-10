@@ -1,11 +1,11 @@
 package aoc2015;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.IntSupplier;
-
-import aoc2017.Util;
 
 public class Day07SomeAssemblyRequired {
 
@@ -64,7 +64,7 @@ public class Day07SomeAssemblyRequired {
 	static Map<String, Integer> result = new HashMap<>();
 
 	public static void main(String[] args) throws Exception {
-		List<String> l = Util.lines("../src/aoc2015/day07.txt");
+	    List<String> l = Files.readAllLines(Paths.get("src/main/java/aoc2015/day07.txt"));
 		for (String s : l) {
 			Gate w = new Gate(s);
 			wire.put(w.name, w);
@@ -72,7 +72,7 @@ public class Day07SomeAssemblyRequired {
 		
 		// part 2
 //		wire.put("b", new Gate("16076 -> b"));
-
+//
 //		for (String sig: wire.keySet()) {
 //			int result = eval(sig);
 //			System.out.println(sig + " = " + ((result < 0) ? result + 65536 : result));

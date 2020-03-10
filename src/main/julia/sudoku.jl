@@ -34,7 +34,6 @@ numInRow(puzzle, 2)
 
 function area(P, row, col)
     start(n) = 1 + 3 * ((n - 1) ÷ 3)
-    # [P[i,j] for i = start(row):start(row) + 2 for j = start(col):start(col) + 2]
     P[start(row):start(row)+2, start(col):start(col)+2]
 end
 
