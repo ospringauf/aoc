@@ -17,6 +17,7 @@ class IntComputer:
 
     def inp(self, p, param): 
         self.mem[p(1)] = self.input()
+        # print("input ", self.mem[p(1)])
         self.iptr += 2
 
     def outp(self, p, param): 
@@ -61,12 +62,14 @@ class IntComputer:
         p = lambda n: self.mem[self.iptr + n]
         # position mode (0)
         pos = lambda n: self.mem[p(n)]
-        # immediate mode (1)
+        # immediate mode (1) 
         imm = lambda n: p(n)
 
         instr = p(0)
-        mode = [0, instr//100%10, instr//1000%10, instr//10000%10]
-        param = lambda n: [pos,imm][mode[n]](n)
+
+        # parameter function for arg #n, depending on parameter mode
+        mode = (0, instr//100%10, instr//1000%10, instr//10000%10)
+        param = lambda n: (pos,imm)[mode[n]](n)
 
         op = instr%100
         
