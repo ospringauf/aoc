@@ -1,16 +1,17 @@
 package aoc2020;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
+
+import io.vavr.collection.List;
 
 public class PointMap<T> extends HashMap<Point, T> {
 
 	private static final long serialVersionUID = 1L;
 	
-	Function<Point, Stream<Point>> neigbors = p -> p.neighbors();
+	//Function<Point, Stream<Point>> neigbors = p -> p.neighbors();
+	Function<Point, List<Point>> neigbors = p -> p.neighbors();
 
 	public static class PathResult {
 		public PointMap<Integer> distance;
@@ -35,15 +36,15 @@ public class PointMap<T> extends HashMap<Point, T> {
 	}
 
 	public Point findPoint(T value) {
-		return findPoints(value).findFirst().orElse(null);
+		return findPoints(value).getOrElse((Point)null);
 	}
 
-	public Stream<Point> findPoints(T value) {
-		return keySet().stream().filter(p -> get(p).equals(value));
+	public List<Point> findPoints(T value) {
+		return List.ofAll(keySet()).filter(p -> get(p).equals(value));
 	}
 
-	public Stream<Point> findPoints(Predicate<T> filter) {
-		return keySet().stream().filter(p -> filter.test(get(p)));
+	public List<Point> findPoints(Predicate<T> filter) {
+		return List.ofAll(keySet()).filter(p -> filter.test(get(p)));
 	}
 
 	public PointMap<Integer> minDistances(Point start, Predicate<T> allowed) {
@@ -78,10 +79,9 @@ public class PointMap<T> extends HashMap<Point, T> {
 				var bestNeighbor =
 						neigbors.apply(p)
 						.filter(x -> via.test(get(x)))
-						.min(Comparator.comparing(n -> dist.getOrDefault(n, INF)));
-//						.get();
+						.minBy(n -> dist.getOrDefault(n, INF));
 
-				if (!bestNeighbor.isPresent()) continue;
+				if (bestNeighbor.isEmpty()) continue;
 				
 				int dn = dist.getOrDefault(bestNeighbor.get(), INF);
 				int dp = dist.getOrDefault(p, INF);

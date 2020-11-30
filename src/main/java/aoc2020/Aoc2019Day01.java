@@ -1,16 +1,23 @@
-package aoc2019;
+package aoc2020;
 
 import java.util.function.Function;
 
 import io.vavr.collection.List;
 
-public class Day01Vavr {
+public class Aoc2019Day01 {
 
     public static void main(String[] args) {
-        new Day01Vavr().part1();
-        new Day01Vavr().part2();
+        new Aoc2019Day01().part1();
+        new Aoc2019Day01().part2();
     }
     
+    private void part1() {
+    	List<Integer> masses = List.of(inp.split("\n")).map(Integer::valueOf);
+    	Function<Integer, Integer> fuelfunc = m -> m/3 - 2;
+    	var fuel = masses.map(fuelfunc).sum();
+    	
+    	System.out.println(fuel);
+    }
     
     private void part2() {
         List<Integer> masses = List.of(inp.split("\n")).map(Integer::valueOf);
@@ -20,19 +27,11 @@ public class Day01Vavr {
     }
     
     int totalfuel(int mass) {
-        int f = mass / 3 - 2;
-        
+        int f = mass / 3 - 2;       
         return (f > 0) ? f + totalfuel(f) : 0;
     }
 
 
-    private void part1() {
-        List<Integer> masses = List.of(inp.split("\n")).map(Integer::valueOf);
-        Function<Integer, Integer> fuelfunc = m -> m/3 - 2;
-        var fuel = masses.map(fuelfunc).sum();
-        
-        System.out.println(fuel);
-    }
 
 
     String inp = """
