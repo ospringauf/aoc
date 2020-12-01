@@ -35,10 +35,10 @@ class Util {
     static List<String> splitLine(String s) {
         return List.of(s.split("\\s+"));
     }
-    
-    public static void main(String[] args) {
-		System.out.println(splitLine("a b,c d"));
-	}
+
+    static List<Integer> string2ints(String input) {
+        return splitLine(input).map(Integer::valueOf);
+    }
     
     static long[] readIntProg(String filename) {
         try {
