@@ -31,7 +31,6 @@ public class Aoc2016Day01 {
 		
 		System.out.println(destination);
 		System.out.println(destination.pos().manhattan());
-
 	}
 	
 	private void part2() {
