@@ -1,14 +1,14 @@
-package aoc2020;
+package aoc2019;
 
 import java.util.function.Function;
 
 import io.vavr.collection.List;
 
-public class Aoc2019Day01 {
+public class Day01Vavr {
 
     public static void main(String[] args) {
-        new Aoc2019Day01().part1();
-        new Aoc2019Day01().part2();
+        new Day01Vavr().part1();
+        new Day01Vavr().part2();
     }
     
     private void part1() {

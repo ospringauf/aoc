@@ -12,3 +12,4 @@ tmp/
 # manual
 /target/
 /.settings/
+aoc.code-workspace

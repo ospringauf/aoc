@@ -1,4 +1,4 @@
-package aoc2020;
+package aoc2016;
 
 import io.vavr.collection.List;
 
