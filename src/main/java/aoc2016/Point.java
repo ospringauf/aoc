@@ -5,19 +5,19 @@ import io.vavr.collection.List;
 
 public record Point(int x, int y) {
 	
-	Point next() {
-		return new Point(x + 1, y);
-	}
-
-	Point next(Heading h, int d) {
-		return switch (h) {
-		case NORTH -> new Point(x, y - d);
-		case EAST -> new Point(x + d, y);
-		case SOUTH -> new Point(x, y + d);
-		case WEST -> new Point(x - d, y);
-		};
-	}
-	
+//	Point next() {
+//		return new Point(x + 1, y);
+//	}
+//
+//	Point next(Heading h, int d) {
+//		return switch (h) {
+//		case NORTH -> new Point(x, y - d);
+//		case EAST -> new Point(x + d, y);
+//		case SOUTH -> new Point(x, y + d);
+//		case WEST -> new Point(x - d, y);
+//		};
+//	}
+//	
 	int manhattan() {
 		return Math.abs(x) + Math.abs(y);
 	}

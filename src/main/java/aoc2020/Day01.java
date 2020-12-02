@@ -2,6 +2,7 @@ package aoc2020;
 
 import io.vavr.collection.List;
 
+//--- Day 1: Report Repair ---
 // https://adventofcode.com/2020/day/1
 
 @SuppressWarnings("deprecation")
@@ -20,13 +21,11 @@ public class Day01 {
 	
 	private void part1() {
 		List<Integer> numbers = Util.string2ints(inp);
-		
 		System.out.println(findProd(2020, numbers));
 	}
 	
 	private void part2() {
 		List<Integer> numbers = Util.string2ints(inp);
-		
 		var prod = numbers.map(x -> x * findProd(2020-x, numbers)).filter(x -> x>0).head();
 		System.out.println(prod);
 	}

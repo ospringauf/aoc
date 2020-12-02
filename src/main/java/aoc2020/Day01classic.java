@@ -3,6 +3,7 @@ package aoc2020;
 import io.vavr.collection.List;
 
 // https://adventofcode.com/2020/day/1
+//--- Day 1: Report Repair ---
 
 @SuppressWarnings("deprecation")
 public class Day01classic {
@@ -14,11 +15,6 @@ public class Day01classic {
 		new Day01classic().part2();
 	}
 
-	int findProd(int sum, List<Integer> n) {
-	    
-	    return 0;
-	}
-	
 	private void part1() {
 		Integer[] n = Util.string2ints(inp).toJavaArray(Integer.class);
 		

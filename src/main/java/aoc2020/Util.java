@@ -39,11 +39,20 @@ class Util {
     static List<Integer> string2ints(String input) {
         return splitLine(input).map(Integer::valueOf);
     }
-    
+
+    static int[] string2intArray(String input) {
+        return Arrays.stream(input.split("\\s+")).mapToInt(Integer::valueOf).toArray();
+    }
+
+    static long[] string2longArray(String input) {
+        return Arrays.stream(input.split("\\s+")).mapToLong(Long::valueOf).toArray();
+    }
+
     static long[] readIntProg(String filename) {
         try {
             String l = lines(filename).head();
-            return Arrays.stream(l.split(",")).mapToLong(Long::parseLong).toArray();
+            // return Arrays.stream(l.split(",")).mapToLong(Long::parseLong).toArray();
+            return string2longArray(l);
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e.getMessage());

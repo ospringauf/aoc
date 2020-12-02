@@ -21,19 +21,19 @@ public record Pose(Heading heading, Point pos) {
 	}
 
 	Pose turnRight() {
-		return turn(true);
+		return new Pose(heading.right(), pos);
 	}
 
 	Pose turnLeft() {
-		return turn(false);
+		return new Pose(heading.left(), pos);
 	}
 
 	Pose left() {
-		return new Pose(heading, pos.translate(heading.dy, -heading.dx));
+		return new Pose(heading, pos.translate(heading.left()));
 	}
 
 	Pose right() {
-		return new Pose(heading, pos.translate(-heading.dy, heading.dx));
+		return new Pose(heading, pos.translate(heading.right()));
 	}
 
 	Pose ahead() {
@@ -41,7 +41,7 @@ public record Pose(Heading heading, Point pos) {
 	}
 
 	Pose ahead(int steps) {
-		return new Pose(heading, pos.translate(steps * heading.dx, steps * heading.dy));
+		return new Pose(heading, pos.translate(heading, steps));
 	}
 
 	List<Pose> aheads(int steps) {
@@ -49,7 +49,7 @@ public record Pose(Heading heading, Point pos) {
 	}
 
 	Pose behind() {
-		return new Pose(heading, pos.translate(-heading.dx, -heading.dy));
+		return new Pose(heading, pos.translate(heading, -1));
 	}
 	
 	boolean equalsPos(Pose p) {
