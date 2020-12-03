@@ -24,10 +24,9 @@ public class Day03 {
 		var m = new PointMap<Character>();
 		m.read(data, c -> c);
 
-		UnaryOperator<Point> nextPoint = p -> p.east(3).south(1);		
-		long t1 = countTreesOnSlope(m, nextPoint);
-		
 		System.out.println("=== part 1");
+		UnaryOperator<Point> nextPoint = p -> p.east(3).south(1);		
+		long t1 = countTreesOnSlope(m, nextPoint);		
 		System.out.println(t1);
 
 		System.out.println("=== part 2");
