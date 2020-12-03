@@ -25,20 +25,40 @@ public record Point(int x, int y) {
 		return Point.of(x + d*h.dx, y + d*h.dy);
 	}
 	
-    public Point north() {
-        return Point.of(x,  y-1);
+	public Point north() {
+        return north(1);
+    }
+	
+    public Point north(int steps) {
+        return Point.of(x,  y-steps);
     }
 
     public Point south() {
-        return Point.of(x,  y+1);
+    	return south(1);
+    }
+    
+    public Point south(int steps) {
+        return Point.of(x,  y+steps);
     }
     
     public Point east() {
-        return Point.of(x+1,  y);
+    	return east(1);
+    }
+    
+    public Point east(int steps) {
+        return Point.of(x+steps,  y);
     }
     
     public Point west() {
-        return Point.of(x-1,  y);
+    	return west(1);
+    }
+    
+    public Point west(int steps) {
+        return Point.of(x-steps,  y);
+    }
+    
+    public Point modulo(int w, int h) {    	
+    	return Point.of(x % w, y % h);   			
     }
     
 //    public Stream<Point> neighbors() {

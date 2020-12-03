@@ -40,4 +40,24 @@ public record BoundingBox(int xMin, int xMax, int yMin, int yMax) {
 	Point center() {
 		return new Point((xMin+xMax)/2, (yMin+yMax)/2);
 	}
+
+	public int height() {		
+		return yMax-yMin+1;
+	}
+	
+	public int width() {		
+		return xMax-xMin+1;
+	}
+	
+	public Point wrapX(Point p) {
+		return new Point(((p.x()-xMin) % width()) + xMin, p.y());
+	}
+
+	public Point wrapY(Point p) {
+		return new Point(p.x(), ((p.y()-yMin) % height()) + yMin);
+	}
+
+	public boolean contains(Point p) {		
+		return p.x() >= xMin && p.x() <= xMax && p.y() >= yMin && p.y() <= yMax;
+	}
 }

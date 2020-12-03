@@ -32,7 +32,10 @@ public class PointMap<T> extends HashMap<Point, T> {
 			for (int x = 0; x < s[y].length(); ++x) {
 				put(new Point(x, y), f.apply(s[y].charAt(x)));
 			}
-
+	}
+	
+	void read(List<String> lines, Function<Character, T> f) {
+		read(lines.toJavaArray(String.class), f);
 	}
 
 	public Point findPoint(T value) {

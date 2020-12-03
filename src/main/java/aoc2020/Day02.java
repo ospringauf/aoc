@@ -14,7 +14,7 @@ public class Day02 {
 		}
 		
 		boolean check2() {
-			return (pw.charAt(low-1) == letter) ^ (pw.charAt(high-1) == letter); 
+			return (pw.charAt(low-1) == letter) != (pw.charAt(high-1) == letter); 
 		}
 		
 		static Rule parse(String s) {
