@@ -4,11 +4,11 @@ import java.util.function.UnaryOperator;
 
 import io.vavr.collection.Stream;
 
-// https://adventofcode.com/2020/day/3
 // --- Day 3: Toboggan Trajectory ---
+// https://adventofcode.com/2020/day/3
 
 @SuppressWarnings({ "deprecation", "preview" })
-public class Day03 {
+class Day03 {
 
 	private static final char TREE = '#';
 

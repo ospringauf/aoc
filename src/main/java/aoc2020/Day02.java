@@ -4,7 +4,7 @@ package aoc2020;
 // https://adventofcode.com/2020/day/2
 
 @SuppressWarnings( { "deprecation", "preview" })
-public class Day02 {
+class Day02 {
 
 	static record Rule(int low, int high, char letter, String pw) {
 		

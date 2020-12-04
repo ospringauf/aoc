@@ -6,7 +6,7 @@ import io.vavr.collection.List;
 //--- Day 1: Report Repair ---
 
 @SuppressWarnings("deprecation")
-public class Day01classic {
+class Day01classic {
 
 	public static void main(String[] args) {
 		System.out.println("=== part 1");
