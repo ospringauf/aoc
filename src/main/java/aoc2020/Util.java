@@ -1,41 +1,10 @@
 package aoc2020;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 
 import io.vavr.collection.List;
 
 class Util {
-
-	private static final String INPUT_PATH = "src/main/java/aoc2020";
-
-	static List<String> lines(String fname) throws IOException {
-		return List.ofAll(Files.lines(Paths.get(INPUT_PATH, fname)));
-	}
-	
-	static String readString(String fname) throws IOException {
-		return Files.readString(Paths.get(INPUT_PATH, fname));
-	}
-
-
-//    static String[] linesArray(String fname) throws IOException {
-//        var l = Files.readAllLines(Paths.get(INPUT_PATH, fname));
-//        return l.toArray(new String[0]);
-//    }
-
-//    static Stream<String> stringStreamOf(String fname) throws IOException {
-//        return Files.lines(Paths.get(INPUT_PATH, fname));
-//    }
-
-	static List<Integer> ints(String fname) throws IOException {
-		return lines(fname).map(Integer::valueOf);
-	}
-
-	static List<Long> longs(String fname) throws IOException {
-		return lines(fname).map(Long::valueOf);
-	}
 
 	static List<String> splitLine(String s) {
 		return List.of(s.split("\\s+"));
@@ -53,17 +22,6 @@ class Util {
 		return Arrays.stream(input.split("\\s+")).mapToLong(Long::valueOf).toArray();
 	}
 
-	static long[] readIntProg(String filename) {
-		try {
-			String l = lines(filename).head();
-			// return Arrays.stream(l.split(",")).mapToLong(Long::parseLong).toArray();
-			return string2longArray(l);
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new RuntimeException(e.getMessage());
-		}
-
-	}
 
 	// least common multiple
 	// https://www.geeksforgeeks.org/lcm-of-given-array-elements/

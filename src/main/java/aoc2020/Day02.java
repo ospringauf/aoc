@@ -4,7 +4,7 @@ package aoc2020;
 // https://adventofcode.com/2020/day/2
 
 @SuppressWarnings( { "deprecation", "preview" })
-class Day02 {
+class Day02 extends AocPuzzle {
 
 	static record Rule(int low, int high, char letter, String pw) {
 		
@@ -25,7 +25,7 @@ class Day02 {
 	
 	public static void main(String[] args) throws Exception {
 		
-		var rules = Util.lines("input02.txt").map(Rule::parse);
+		var rules = new Day02().lines("input02.txt").map(Rule::parse);
 		
 		System.out.println("=== part 1");
 		System.out.println(rules.count(Rule::check1));

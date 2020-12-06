@@ -8,7 +8,7 @@ import io.vavr.collection.Stream;
 // https://adventofcode.com/2020/day/3
 
 @SuppressWarnings({ "deprecation", "preview" })
-class Day03 {
+class Day03 extends AocPuzzle {
 
 	private static final char TREE = '#';
 
@@ -18,8 +18,8 @@ class Day03 {
 	}
 
 	private void solve() throws Exception {
-		var data = example.split("\\n");
-//		var data = Util.lines("input03.txt");
+//		var data = example.split("\\n");
+		var data = lines("input03.txt");
 		
 		var m = new PointMap<Character>();
 		m.read(data, c -> c);

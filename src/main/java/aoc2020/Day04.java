@@ -8,7 +8,7 @@ import io.vavr.collection.Set;
 // https://adventofcode.com/2020/day/4
 
 @SuppressWarnings({ "deprecation", "preview" })
-class Day04 {
+class Day04 extends AocPuzzle {
 
 	private static final String BLANK_LINE = "\\n\\n";
 	private static final List<String> REQUIRED_FIELDS = List.of("byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid");
@@ -64,7 +64,7 @@ class Day04 {
 	public static void main(String[] args) throws Exception {
 
 //		var data = example;
-		var data = Util.readString("input04.txt");
+		var data = new Day04().readString("input04.txt");
 		var passports = List.of(data.split(BLANK_LINE)).map(Passport::parse);
 
 		System.out.println("=== part 1");

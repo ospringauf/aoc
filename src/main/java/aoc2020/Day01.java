@@ -6,7 +6,7 @@ import io.vavr.collection.List;
 // https://adventofcode.com/2020/day/1
 
 @SuppressWarnings("deprecation")
-class Day01 {
+class Day01 extends AocPuzzle {
 
 	public static void main(String[] args) {
 		System.out.println("=== part 1");

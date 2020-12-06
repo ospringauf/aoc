@@ -8,6 +8,11 @@ public record Point(int x, int y) {
 	int manhattan() {
 		return Math.abs(x) + Math.abs(y);
 	}
+	
+    int manhattan(Point a) {
+        return Math.abs(a.x - x) + Math.abs(a.y - y);
+    }
+
 
 	public static Point of(int x, int y) {
 	    return new Point(x,y);
