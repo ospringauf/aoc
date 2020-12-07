@@ -5,24 +5,23 @@ import io.vavr.collection.List;
 import io.vavr.collection.Set;
 
 // --- Day 7: Handy Haversacks ---
-// fixpoint iteration / Convex hull approach
+// recursive approach
 // https://adventofcode.com/2020/day/7
 
 @SuppressWarnings({ "deprecation", "preview" })
-class Day07 extends AocPuzzle {
+class Day07recursive extends AocPuzzle {
 
     public static void main(String[] args) throws Exception {
 
         System.out.println("=== part 1"); // 192
-        new Day07().part1();
+        new Day07recursive().part1();
 
         System.out.println("=== part 2"); // 12128
-        new Day07().part2();              
+        new Day07recursive().part2();
     }
 
-    private List<Rule> rules;
+    private Set<Rule> rules;
 
- 
     static record Bags(int amount, String color) {
         static Bags parse(String s) {
             var x = s.split(" ");
@@ -42,7 +41,6 @@ class Day07 extends AocPuzzle {
     static record Rule(String color, List<Bags> inner) {
 
         static Rule parse(String s) {
-            // light red| bags contain |1 bright white bag|, |2 muted yellow bags.
             var a = s.split(" bags contain ");
             var inner = a[1].split(", ");
             return new Rule(a[0], List.of(inner).map(Bags::parse).filter(b -> b != null));
@@ -56,16 +54,15 @@ class Day07 extends AocPuzzle {
             return inner.map(bag -> new Bags(bag.amount * ntimes, bag.color));
         }
     }
-    
-    Day07() throws Exception {
-        var input = List.of(example.split("\\n"));
-//       var input = lines("input07.txt");
 
-       rules = input.map(Rule::parse);
+    Day07recursive() throws Exception {
+        // var input = List.of(example.split("\\n"));
+        var input = lines("input07.txt");
+
+        rules = input.map(Rule::parse).toSet();
     }
 
-
-    private List<Rule> findContainingRules(Rule r) {
+    private Set<Rule> findContainingRules(Rule r) {
         return rules.filter(rule -> rule.containsColor(r.color));
     }
 
@@ -73,35 +70,30 @@ class Day07 extends AocPuzzle {
         return rules.find(rule -> rule.color.equals(color)).get();
     }
 
-    private void part1() throws Exception {
-
-        List<Rule> next = List.of(findRule("shiny gold"));
-        Set<Rule> found = HashSet.empty();
-
-        // convex hull: rule(s) --> containing rule(s)
-        while (! next.isEmpty()) {
-            next = next.flatMap(this::findContainingRules).removeAll(found);
-            found = found.addAll(next);
-        }
-        
-//        System.out.println(found.map(r -> r.outer));
-        System.out.println(found.size());
+    private Set<Rule> expandOuter(Rule r) {
+        return findContainingRules(r)
+                .flatMap(x -> HashSet.of(x).addAll(expandOuter(x)));
     }
 
+    private List<Bags> expandInner(Bags b) {
+        return findRule(b.color)
+                .multiply(b.amount)
+                .flatMap(x -> List.of(x).appendAll(expandInner(x)));
+    }
+
+    private void part1() throws Exception {
+
+        Rule shinyGold = findRule("shiny gold");
+        var found = expandOuter(shinyGold);
+
+        System.out.println(found.map(r -> r.color));
+        System.out.println(found.size());
+    }
 
     private void part2() throws Exception {
 
         Bags shinyGold = new Bags(1, "shiny gold");
-        List<Bags> todo = List.of(shinyGold);
-        List<Bags> expanded = List.empty();
-
-        // convex hull expansion: bag(s) --> inner bags * N
-        while (!todo.isEmpty()) {
-            expanded = expanded.appendAll(todo);
-            todo = todo.flatMap(bag -> findRule(bag.color).multiply(bag.amount));
-        }
-
-        expanded = expanded.remove(shinyGold);
+        var expanded = expandInner(shinyGold);
 
         System.out.println(expanded);
         System.out.println(expanded.map(b -> b.amount).sum());
