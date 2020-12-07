@@ -6,11 +6,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import io.vavr.collection.List;
+import io.vavr.control.Try;
 
 public class AocPuzzle {
 	
-	public List<String> lines(String fname) throws Exception {
-		return List.ofAll(Files.lines(path(fname)));
+	public List<String> lines(String fname)  {
+		//return List.ofAll(Files.lines(path(fname)));
+		
+		// turn checked exception into RuntimeException
+		return Try.of(() -> List.ofAll(Files.lines(path(fname)))).get();
 	}
 
 	Path path(String fname) throws URISyntaxException {
@@ -18,15 +22,16 @@ public class AocPuzzle {
 		return path;
 	}
 	
-	String readString(String fname) throws Exception {
-		return Files.readString(path(fname));
+	String readString(String fname) {
+		// turn checked exception into RuntimeException
+		return Try.of(() -> Files.readString(path(fname))).get();
 	}
 
-	List<Integer> ints(String fname) throws Exception {
+	List<Integer> ints(String fname) {
 		return lines(fname).map(Integer::valueOf);
 	}
 
-	List<Long> longs(String fname) throws Exception {
+	List<Long> longs(String fname) {
 		return lines(fname).map(Long::valueOf);
 	}
 //

@@ -20,7 +20,8 @@ class Day07 extends AocPuzzle {
         new Day07().part2();              
     }
 
-    private List<Rule> rules;
+    private List<Rule> rules = lines("input07.txt").map(Rule::parse);
+//    private List<Rule> rules = List.of(example.split("\\n"));
 
  
     static record Bags(int amount, String color) {
@@ -43,9 +44,10 @@ class Day07 extends AocPuzzle {
 
         static Rule parse(String s) {
             // light red| bags contain |1 bright white bag|, |2 muted yellow bags.
-            var a = s.split(" bags contain ");
-            var inner = a[1].split(", ");
-            return new Rule(a[0], List.of(inner).map(Bags::parse).filter(b -> b != null));
+            var arr = s.split(" bags contain ");
+            var left = arr[0];
+            var right = List.of(arr[1].split(", "));
+            return new Rule(left, right.map(Bags::parse).filter(bag -> bag != null));
         }
 
         public boolean containsColor(String c) {
@@ -57,13 +59,6 @@ class Day07 extends AocPuzzle {
         }
     }
     
-    Day07() throws Exception {
-        var input = List.of(example.split("\\n"));
-//       var input = lines("input07.txt");
-
-       rules = input.map(Rule::parse);
-    }
-
 
     private List<Rule> findContainingRules(Rule r) {
         return rules.filter(rule -> rule.containsColor(r.color));

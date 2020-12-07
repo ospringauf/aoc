@@ -1,5 +1,6 @@
 package aoc2020;
 
+import aoc2020.Day07.Rule;
 import io.vavr.collection.HashSet;
 import io.vavr.collection.List;
 import io.vavr.collection.Set;
@@ -20,7 +21,9 @@ class Day07recursive extends AocPuzzle {
         new Day07recursive().part2();
     }
 
-    private Set<Rule> rules;
+    private Set<Rule> rules = lines("input07.txt").map(Rule::parse).toSet();
+//    private Set<Rule> rules = List.of(example.split("\\n")).map(Rule::parse).toSet();
+
 
     static record Bags(int amount, String color) {
         static Bags parse(String s) {
@@ -40,10 +43,12 @@ class Day07recursive extends AocPuzzle {
 
     static record Rule(String color, List<Bags> inner) {
 
-        static Rule parse(String s) {
-            var a = s.split(" bags contain ");
-            var inner = a[1].split(", ");
-            return new Rule(a[0], List.of(inner).map(Bags::parse).filter(b -> b != null));
+    	static Rule parse(String s) {
+            // light red| bags contain |1 bright white bag|, |2 muted yellow bags.
+            var arr = s.split(" bags contain ");
+            var left = arr[0];
+            var right = List.of(arr[1].split(", "));
+            return new Rule(left, right.map(Bags::parse).filter(bag -> bag != null));
         }
 
         public boolean containsColor(String c) {
@@ -53,13 +58,6 @@ class Day07recursive extends AocPuzzle {
         public List<Bags> multiply(int ntimes) {
             return inner.map(bag -> new Bags(bag.amount * ntimes, bag.color));
         }
-    }
-
-    Day07recursive() throws Exception {
-        // var input = List.of(example.split("\\n"));
-        var input = lines("input07.txt");
-
-        rules = input.map(Rule::parse).toSet();
     }
 
     private Set<Rule> findContainingRules(Rule r) {
