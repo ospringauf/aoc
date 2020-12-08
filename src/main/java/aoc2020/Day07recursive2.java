@@ -9,15 +9,15 @@ import io.vavr.collection.Set;
 // https://adventofcode.com/2020/day/7
 
 @SuppressWarnings({ "deprecation", "preview" })
-class Day07recursive extends AocPuzzle {
+class Day07recursive2 extends AocPuzzle {
 
     public static void main(String[] args) throws Exception {
 
         System.out.println("=== part 1"); // 192
-        new Day07recursive().part1();
+        new Day07recursive2().part1();
 
         System.out.println("=== part 2"); // 12128
-        new Day07recursive().part2();
+        new Day07recursive2().part2();
     }
 
     private Set<Rule> rules = lines("input07.txt").map(Rule::parse).toSet();
