@@ -27,28 +27,28 @@ class Day08 extends AocPuzzle {
 		assertEquals(2092, r2);
 	}
 
-	int part1(Array<Instr> prog) {
+	long part1(Array<Instr> prog) {
 //		System.out.println(prog);
 		var c = new Comp();
 
 		c.execute(prog);
+		
 		System.out.println(c.acc);
 		return c.acc;
 	}
 
-	int part2(Array<Instr> prog) {
+	long part2(Array<Instr> prog) {
 		var c = new Comp();
 
-		var pos = List.range(0, prog.size()).filter(t -> c.execute(modifyProg(prog, t))).get();
-
-		System.out.println(pos);
+		var pos = List.range(0, prog.size()).filter(n -> c.execute(modifyProg(prog, n))).get();
 
 		c.execute(modifyProg(prog, pos));
+		System.out.println(pos);
 		System.out.println(c.acc);
 		return c.acc;
 	}
 
-	Array<Instr> modifyProg(Array<Instr> prog, Integer pos) {
+	Array<Instr> modifyProg(Array<Instr> prog, int pos) {
 		var instr = prog.get(pos);
 		instr = switch (instr.op()) {
 			case JMP -> new Instr(Opcode.NOP, instr.arg());

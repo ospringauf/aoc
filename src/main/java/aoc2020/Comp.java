@@ -2,6 +2,7 @@ package aoc2020;
 
 import io.vavr.collection.Array;
 import io.vavr.collection.List;
+import io.vavr.collection.Seq;
 
 @SuppressWarnings({ "deprecation", "preview" })
 class Comp {
@@ -12,15 +13,14 @@ class Comp {
 		ACC
 	}
 	
-	public static record Instr(Opcode op, int arg) {
+	public static record Instr(Opcode op, long arg) {
 		static Instr parse(String s) {
 			var a = s.split(" ");
-			return new Instr(Opcode.valueOf(a[0].toUpperCase()), Integer.parseInt(a[1]));
+			return new Instr(Opcode.valueOf(a[0].toUpperCase()), Long.valueOf(a[1]));
 		}
 		
 		public String toString() {
 			return String.format("%s %d", op, arg);
-					
 		}
 	}
 	
@@ -32,9 +32,9 @@ class Comp {
 		return Array.of(lines.split("\\n")).map(Instr::parse);
 	}
 
-	int acc = 0;
+	long acc = 0;
 
-	boolean execute(final Array<Instr> prog) {
+	boolean execute(final Seq<Instr> prog) {
 
 		int iptr = 0;
 		acc = 0;
