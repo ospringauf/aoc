@@ -3,13 +3,16 @@ package aoc2020;
 import io.vavr.collection.Array;
 import io.vavr.collection.List;
 
+// --- Day 9: Encoding Error ---
 // https://adventofcode.com/2020/day/9
 
 @SuppressWarnings({ "deprecation", "preview" })
 class Day09 extends AocPuzzle {
+    
+    record Range(int from, int to) {};
 
 	public static void main(String[] args) {
-		var t0 = System.currentTimeMillis();
+	    var t0 = System.currentTimeMillis();
 
 		System.out.println("=== part 1");
 		var result1 = new Day09().part1();
@@ -26,45 +29,47 @@ class Day09 extends AocPuzzle {
 //	Array<Long> data = Array.of(example.split("\n")).map(Long::valueOf);
 
 	int preamble = 25;
-	Array<Long> data = lines("input09.txt").map(Long::valueOf).toArray();
+	Array<Long> data = longs("input09.txt").toArray();
 
-	long part1() { 
-
+	long part1() {
 		var r = data.sliding(preamble + 1)
-				.filterNot(w -> check1(w))
-				.map(w -> w.last());
-		
-		return r.get();
+				.filterNot(w -> lastIsSumOfTwo(w))
+				.map(w -> w.last())
+				.single();
+
+		return r;
 	}
 	
-	private boolean check1(Array<Long> window) {
-		Long sum = window.last();
-		return window.exists(x -> window.contains(sum - x));
+	boolean lastIsSumOfTwo(Array<Long> window) {
+	    Long sum = window.last();
+	    return window.exists(x -> window.contains(sum - x));
 	}
 
 	long part2(long sum) {
-
-		var r = List.range(0, data.size())
-				.map(from -> check2(sum, from, data))
-				.filterNot(Array::isEmpty)
-				.get();
-		
-		System.out.println(r);
-
-		return r.min().get() + r.max().get();
+	    var w = ranges(data.size())
+        	    .filter(r -> windowSum(r.from, r.to) == sum)
+        	    .map(r -> data.subSequence(r.from, r.to))
+        	    .single();
+	    
+        System.out.println(w);
+        return w.min().get() + w.max().get();
 	}
-
-	Array<Long> check2(long sum, int from, Array<Long> l) {
-		var r = List.range(from, l.size())
-				.filter(to -> l.subSequence(from, to).sum().longValue() == sum)
-				.headOption();
-		
-		Array<Long> r2 = r.map(to -> l.subSequence(from, to)).getOrElse(Array.empty());
-		return r2;
+	
+	// all ranges (from,to) having at least 2 elements
+	List<Range> ranges(int m) {
+	    return List.rangeClosed(0, m)
+	            .flatMap(a -> List.rangeClosed(a + 2, m).map(b -> new Range(a,b)));
 	}
-
-
-	void part2() {}
+	
+	long windowSum(int from, int to) {
+	    long s = 0;
+	    for (int i = from; i < to; ++i) {
+	        s += data.get(i);
+	    }
+	    return s;
+	    
+//	    return data.subSequence(from, to).sum().longValue();
+	}
 
 	static String example = """
 			35
