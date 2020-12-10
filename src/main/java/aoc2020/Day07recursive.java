@@ -11,53 +11,52 @@ import io.vavr.collection.Set;
 @SuppressWarnings({ "deprecation", "preview" })
 class Day07recursive extends AocPuzzle {
 
-    public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws Exception {
 
-        System.out.println("=== part 1"); // 192
-        new Day07recursive().part1();
+		System.out.println("=== part 1"); // 192
+		new Day07recursive().part1();
 
-        System.out.println("=== part 2"); // 12128
-        new Day07recursive().part2();
-    }
+		System.out.println("=== part 2"); // 12128
+		new Day07recursive().part2();
+	}
 
-    private Set<Rule> rules = lines("input07.txt").map(Rule::parse).toSet();
+	final Set<Rule> rules = lines("input07.txt").map(Rule::parse).toSet();
 //    private Set<Rule> rules = List.of(example.split("\\n")).map(Rule::parse).toSet();
 
+	static record Bags(int amount, String color) {
+		static Bags parse(String s) {
+			var x = s.split(" ");
+			if (x[0].equals("no"))
+				// no other bags
+				return null;
+			else
+				// 2 muted yellow bags
+				return new Bags(Integer.parseInt(x[0]), x[1] + " " + x[2]);
+		}
 
-    static record Bags(int amount, String color) {
-        static Bags parse(String s) {
-            var x = s.split(" ");
-            if (x[0].equals("no"))
-                // no other bags
-                return null;
-            else
-                // 2 muted yellow bags
-                return new Bags(Integer.parseInt(x[0]), x[1] + " " + x[2]);
-        }
+		boolean isColor(String c) {
+			return c.equals(color);
+		}
+	}
 
-        boolean isColor(String c) {
-            return c.equals(color);
-        }
-    }
+	static record Rule(String color, List<Bags> inner) {
 
-    static record Rule(String color, List<Bags> inner) {
+		static Rule parse(String s) {
+			// light red| bags contain |1 bright white bag|, |2 muted yellow bags.
+			var arr = s.split(" bags contain ");
+			var left = arr[0];
+			var right = List.of(arr[1].split(", "));
+			return new Rule(left, right.map(Bags::parse).filter(bag -> bag != null));
+		}
 
-    	static Rule parse(String s) {
-            // light red| bags contain |1 bright white bag|, |2 muted yellow bags.
-            var arr = s.split(" bags contain ");
-            var left = arr[0];
-            var right = List.of(arr[1].split(", "));
-            return new Rule(left, right.map(Bags::parse).filter(bag -> bag != null));
-        }
+		public boolean containsColor(String c) {
+			return inner.exists(i -> i.color.equals(c));
+		}
 
-        public boolean containsColor(String c) {
-            return inner.exists(i -> i.color.equals(c));
-        }
-
-        public List<Bags> multiply(int ntimes) {
-            return inner.map(bag -> new Bags(bag.amount * ntimes, bag.color));
-        }
-    }
+		public List<Bags> multiply(int ntimes) {
+			return inner.map(bag -> new Bags(bag.amount * ntimes, bag.color));
+		}
+	}
 
     private Set<Rule> findContainingRules(Rule r) {
         return rules.filter(rule -> rule.containsColor(r.color));

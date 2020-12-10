@@ -51,16 +51,15 @@ class Day10 extends AocPuzzle {
         var chain = List.of(0).appendAll(adapters).sorted();
 
         var diffs = chain.sliding(2).map(w -> w.get(1) - w.get(0)).toList();
-        
         var d1 = diffs.count(x -> x == 1);
-        var d3 = diffs.count(x -> x == 3)+1;
+        var d3 = diffs.count(x -> x == 3) + 1;
         System.out.println(d1 * d3);
     }
 
     void part2() {
-        var target = adapters.max().get() + 3;
+        var target = adapters.max().get();
 
-        long n = options(0, target - 3);
+        long n = countOptions(0, target);
 //        System.out.println(cache);
         System.out.println(n);
     }
@@ -68,20 +67,20 @@ class Day10 extends AocPuzzle {
 
     final Map<Integer, Long> cache = new HashMap<>();
 
-    long options(int curr, int target) {
-        if (cache.containsKey(curr))
-            return cache.get(curr);
+    long countOptions(int current, int target) {
+        if (cache.containsKey(current))
+            return cache.get(current);
 
         long n;
-        if (curr == target) 
+        if (current == target) 
             n = 1;
         else
             n = adapters
-            	.filter(a -> a > curr && a <= curr + 3)
-            	.map(a -> options(a, target))
+            	.filter(a -> a > current && a <= current + 3)
+            	.map(a -> countOptions(a, target))
             	.sum().longValue();
 
-        cache.put(curr, n);
+        cache.put(current, n);
         return n;
     }
 
