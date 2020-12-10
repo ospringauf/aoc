@@ -10,28 +10,26 @@ import io.vavr.control.Try;
 
 public class AocPuzzle {
 	
-	public List<String> lines(String fname)  {
-		//return List.ofAll(Files.lines(path(fname)));
-		
-		// turn checked exception into RuntimeException
-		return Try.of(() -> List.ofAll(Files.lines(path(fname)))).get();
-	}
-
-	Path path(String fname) throws URISyntaxException {
+	private Path path(String fname) throws URISyntaxException {
 		var path = Paths.get(getClass().getResource(fname).toURI());
 		return path;
 	}
 	
-	String readString(String fname) {
+	public List<String> lines(String fname)  {
+		// turn checked exception into RuntimeException
+		return Try.of(() -> List.ofAll(Files.lines(path(fname)))).get();
+	}
+
+	public String readString(String fname) {
 		// turn checked exception into RuntimeException
 		return Try.of(() -> Files.readString(path(fname))).get();
 	}
 
-	List<Integer> ints(String fname) {
+	public List<Integer> ints(String fname) {
 		return lines(fname).map(Integer::valueOf);
 	}
 
-	List<Long> longs(String fname) {
+	public List<Long> longs(String fname) {
 		return lines(fname).map(Long::valueOf);
 	}
 //
