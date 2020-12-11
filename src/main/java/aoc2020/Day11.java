@@ -19,12 +19,15 @@ class Day11 extends AocPuzzle {
 	}
 
 	public static void main(String[] args) {
+	    var t0 = System.currentTimeMillis();
 
-		System.out.println("=== part 1"); // 2481
-		new Day11().part1();
+	    System.out.println("=== part 1"); // 2481
+	    new Day11().part1();
+		System.out.format("=== end (%d ms)\n", System.currentTimeMillis() - t0);
 
 		System.out.println("=== part 2"); // 2227
 		new Day11().part2();
+		System.out.format("=== end (%d ms)\n", System.currentTimeMillis() - t0);
 	}
 
 //	final List<String> = List.of(example.split("\n"));
