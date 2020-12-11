@@ -53,6 +53,14 @@ public class PointMap<T> extends HashMap<Point, T> {
 	public void read(List<String> lines) {
 		read(lines, c->(T)c);		
 	}
+	
+	public long countValues(Predicate<T> p) {
+		return values().stream().filter(p).count();
+	}
+	
+	public long countValues(T value) {
+		return values().stream().filter(v -> v.equals(value)).count();
+	}
 
 
 	public Point findPoint(T value) {

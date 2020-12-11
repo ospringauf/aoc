@@ -3,12 +3,20 @@ package aoc2020;
 import java.util.function.Function;
 
 import io.vavr.collection.List;
-import io.vavr.collection.Traversable;
 
+// --- Day 11: Seating System ---
 // https://adventofcode.com/2020/day/11
 
-@SuppressWarnings({ "deprecation", "preview" })
+@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day11 extends AocPuzzle {
+
+	private static final char UNDEF = '?';
+	private static final char FLOOR = '.';
+	private static final char OCCUPIED = '#';
+	private static final char EMPTY = 'L';
+
+	static class SeatMap extends PointMap<Character> {
+	}
 
 	public static void main(String[] args) {
 
@@ -16,106 +24,89 @@ class Day11 extends AocPuzzle {
 		new Day11().part1();
 
 		System.out.println("=== part 2"); // 2227
-//		new Day11().part2();
+		new Day11().part2();
 	}
 
+//	final List<String> = List.of(example.split("\n"));
+	final List<String> data = lines("input11.txt");
+
 	void part1() {
-		// var data = List.of(example.split("\n"));
-		var data = lines("input11.txt");
-
-		var map = new PointMap<Character>();
+		var map = new SeatMap();
 		map.read(data);
-
-		var occ = 0;
-		var nextOcc = 0;
-		PointMap<Character> n = map;
-		do {
-			occ = n.findPoints('#').size();
-			n = next1(n);
-			nextOcc = n.findPoints('#').size();
-			System.out.println(occ);
-
-		} while (nextOcc != occ);
+		nextUntilStable(map, this::next1);
 	}
 
 	void part2() {
-//		 var data = List.of(example.split("\n"));
-		var data = lines("input11.txt");
-
-		var map = new PointMap<Character>();
+		var map = new SeatMap();
 		map.read(data);
-		map.print();
-		System.out.println();
+		nextUntilStable(map, this::next2);
+	}
 
-		var occ = 0;
-		var nextOcc = 0;
-		PointMap<Character> n = map;
+	void nextUntilStable(SeatMap map, Function<SeatMap, SeatMap> nextMap) {
+		long occ = 0;
+		long nextOcc = map.countValues(OCCUPIED);
 		do {
-			occ = n.findPoints('#').size();
-			n = next2(n);
-			nextOcc = n.findPoints('#').size();
-			System.out.println(occ);
-
+			occ = nextOcc;
+			map = nextMap.apply(map);
+			nextOcc = map.countValues(OCCUPIED);
 		} while (nextOcc != occ);
+		System.out.println(occ);
 	}
 
-	PointMap<Character> next1(PointMap<Character> m) {
-		var nxt = new PointMap<Character>();
-		for (Point p : m.keySet()) {
-			var empty = m.get(p) == 'L';
-			var occupied = m.get(p) == '#';
-			var nocc = allneighbors(p).count(n -> m.getOrDefault(n, '?') == '#');
+	SeatMap next1(SeatMap map) {
+		var next = new SeatMap();
+		for (Point p : map.keySet()) {
+			var current = map.get(p);
+			var empty = current == EMPTY;
+			var occupied = current == OCCUPIED;
+			
+			var nocc = p.neighbors8().count(n -> map.getOrDefault(n, UNDEF) == OCCUPIED);
 
 			if (empty && nocc == 0)
-				nxt.put(p, '#');
+				next.put(p, OCCUPIED);
 			else if (occupied && nocc >= 4)
-				nxt.put(p, 'L');
+				next.put(p, EMPTY);
 			else
-				nxt.put(p, m.get(p));
-
+				next.put(p, current);
 		}
-		return nxt;
+		return next;
 	}
-	
-	PointMap<Character> next2(PointMap<Character> m) {
-		var nxt = new PointMap<Character>();
-		for (Point p : m.keySet()) {
-			var empty = m.get(p) == 'L';
-			var occupied = m.get(p) == '#';
-			var nocc = 
-					visibleOccupied(m, p, x->x.north())
-					+ visibleOccupied(m, p, x->x.south())
-					+ visibleOccupied(m, p, x->x.east())
-					+ visibleOccupied(m, p, x->x.west())
-					+ visibleOccupied(m, p, x->x.north().east())
-					+ visibleOccupied(m, p, x->x.south().east())
-					+ visibleOccupied(m, p, x->x.north().west())
-					+ visibleOccupied(m, p, x->x.south().west());
+
+	SeatMap next2(SeatMap map) {
+		var next = new SeatMap();
+		for (Point p : map.keySet()) {
+			var current = map.get(p);
+			var empty = current == EMPTY;
+			var occupied = current == OCCUPIED;
+
+			var nocc = visibleOccupied(map, p, x -> x.north()) 
+					+ visibleOccupied(map, p, x -> x.south())
+					+ visibleOccupied(map, p, x -> x.east()) 
+					+ visibleOccupied(map, p, x -> x.west())
+					+ visibleOccupied(map, p, x -> x.north().east()) 
+					+ visibleOccupied(map, p, x -> x.north().west())
+					+ visibleOccupied(map, p, x -> x.south().east()) 
+					+ visibleOccupied(map, p, x -> x.south().west());
 
 			if (empty && nocc == 0)
-				nxt.put(p, '#');
+				next.put(p, OCCUPIED);
 			else if (occupied && nocc >= 5)
-				nxt.put(p, 'L');
+				next.put(p, EMPTY);
 			else
-				nxt.put(p, m.get(p));
-
+				next.put(p, current);
 		}
-		return nxt;
+		return next;
 	}
 
-	private int visibleOccupied(PointMap<Character> m, Point p, Function<Point, Point> nextp) {
-		p = nextp.apply(p);
-		return switch (m.getOrDefault(p, '?')) {
-		case 'L' -> 0;
-		case '#' -> 1;
-		case '.' -> visibleOccupied(m, p, nextp);
-		case '?' -> 0;
+	int visibleOccupied(SeatMap m, Point p, Function<Point, Point> nextPoint) {
+		p = nextPoint.apply(p);
+		return switch (m.getOrDefault(p, UNDEF)) {
+		case FLOOR -> visibleOccupied(m, p, nextPoint);
+		case OCCUPIED -> 1;
+		case EMPTY -> 0;
+		case UNDEF -> 0;
 		default -> 0;
 		};
-	}
-
-	private List<Point> allneighbors(Point p) {
-		return p.neighbors().appendAll(List.of(p.north().west(), p.north().east(), p.south().west(), p.south().east()));
 	}
 
 	static String example = """

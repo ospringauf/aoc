@@ -74,6 +74,10 @@ public record Point(int x, int y) {
         return List.of(north(), south(), east(), west());
     }
 
+    public List<Point> neighbors8() {
+        return List.of(north(), south(), east(), west(), translate(1,1), translate(1,-1), translate(-1,-1), translate(-1, 1));
+    }
+
     public String toString() {
     	return String.format("(%d,%d)", x,y);
     }
