@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import aoc2020.Comp.Instr;
 import aoc2020.Comp.Opcode;
+import common.AocPuzzle;
 import io.vavr.collection.Array;
 import io.vavr.collection.List;
 

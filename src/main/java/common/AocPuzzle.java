@@ -1,4 +1,4 @@
-package aoc2020;
+package common;
 
 import java.net.URISyntaxException;
 import java.nio.file.Files;

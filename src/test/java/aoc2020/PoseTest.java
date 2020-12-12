@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import common.Heading;
+import common.Pose;
+
 public class PoseTest {
 
 	@Test

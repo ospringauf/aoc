@@ -1,5 +1,7 @@
 package aoc2016;
 
+import common.Heading;
+import common.Pose;
 import io.vavr.collection.List;
 
 // https://adventofcode.com/2016/day/1

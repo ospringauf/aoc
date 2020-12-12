@@ -1,5 +1,7 @@
 package aoc2020;
 
+import common.AocPuzzle;
+import common.Util;
 import io.vavr.collection.List;
 
 //--- Day 1: Report Repair ---

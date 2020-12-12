@@ -1,4 +1,4 @@
-package aoc2020;
+package common;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -15,7 +15,7 @@ public class PointMap<T> extends HashMap<Point, T> {
 
 	private static final long serialVersionUID = 1L;
 	
-	Function<Point, List<Point>> neigbors = p -> p.neighbors();
+	public Function<Point, List<Point>> neigbors = p -> p.neighbors();
 
 	public static class PathResult {
 		public PointMap<Integer> distance;
@@ -39,14 +39,14 @@ public class PointMap<T> extends HashMap<Point, T> {
 	}
 
 	// f: translate characters to value type T
-	void read(String[] s, Function<Character, T> f) {
+	public void read(String[] s, Function<Character, T> f) {
 		for (int y = 0; y < s.length; ++y)
 			for (int x = 0; x < s[y].length(); ++x) {
 				put(new Point(x, y), f.apply(s[y].charAt(x)));
 			}
 	}
 	
-	void read(List<String> lines, Function<Character, T> f) {
+	public void read(List<String> lines, Function<Character, T> f) {
 		read(lines.toJavaArray(String.class), f);
 	}
 	
@@ -90,14 +90,18 @@ public class PointMap<T> extends HashMap<Point, T> {
 		return BoundingBox.of(keySet());
 	}
 
-	void print() {
+	public void print() {
 		boundingBox().print(p -> String.valueOf(get(p)).charAt(0));
 	}
 
-	void print(Function<T, Character> val2Text) {
+	public void print(Function<T, Character> val2Text) {
 		boundingBox().print(p -> val2Text.apply(get(p)));
 	}
-	
+
+	public void printS(Function<T, String> val2Text) {
+		boundingBox().printS(p -> val2Text.apply(get(p)));
+	}
+
 
 	public PointMap<Integer> minDistances(Point start, Predicate<T> allowed) {
 		return minDistances(start, allowed, x -> true);

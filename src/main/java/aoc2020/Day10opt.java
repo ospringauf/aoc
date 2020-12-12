@@ -3,6 +3,7 @@ package aoc2020;
 import java.util.HashMap;
 import java.util.Map;
 
+import common.AocPuzzle;
 import io.vavr.collection.List;
 
 // --- Day 10: Adapter Array ---

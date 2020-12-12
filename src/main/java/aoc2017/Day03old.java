@@ -1,8 +1,8 @@
 package aoc2017;
 
-import aoc2017.Day3Grid.Pos;
+import aoc2017.Day03Grid.Pos;
 
-public class Day3 {
+public class Day03old {
 
 	
     public static void main(String[] args) throws Exception {
@@ -10,7 +10,7 @@ public class Day3 {
     }
 
     private static void part1test() throws Exception {
-    	Day3Grid grid = new Day3Grid(10, 10);
+    	Day03Grid grid = new Day03Grid(10, 10);
     	Pos p = new Pos(0,0);
     	grid.set(p, 1);
     	for (int i=2; i<=23; ++i) {
@@ -22,7 +22,7 @@ public class Day3 {
     }
 
     private static void part1() throws Exception {
-    	Day3Grid grid =new Day3Grid(1000, 1000);
+    	Day03Grid grid =new Day03Grid(1000, 1000);
     	Pos p = new Pos(0,0);
     	grid.set(p, 1);
     	for (int i=2; i<=325489; ++i) {
@@ -34,7 +34,7 @@ public class Day3 {
     }
 
     private static void part2() throws Exception {
-    	Day3Grid grid =new Day3Grid(20, 20);
+    	Day03Grid grid =new Day03Grid(20, 20);
     	Pos p = new Pos(0,0);
     	
     	int v = 1;

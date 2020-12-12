@@ -2,6 +2,7 @@ package aoc2020;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import common.AocPuzzle;
 import io.vavr.collection.List;
 
 // --- Day 5: Binary Boarding ---

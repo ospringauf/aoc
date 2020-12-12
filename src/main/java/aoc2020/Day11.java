@@ -2,6 +2,9 @@ package aoc2020;
 
 import java.util.function.Function;
 
+import common.AocPuzzle;
+import common.Point;
+import common.PointMap;
 import io.vavr.collection.List;
 
 // --- Day 11: Seating System ---

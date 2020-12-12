@@ -2,7 +2,7 @@ package aoc2015;
 
 import java.security.MessageDigest;
 
-import aoc2017.Util;
+import common.Util;
 
 public class Day04 {
 

@@ -1,4 +1,4 @@
-package aoc2020;
+package common;
 
 import java.util.function.Function;
 
@@ -7,11 +7,11 @@ import io.vavr.collection.List;
 
 public record Point(int x, int y) {
 	
-	int manhattan() {
+	public int manhattan() {
 		return Math.abs(x) + Math.abs(y);
 	}
 	
-    int manhattan(Point a) {
+	public int manhattan(Point a) {
         return Math.abs(a.x - x) + Math.abs(a.y - y);
     }
 

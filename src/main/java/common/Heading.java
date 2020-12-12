@@ -1,6 +1,6 @@
-package aoc2020;
+package common;
 
-enum Heading {
+public enum Heading {
 
 	NORTH(0, -1), EAST(1, 0), SOUTH(0, 1), WEST(-1, 0),
 
@@ -14,11 +14,11 @@ enum Heading {
 		this.dy = dy;
 	}
 	
-	Heading turn(boolean right) {
+	public Heading turn(boolean right) {
 		return right ? right() : left();
 	}
 
-	Heading left() {
+	public Heading left() {
 		return switch (this) {
 		case NORTH -> WEST;
 		case WEST -> SOUTH;
@@ -32,7 +32,7 @@ enum Heading {
 		};
 	}
 
-	Heading right() {
+	public Heading right() {
 		return switch (this) {
 		case NORTH -> EAST;
 		case EAST -> SOUTH;

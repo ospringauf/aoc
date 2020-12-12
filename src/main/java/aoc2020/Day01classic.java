@@ -1,5 +1,6 @@
 package aoc2020;
 
+import common.Util;
 import io.vavr.collection.List;
 
 // https://adventofcode.com/2020/day/1
