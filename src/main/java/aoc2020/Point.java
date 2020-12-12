@@ -1,5 +1,7 @@
 package aoc2020;
 
+import java.util.function.Function;
+
 import io.vavr.collection.List;
 
 
@@ -65,6 +67,23 @@ public record Point(int x, int y) {
     public Point modulo(int w, int h) {    	
     	return Point.of(x % w, y % h);   			
     }
+    
+    public Point rotLeft() {
+    	return new Point(y, -x);
+	}
+    
+    public Point rotRight() {
+    	return new Point(-y, x);
+	}
+    
+    public Point repeat(int n, Function<Point, Point> f) {
+    	var p = this;
+    	for (int i=0; i<n; ++i) {
+    		p = f.apply(p);
+    	}
+    	return p;
+    }
+
     
 //    public Stream<Point> neighbors() {
 //        return Stream.of(north(), south(), east(), west());

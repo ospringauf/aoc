@@ -1,5 +1,7 @@
 package aoc2020;
 
+import java.util.function.Function;
+
 import io.vavr.collection.List;
 
 public record Pose(Heading heading, Point pos) {
@@ -27,7 +29,8 @@ public record Pose(Heading heading, Point pos) {
 	Pose turnLeft() {
 		return new Pose(heading.left(), pos);
 	}
-
+	
+	
 	Pose left() {
 		return new Pose(heading, pos.translate(heading.left()));
 	}
@@ -59,5 +62,17 @@ public record Pose(Heading heading, Point pos) {
 	public String toString() {
 		return String.format("%s@%s", heading, pos);
 	}
+
+	public Pose go(Point newp) {
+		return new Pose(heading, newp);
+	}
+
+    public Pose repeat(int n, Function<Pose, Pose> f) {
+    	var p = this;
+    	for (int i=0; i<n; ++i) {
+    		p = f.apply(p);
+    	}
+    	return p;
+    }
 
 }

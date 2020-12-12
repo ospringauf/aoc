@@ -8,71 +8,48 @@ import io.vavr.collection.List;
 // --- Day 10: Adapter Array ---
 // https://adventofcode.com/2020/day/10
 
+// rethought, optimized version
+
 @SuppressWarnings({ "deprecation", "preview" })
-class Day10 extends AocPuzzle {
+class Day10opt extends AocPuzzle {
 
     public static void main(String[] args) {
 
         System.out.println("=== part 1"); // 1984
-        new Day10().part1();
+        new Day10opt().part1();
 
         System.out.println("=== part 2"); // 3543369523456
-        new Day10().part2();
+        new Day10opt().part2();
 }
 
 //    final List<Integer> adapters = List.of(example2.split("\n")).map(Integer::valueOf);
     final List<Integer> adapters = ints("input10.txt");
 
     void part1() {
-        int target = adapters.max().get() + 3;
-
-        int curr = 0;
-        List<Integer> chain = List.of(curr);
-        while (curr < target - 3) {
-            int last = curr;
-            curr = adapters.filter(a -> a > last & a <= last + 3).min().get();
-            chain = chain.append(curr);
-        }
-        chain = chain.append(target);
-        // System.out.println(adapters);
+        var chain = adapters.append(0).sorted();
 
         var diffs = chain.sliding(2).map(w -> w.get(1) - w.get(0)).toList();
-        System.out.println(diffs);
         var d1 = diffs.count(x -> x == 1);
-        var d3 = diffs.count(x -> x == 3);
+        var d3 = diffs.count(x -> x == 3) + 1;
         System.out.println(d1 * d3);
     }
-
+    
     void part2() {
-        var target = adapters.max().get();
-        System.out.println("target="+target);
-
-        long n = countOptions(0, target);
-//        System.out.println(cache);
-//        List.ofAll(cache.keySet()).sorted().forEach(k -> System.out.println(k + " -> " + cache.get(k)));
-        System.out.println(n);
+    	Map<Integer, Long> options = new HashMap<>();
+    	List<Integer> jolts = adapters.sorted().reverse().append(0);
+    	
+    	options.put(jolts.head() + 3, 1L);
+    	
+    	for (int j : jolts) {
+    		options.put(j, 
+    				options.getOrDefault(j+1, 0L) + 
+    				options.getOrDefault(j+2, 0L) + 
+    				options.getOrDefault(j+3, 0L));
+    	}
+    	System.out.println(options.get(0));
     }
+    
 
-
-    final Map<Integer, Long> cache = new HashMap<>();
-
-    long countOptions(int current, int target) {
-        if (cache.containsKey(current))
-            return cache.get(current);
-
-        long n;
-        if (current == target) 
-            n = 1;
-        else
-            n = adapters
-            	.filter(a -> a > current && a <= current + 3)
-            	.map(a -> countOptions(a, target))
-            	.sum().longValue();
-
-        cache.put(current, n);
-        return n;
-    }
-   
     static String example2 = """
             28
             33
