@@ -1,5 +1,6 @@
 package common;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 
 import io.vavr.collection.List;
@@ -39,7 +40,7 @@ public class Util {
 
 	// least common multiple
 	// https://www.geeksforgeeks.org/lcm-of-given-array-elements/
-	public static long lcm(Integer... numbers) {
+	public static long lcm(int... numbers) {
 		long result = 1;
 		int divisor = 2;
 
@@ -91,12 +92,10 @@ public class Util {
 	}
 
 	public static long gcd(long a, long b) {
-		while (a != b) {
-			if (a > b)
-				a = a - b;
-			else
-				b = b - a;
-		}
-		return b;
+		return BigInteger.valueOf(a).gcd(BigInteger.valueOf(b)).longValue();
+	}
+	
+	public static long modInv(long a, long n) {
+		return BigInteger.valueOf(a).modInverse(BigInteger.valueOf(n)).longValue();
 	}
 }
