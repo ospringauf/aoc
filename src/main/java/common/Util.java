@@ -39,7 +39,7 @@ public class Util {
 
 	// least common multiple
 	// https://www.geeksforgeeks.org/lcm-of-given-array-elements/
-	public static long lcm(int... numbers) {
+	public static long lcm(Integer... numbers) {
 		long result = 1;
 		int divisor = 2;
 
@@ -88,5 +88,15 @@ public class Util {
 				return result;
 			}
 		}
+	}
+
+	public static long gcd(long a, long b) {
+		while (a != b) {
+			if (a > b)
+				a = a - b;
+			else
+				b = b - a;
+		}
+		return b;
 	}
 }

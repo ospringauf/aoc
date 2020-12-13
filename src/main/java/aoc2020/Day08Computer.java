@@ -5,7 +5,7 @@ import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 
 @SuppressWarnings({ "deprecation", "preview" })
-class Comp {
+class Day08Computer {
 
 	public enum Opcode {
 		NOP,
