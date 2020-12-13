@@ -77,40 +77,36 @@ class Day13 extends AocPuzzle {
 	
 	void part2a() {
 
-//		var line1 = "17,x,13,19";
-//		var line1 = "7,13,x,x,59,x,31,19";
-//		var line1 = "1789,37,47,1889";
-		var line1 = data.get(1);
+//		var line1 = "17,x,13,19".split(",");
+//		var line1 = "7,13,x,x,59,x,31,19".split(",");
+//		var line1 = "1789,37,47,1889".split(",");
+		String[] line1 = data.get(1).split(",");
 
-		Long[] busses = List.of(line1.split(","))
-				.map(s -> "x".equals(s) ? 0 : Long.valueOf(s))
-				.toJavaArray(Long.class);
-
-		var dat = List.range(0, busses.length)
-				.filter(i -> busses[i] != 0)
-				.map(i -> new Bus(i, busses[i]));
-
-		dat.forEach(b -> System.out.format("bus: %3d -> %3d  [%3d]\n", b.id, b.offset, b.offset % b.id));
+		List<Bus> bus = List.range(0, line1.length)
+				.filter(i -> ! "x".equals(line1[i]))
+				.map(i -> new Bus(i, Long.valueOf(line1[i])));
+		
+		bus.forEach(b -> System.out.format("bus: %3d -> %3d  [%3d]\n", b.id, b.offset, b.offset % b.id));
 
 //		long start = -19;
 //		long step = 19 * 743 * 29 * 37;
 		
-		long bus0 = busses[0];
-		long start = -bus0;
+		Bus bus0 = bus.get(0);
 
-		var factors = dat.filter(d -> (d.offset % d.id) == bus0).map(d -> d.id);
+		List<Long> factors = bus.filter(d -> (d.offset % d.id) == bus0.id).map(d -> d.id);
 
-		long step = factors.product().longValue() * bus0;
+		long step = factors.product().longValue() * bus0.id;
 		
-		Predicate<Long> found = t -> dat.forAll(x -> (t + x.offset) % x.id == 0);
+		Predicate<Long> found = t -> bus.forAll(x -> (t + x.offset) % x.id == 0);
 
-		long t = start;
+		long t = - bus0.id;
 		while (!found.test(t)) {
 			t += step;
 		}
 	
 		System.out.println("t = " + t);
 	}
+	
 
 	static String example = """
 			939
