@@ -93,13 +93,15 @@ class Day13 extends AocPuzzle {
 		
 		Bus bus0 = bus.get(0);
 
-		List<Long> factors = bus.filter(d -> (d.offset % d.id) == bus0.id).map(d -> d.id);
+		List<Long> factors = bus.filter(b -> (b.offset % b.id) == bus0.id).map(d -> d.id);
 
+		// meeting at minute 19 (bus0 id)
 		long step = factors.product().longValue() * bus0.id;
+		System.out.println("steps: n * " + step + " - " + bus0.id);
 		
-		Predicate<Long> found = t -> bus.forAll(x -> (t + x.offset) % x.id == 0);
+		Predicate<Long> found = t -> bus.forAll(b -> (t + b.offset) % b.id == 0);
 
-		long t = - bus0.id;
+		long t = 0 * step - bus0.id;
 		while (!found.test(t)) {
 			t += step;
 		}
