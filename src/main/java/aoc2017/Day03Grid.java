@@ -1,6 +1,6 @@
 package aoc2017;
 
-public class Day3Grid {
+public class Day03Grid {
 
 	public static class Pos {
 		public int x;
@@ -19,7 +19,7 @@ public class Day3Grid {
 	Integer[] a;
 	int w, h;
 	
-	public Day3Grid(int w, int h) {
+	public Day03Grid(int w, int h) {
 		this.w = w;
 		this.h= h;
 		a = new Integer[w*h];

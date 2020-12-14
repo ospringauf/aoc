@@ -2,6 +2,10 @@ package aoc2020;
 
 import java.util.function.UnaryOperator;
 
+import common.AocPuzzle;
+import common.BoundingBox;
+import common.Point;
+import common.PointMap;
 import io.vavr.collection.Stream;
 
 // --- Day 3: Toboggan Trajectory ---

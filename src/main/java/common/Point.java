@@ -1,15 +1,17 @@
-package aoc2020;
+package common;
+
+import java.util.function.Function;
 
 import io.vavr.collection.List;
 
 
 public record Point(int x, int y) {
 	
-	int manhattan() {
+	public int manhattan() {
 		return Math.abs(x) + Math.abs(y);
 	}
 	
-    int manhattan(Point a) {
+	public int manhattan(Point a) {
         return Math.abs(a.x - x) + Math.abs(a.y - y);
     }
 
@@ -66,12 +68,33 @@ public record Point(int x, int y) {
     	return Point.of(x % w, y % h);   			
     }
     
+    public Point rotLeft() {
+    	return new Point(y, -x);
+	}
+    
+    public Point rotRight() {
+    	return new Point(-y, x);
+	}
+    
+    public Point repeat(int n, Function<Point, Point> f) {
+    	var p = this;
+    	for (int i=0; i<n; ++i) {
+    		p = f.apply(p);
+    	}
+    	return p;
+    }
+
+    
 //    public Stream<Point> neighbors() {
 //        return Stream.of(north(), south(), east(), west());
 //    }
     
     public List<Point> neighbors() {
         return List.of(north(), south(), east(), west());
+    }
+
+    public List<Point> neighbors8() {
+        return List.of(north(), south(), east(), west(), translate(1,1), translate(1,-1), translate(-1,-1), translate(-1, 1));
     }
 
     public String toString() {

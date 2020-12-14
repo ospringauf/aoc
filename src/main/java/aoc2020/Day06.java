@@ -3,6 +3,7 @@ package aoc2020;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import common.AocPuzzle;
 import io.vavr.collection.List;
 
 // --- Day 6: Custom Customs ---

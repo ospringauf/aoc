@@ -2,8 +2,9 @@ package aoc2020;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import aoc2020.Comp.Instr;
-import aoc2020.Comp.Opcode;
+import aoc2020.Day08Computer.Instr;
+import aoc2020.Day08Computer.Opcode;
+import common.AocPuzzle;
 import io.vavr.collection.Array;
 import io.vavr.collection.List;
 
@@ -16,7 +17,7 @@ class Day08 extends AocPuzzle {
 	public static void main(String[] args) {
 
 //		var prog = Comp.parseProg(example);
-		var prog = Comp.parseProg(new Day08().lines("input08.txt"));
+		var prog = Day08Computer.parseProg(new Day08().lines("input08.txt"));
 
 		System.out.println("=== part 1");
 		var r1 = new Day08().part1(prog);
@@ -29,7 +30,7 @@ class Day08 extends AocPuzzle {
 
 	long part1(Array<Instr> prog) {
 //		System.out.println(prog);
-		var c = new Comp();
+		var c = new Day08Computer();
 
 		c.execute(prog);
 		
@@ -38,7 +39,7 @@ class Day08 extends AocPuzzle {
 	}
 
 	long part2(Array<Instr> prog) {
-		var c = new Comp();
+		var c = new Day08Computer();
 
 		var pos = List.range(0, prog.size()).filter(n -> c.execute(modifyProg(prog, n))).get();
 

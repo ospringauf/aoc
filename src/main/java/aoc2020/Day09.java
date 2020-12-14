@@ -1,5 +1,6 @@
 package aoc2020;
 
+import common.AocPuzzle;
 import io.vavr.collection.Array;
 import io.vavr.collection.List;
 

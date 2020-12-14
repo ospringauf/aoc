@@ -3,6 +3,9 @@ package aoc2020;
 
 import java.util.function.Predicate;
 
+import common.AocPuzzle;
+import common.Point;
+import common.PointMap;
 import io.vavr.collection.HashSet;
 import io.vavr.collection.List;
 

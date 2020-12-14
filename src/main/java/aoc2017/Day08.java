@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class Day8 {
+import common.AocPuzzle;
+
+class Day08 extends AocPuzzle {
 
     class Instruction {
 
@@ -101,24 +103,18 @@ public class Day8 {
 
     public static void main(String[] args) throws Exception {
         System.out.println("=== part1 ===");
-        new Day8().part1();
-        System.out.println("=== part2 ===");
-        new Day8().part2();
+        new Day08().solve();
     }
 
-    private void part2() {
-        
-        
-    }
 
-    private void part1() throws Exception {
+    private void solve() throws Exception {
 
         // var i1 = parseLine("b inc 5 if a > 1");
         // System.out.println(i1);
         // i1.execute();
 
         // var prog = Arrays.stream(input).map(this::parseLine).collect(Collectors.toList());
-        var prog = Util.lines("aoc2017/day8.txt").stream().map(this::parseLine).collect(Collectors.toList());
+        var prog = lines("input08.txt").map(this::parseLine).toJavaList();
 
         prog.forEach(Instruction::execute);
         prog.forEach(System.out::println);

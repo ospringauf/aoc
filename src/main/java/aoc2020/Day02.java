@@ -1,5 +1,7 @@
 package aoc2020;
 
+import common.AocPuzzle;
+
 // --- Day 2: Password Philosophy ---
 // https://adventofcode.com/2020/day/2
 

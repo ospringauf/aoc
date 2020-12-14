@@ -1,4 +1,4 @@
-package aoc2020;
+package common;
 
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -32,18 +32,5 @@ public class AocPuzzle {
 	public List<Long> longs(String fname) {
 		return lines(fname).map(Long::valueOf);
 	}
-//
-//
-//	static long[] readIntProg(String filename) {
-//		try {
-//			String l = lines(filename).head();
-//			// return Arrays.stream(l.split(",")).mapToLong(Long::parseLong).toArray();
-//			return string2longArray(l);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//			throw new RuntimeException(e.getMessage());
-//		}
-//
-//	}	
-
+	
 }

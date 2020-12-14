@@ -1,27 +1,42 @@
-package aoc2020;
+package common;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 
 import io.vavr.collection.List;
 
-class Util {
+public class Util {
 
-	static List<String> splitLine(String s) {
+	public static List<String> splitLine(String s) {
 		return List.of(s.split("\\s+"));
 	}
 
-	static List<Integer> string2ints(String input) {
+	public static List<Integer> string2ints(String input) {
 		return splitLine(input).map(Integer::valueOf);
 	}
 
-	static int[] string2intArray(String input) {
+	public static int[] string2intArray(String input) {
 		return Arrays.stream(input.split("\\s+")).mapToInt(Integer::valueOf).toArray();
 	}
 
-	static long[] string2longArray(String input) {
+	public static long[] string2longArray(String input) {
 		return Arrays.stream(input.split("\\s+")).mapToLong(Long::valueOf).toArray();
 	}
 
+	public static String byteToHex(byte num) {
+		char[] hexDigits = new char[2];
+		hexDigits[0] = Character.forDigit((num >> 4) & 0xF, 16);
+		hexDigits[1] = Character.forDigit((num & 0xF), 16);
+		return new String(hexDigits);
+	}
+
+	public static String encodeHexString(byte[] byteArray) {
+		StringBuffer hexStringBuffer = new StringBuffer();
+		for (int i = 0; i < byteArray.length; i++) {
+			hexStringBuffer.append(byteToHex(byteArray[i]));
+		}
+		return hexStringBuffer.toString();
+	}
 
 	// least common multiple
 	// https://www.geeksforgeeks.org/lcm-of-given-array-elements/
@@ -74,5 +89,13 @@ class Util {
 				return result;
 			}
 		}
+	}
+
+	public static long gcd(long a, long b) {
+		return BigInteger.valueOf(a).gcd(BigInteger.valueOf(b)).longValue();
+	}
+	
+	public static long modInv(long a, long n) {
+		return BigInteger.valueOf(a).modInverse(BigInteger.valueOf(n)).longValue();
 	}
 }
