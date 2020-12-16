@@ -4,7 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import common.AocPuzzle;
+import io.vavr.collection.Array;
+import io.vavr.collection.IndexedSeq;
 import io.vavr.collection.List;
+import io.vavr.collection.Seq;
 
 // --- Day 16: Ticket Translation ---
 // https://adventofcode.com/2020/day/16
@@ -16,38 +19,50 @@ class Day16 extends AocPuzzle {
 		new Day16().solve();
 	}
 
-	static List<Rule> rules;
-
+	
 	record Range(int a, int b) {
-		public boolean contains(int val) {
-			return a <= val && val <= b;
-		}
+	    
+	    static Range parse(String s) {
+	        var a = s.split("-");
+	        return new Range(Integer.valueOf(a[0]), Integer.valueOf(a[1]));
+	    }
 
-		public static Range parse(String s) {
-			var a = s.split("-");
-			return new Range(Integer.valueOf(a[0]), Integer.valueOf(a[1]));
+	    boolean contains(int val) {
+			return a <= val && val <= b;
 		}
 	}
 
+	
 	record Rule(String name, Range r1, Range r2) {
+	    
+	    static Rule parse(String s) {
+	        var a = s.split(": ");
+	        var r = a[1].split(" or ");
+	        return new Rule(a[0], Range.parse(r[0]), Range.parse(r[1]));
+	    }
+	    
 		boolean matches(int val) {
 			return r1.contains(val) || r2.contains(val);
 		}
-
-		static Rule parse(String s) {
-			var a = s.split(": ");
-			var r = a[1].split(" or ");
-			return new Rule(a[0], Range.parse(r[0]), Range.parse(r[1]));
+		
+		boolean matchesAll(Seq<Integer> values) {
+		    return values.forAll(this::matches);
 		}
 	}
+	
 
-	record Ticket(List<Integer> fields) {
+	record Ticket(IndexedSeq<Integer> fields) {
+	    
 		static Ticket parse(String s) {
-			return new Ticket(List.of(s.split(",")).map(Integer::parseInt));
+			return new Ticket(Array.of(s.split(",")).map(Integer::valueOf));
 		}
 
-		List<Integer> invalFields() {
-			return fields.filter(f -> rules.forAll(r -> !r.matches(f))); // TODO forNone??
+		Seq<Integer> invalidFields(Seq<Rule> rules) {
+			return fields.filterNot(val -> rules.exists(r -> r.matches(val)));
+		}
+		
+		int field(int idx) {
+		    return fields.get(idx);
 		}
 	}
 
@@ -55,47 +70,53 @@ class Day16 extends AocPuzzle {
 //		var blocks = example.split("\n\n");
 		var blocks = readString("input16.txt").split("\n\n");
 
-		rules = List.of(blocks[0].split("\n")).map(Rule::parse);
+		var rules = List.of(blocks[0].split("\n")).map(Rule::parse);
 		System.out.println("rules: " + rules);
 
 		var myticket = Ticket.parse(blocks[1].split("\n")[1]);
 		System.out.println("my ticket: " + myticket);
 
-		var others = List.of(blocks[2].split("\n")).drop(1).map(Ticket::parse);
-		System.out.println("other tickets: " + others);
+		var nearby = List.of(blocks[2].split("\n")).drop(1).map(Ticket::parse);
+		System.out.println("other tickets: " + nearby);
 
+		
 		System.out.println("=== part 1"); // 29759
-		var scanErrRate = others.flatMap(t -> t.invalFields()).sum();
-		System.out.println(scanErrRate);
+		var scanErrorRate = nearby.flatMap(t -> t.invalidFields(rules)).sum();
+		System.out.println(scanErrorRate);
 
 		System.out.println("=== part 2"); // 1307550234719
-		var validTickets = others.filter(t -> t.invalFields().isEmpty());
-//		System.out.println(validTickets);
-
+		var validTickets = nearby.filter(t -> t.invalidFields(rules).isEmpty());
+		
 		var N = rules.size();
 		
-		Map<Rule, Integer> ruleField = new HashMap<>();
-		while (ruleField.size() < N) {
-			for (int i = 0; i < N; ++i) {
-				var fi = i; // TODO
-				var possRules = rules
-						.filter(r -> validTickets.forAll(t -> r.matches(t.fields.get(fi))))
-						.removeAll(ruleField.keySet());
-//				System.out.println(i + " --> " + possRules);
+		// find rule -> field# mapping, repeat until unambiguous
+		Map<Rule, Integer> ruleIndex = new HashMap<>();
 				
-				// unambiguous?
-				if (possRules.size() == 1) 
-					ruleField.put(possRules.single(), i);
+		while (ruleIndex.size() < N) {
+		    
+			for (final int idx : List.range(0, N)) {
+				var values = validTickets.map(t -> t.field(idx));
+				var candidates = rules
+				        .filter(r -> r.matchesAll(values))
+						.removeAll(ruleIndex.keySet());
+				
+//				System.out.println(i + " --> " + candidates);
+
+				// did we find a single rule that matches all values?
+				if (candidates.size() == 1) 
+					ruleIndex.put(candidates.single(), idx);
 			}
 		}
-		System.out.println(ruleField);
+
+		// print rule-field assignments
+//		rule2Field.entrySet().forEach(e -> System.out.println(e.getValue() + " -> " + e.getKey()));
 
 		var departureFields = rules
 				.filter(r -> r.name.startsWith("departure"))
-				.map(r -> myticket.fields.get(ruleField.get(r)))
-				;
+				.map(r -> ruleIndex.get(r))
+				.map(idx -> myticket.field(idx));
+		
 		System.out.println(departureFields.product());
-
 	}
 
 	static String example = """

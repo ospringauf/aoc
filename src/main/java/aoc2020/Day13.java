@@ -20,12 +20,12 @@ class Day13 extends AocPuzzle {
 		new Day13().part1();
 
 		System.out.println();
-		System.out.println("=== part 2"); // 1001569619313439
+		System.out.println("=== part 2 (crt)"); // 1001569619313439
 		new Day13().part2();
 
 		System.out.println();
-		System.out.println("=== part 2a"); // 1001569619313439
-		new Day13().part2a();
+		System.out.println("=== part 2 (alu)"); // 1001569619313439
+		new Day13().part2alu();
 	}
 
 	List<String> data = List.of(input.split("\n"));
@@ -107,6 +107,32 @@ class Day13 extends AocPuzzle {
 		}
 	
 		System.out.println("t = " + t);
+	}
+	
+	// ALu solution from https://github.com/alu82/adventofcode/blob/master/2020/13/day13.py
+	void part2alu() {
+
+        String[] line1 = data.get(1).split(",");
+
+        List<Bus> bus = List.range(0, line1.length)
+                .filter(i -> ! "x".equals(line1[i]))
+                .map(i -> new Bus(i, Long.valueOf(line1[i])));
+        
+        long t = 0;
+        long step = 1;
+        
+        for (var b : bus) {        
+            while (t < b.id * step) {
+                if ((t + b.offset) % b.id == 0) {
+                    step = step * b.id; // works for primes, else lcm(step, b.id)
+                    break;
+                } else {
+                    t += step;
+                }
+            }            
+        }
+        
+        System.out.println(t);
 	}
 	
 
