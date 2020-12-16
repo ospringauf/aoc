@@ -56,41 +56,45 @@ class Day16 extends AocPuzzle {
 		var blocks = readString("input16.txt").split("\n\n");
 
 		rules = List.of(blocks[0].split("\n")).map(Rule::parse);
-		System.out.println(rules);
+		System.out.println("rules: " + rules);
 
 		var myticket = Ticket.parse(blocks[1].split("\n")[1]);
-		System.out.println(myticket);
+		System.out.println("my ticket: " + myticket);
 
 		var others = List.of(blocks[2].split("\n")).drop(1).map(Ticket::parse);
-		System.out.println(others);
+		System.out.println("other tickets: " + others);
 
 		System.out.println("=== part 1"); // 29759
-		var ser = others.flatMap(t -> t.invalFields()).sum();
-		System.out.println(ser);
+		var scanErrRate = others.flatMap(t -> t.invalFields()).sum();
+		System.out.println(scanErrRate);
 
 		System.out.println("=== part 2"); // 1307550234719
 		var validTickets = others.filter(t -> t.invalFields().isEmpty());
-		System.out.println(validTickets);
+//		System.out.println(validTickets);
 
-		var N = myticket.fields.size();
-		Map<Integer, Rule> fieldRule = new HashMap<>();
-		while (fieldRule.size() < rules.size()) {
+		var N = rules.size();
+		
+		Map<Rule, Integer> ruleField = new HashMap<>();
+		while (ruleField.size() < N) {
 			for (int i = 0; i < N; ++i) {
-				var fi = i;
-				var possRules = rules.filter(r -> validTickets.forAll(t -> r.matches(t.fields.get(fi))));
-				possRules = possRules.removeAll(fieldRule.values());
+				var fi = i; // TODO
+				var possRules = rules
+						.filter(r -> validTickets.forAll(t -> r.matches(t.fields.get(fi))))
+						.removeAll(ruleField.keySet());
 //				System.out.println(i + " --> " + possRules);
-				if (possRules.size() == 1)
-					fieldRule.put(i, possRules.single());
+				
+				// unambiguous?
+				if (possRules.size() == 1) 
+					ruleField.put(possRules.single(), i);
 			}
 		}
-		System.out.println(fieldRule);
+		System.out.println(ruleField);
 
-		var f6 = List.range(0, N)
-				.filter(i -> fieldRule.get(i).name.startsWith("departure"))
-				.map(i -> myticket.fields.get(i))
-				.product();
-		System.out.println(f6);
+		var departureFields = rules
+				.filter(r -> r.name.startsWith("departure"))
+				.map(r -> myticket.fields.get(ruleField.get(r)))
+				;
+		System.out.println(departureFields.product());
 
 	}
 
