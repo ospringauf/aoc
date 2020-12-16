@@ -4,7 +4,7 @@ import java.util.List;
 
 class Meta {
 
-	static List<Integer> order = List.of(1,2,3,4,5,6,7,8,0,9,0,0,15,0,10,14,0,11,13,0,12);
+	static List<Integer> order = List.of(1,2,3,4,5,6,7,8,17,9,16,0,15,0,10,14,0,11,13,0,12);
 	
 	static String puzzles = """
 --- Day 1: Report Repair ---
@@ -21,5 +21,7 @@ class Meta {
 --- Day 12: Rain Risk ---		
 --- Day 13: Shuttle Search ---	
 --- Day 14: Docking Data ---
+--- Day 15: Rambunctious Recitation ---
+--- Day 16: Ticket Translation ---
 			""";
 }
