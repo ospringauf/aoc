@@ -1,10 +1,10 @@
 package aoc2020;
 
-import java.util.List;
+import io.vavr.collection.List;
 
 class Meta {
 
-	static List<Integer> order = List.of(1,2,3,4,5,6,7,8,17,9,16,0,15,0,10,14,0,11,13,0,12);
+	static List<Integer> order = List.of(1,2,3,4,5,6,7,8,17,9,16,18,15,0,10,14,0,11,13,0,12,0,0,0,0);
 	
 	static String puzzles = """
 --- Day 1: Report Repair ---
@@ -23,5 +23,13 @@ class Meta {
 --- Day 14: Docking Data ---
 --- Day 15: Rambunctious Recitation ---
 --- Day 16: Ticket Translation ---
+--- Day 17: Conway Cubes ---
 			""";
+	
+	public static void main(String[] args) {
+		var pz = List.of(puzzles.split("\n"));
+		var pz1 = pz.map(s -> s.split(": ")[1].charAt(0)).mkString() + "______________";
+		var x = order.map(i -> i==0?26:i).map(i -> pz1.charAt(i-1)).mkString();
+		System.out.println(x);
+	}
 }

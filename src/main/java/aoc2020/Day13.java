@@ -123,7 +123,8 @@ class Day13 extends AocPuzzle {
         
         for (var b : bus) {        
             while (t < b.id * step) {
-                if ((t + b.offset) % b.id == 0) {
+            	// b departs at the correct minute?
+                if ((t + b.offset) % b.id == 0) { 
                     step = step * b.id; // works for primes, else lcm(step, b.id)
                     break;
                 } else {

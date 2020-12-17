@@ -40,7 +40,7 @@ class Day15 extends AocPuzzle {
             int next = 0;
             if (spoken.tail().contains(last)) {
                 var a = spoken.indexOf(last);
-                int age = spoken.drop(a + 1).indexOf(last) + 1;
+                int age = spoken.subSequence(a+1).indexOf(last) + 1;
                 next = age;
             }
 
@@ -48,7 +48,7 @@ class Day15 extends AocPuzzle {
             last = next;
             i++;
         }
-        System.out.println(i + " --> " + spoken.head());
+        System.out.println(i + " --> " + last);
     }
 
     void part2() {

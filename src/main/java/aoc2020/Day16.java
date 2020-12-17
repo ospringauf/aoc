@@ -36,6 +36,7 @@ class Day16 extends AocPuzzle {
 	record Rule(String name, Range r1, Range r2) {
 	    
 	    static Rule parse(String s) {
+	    	// seat: 13-40 or 45-50
 	        var a = s.split(": ");
 	        var r = a[1].split(" or ");
 	        return new Rule(a[0], Range.parse(r[0]), Range.parse(r[1]));
@@ -77,7 +78,7 @@ class Day16 extends AocPuzzle {
 		System.out.println("my ticket: " + myticket);
 
 		var nearby = List.of(blocks[2].split("\n")).drop(1).map(Ticket::parse);
-		System.out.println("other tickets: " + nearby);
+		System.out.println("nearby tickets: " + nearby);
 
 		
 		System.out.println("=== part 1"); // 29759
@@ -97,8 +98,8 @@ class Day16 extends AocPuzzle {
 			for (final int idx : List.range(0, N)) {
 				var values = validTickets.map(t -> t.field(idx));
 				var candidates = rules
-				        .filter(r -> r.matchesAll(values))
-						.removeAll(ruleIndex.keySet());
+					.filter(r -> r.matchesAll(values))
+					.removeAll(ruleIndex.keySet());
 				
 //				System.out.println(i + " --> " + candidates);
 
