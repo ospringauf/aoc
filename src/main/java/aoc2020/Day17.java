@@ -9,7 +9,6 @@ import common.AocPuzzle;
 import common.PointMap;
 import io.vavr.collection.Array;
 import io.vavr.collection.HashSet;
-import io.vavr.collection.IndexedSeq;
 import io.vavr.collection.Seq;
 
 // --- Day 17: Conway Cubes ---
@@ -24,34 +23,49 @@ class Day17 extends AocPuzzle {
     /**
      * point in 4-dim space
      */
-    static record P4(int x, int y, int z, int w) {
+    static record Cube(int x, int y, int z, int w) {
+
+        static final Cube ZERO = new Cube(0,0,0,0); 
         
         // neighbor delta in any direction
-        static Array<Integer> offset = Array.of(-1,0,+1);
+        static final Array<Integer> OFFSET = Array.of(-1,0,+1);
+        
+        // pre-calc relative neighbor vectors in 3d
+        static final Array<Cube> VECTORS_3D = 
+                OFFSET
+                .crossProduct(3)
+                .map(v -> v.append(0)) // set w=0 fixed
+                .map(Cube::new)
+                .toArray()
+                .remove(ZERO);
 
-        P4 add(IndexedSeq<Integer> delta) {
-            return new P4(x+delta.get(0), y+delta.get(1), z+delta.get(2), w+delta.get(3));
+        // pre-calc relative neighbor vectors in 4d as (-1,0,+1) x ... x (-1,0,+1)
+        static final Array<Cube> VECTORS_4D = OFFSET.crossProduct(4).map(Cube::new).toArray().remove(ZERO);
+        
+        private Cube(Array<Integer> v) {
+            this(v.get(0), v.get(1), v.get(2), v.get(3));
+        }
+
+        Cube shift(Cube delta) {
+            return new Cube(x+delta.x, y+delta.y, z+delta.z, w+delta.w);
         }
         
-        Seq<P4> neighbors3d() {
-            return offset.crossProduct(3)
-                    .map(c -> c.append(0)) // [dx, dy, dz, 0]
-                    .map(c -> this.add(c))
-                    .toList()
-                    .remove(this);
+        Seq<Cube> neighbors3d() {
+            return VECTORS_3D.map(this::shift);
         }
 
-        Seq<P4> neighbors4d() {
-            return offset.crossProduct(4).map(c -> this.add(c)).toList().remove(this);
+        Seq<Cube> neighbors4d() {
+            return VECTORS_4D.map(this::shift);
         }
     }
     
+    
     /**
-     * map: point -> current status (ACTIVE/INACTIVE)
+     * map: cube -> current status (ACTIVE/INACTIVE)
      */
-    static class CubeMap extends HashMap<P4, Character> {
+    static class ConwayPocket extends HashMap<Cube, Character> {
         
-        void expand(Function<P4, Seq<P4>> neighbors) {
+        void expand(Function<Cube, Seq<Cube>> neighbors) {
             var source = HashSet.ofAll(keySet());
             
             // optimization: expand only active points 
@@ -63,6 +77,26 @@ class Day17 extends AocPuzzle {
             
             putAll(newNeighbors.toMap(p->p, p->INACTIVE).toJavaMap());
         }        
+        
+        /**
+         * single conway cycle, produces a new map (configuration)
+         */
+        ConwayPocket singleCycle(Function<Cube, Seq<Cube>> neighbors) {
+            
+            expand(neighbors);
+            ConwayPocket next = new ConwayPocket();
+
+            for (Cube p : keySet()) {
+                int activeNeighbors = neighbors.apply(p).count(n -> this.getOrDefault(n, '?') == ACTIVE);
+
+                if (this.get(p) == ACTIVE) { 
+                    next.put(p, (activeNeighbors == 2 || activeNeighbors == 3) ? ACTIVE : INACTIVE);
+                } else {
+                    next.put(p, (activeNeighbors == 3) ? ACTIVE : INACTIVE);
+                }
+            }
+            return next;            
+        }
     }
     
     public static void main(String[] args) {
@@ -82,40 +116,27 @@ class Day17 extends AocPuzzle {
     }
     
     void part1() {
-        conway(input, 6, P4::neighbors3d);
+        solve(input, 6, Cube::neighbors3d);
     }
 
     void part2() {
-        conway(input, 6, P4::neighbors4d);
+        solve(input, 6, Cube::neighbors4d);
     }
 
-    void conway(String initial, int cycles, Function<P4, Seq<P4>> neighbors) {
+    void solve(String initial, int cycles, Function<Cube, Seq<Cube>> neighbors) {
 
         // read initial 2d configuration
         var start = new PointMap<Character>();
         start.read(initial.split("\n"), c -> c);
 
         // transform to 2d-slice of n-dim map
-        var map = new CubeMap();
+        var map = new ConwayPocket();
         for (var p : start.keySet())
-            map.put(new P4(p.x(), p.y(), 0, 0), start.get(p));
+            map.put(new Cube(p.x(), p.y(), 0, 0), start.get(p));
 
+        // simulate (6) cycles
         for (int i = 1; i <= cycles; ++i) {
-            map.expand(neighbors);
-            CubeMap last = map;
-            CubeMap next = new CubeMap();
-
-            for (P4 p : last.keySet()) {
-
-                int activeNeighbors = neighbors.apply(p).count(n -> last.getOrDefault(n, '?') == ACTIVE);
-
-                if (last.get(p) == ACTIVE) { 
-                    next.put(p, (activeNeighbors == 2 || activeNeighbors == 3) ? ACTIVE : INACTIVE);
-                } else {
-                    next.put(p, (activeNeighbors == 3) ? ACTIVE : INACTIVE);
-                }
-            }
-            map = next;
+            map = map.singleCycle(neighbors);
             
             var totalActive = map.values().stream().filter(v -> v == ACTIVE).count();
             System.out.println(i + " --> " + totalActive);
@@ -134,9 +155,8 @@ class Day17 extends AocPuzzle {
         var c4 = diff.crossProduct(4).toList();
         assertEquals(81, c4.size());
 
-        var p0 = new P4(0, 0, 0, 0);
-        assertEquals(26, p0.neighbors3d().size());
-        assertEquals(80, p0.neighbors4d().size());
+        assertEquals(26, Cube.ZERO.neighbors3d().size());
+        assertEquals(80, Cube.ZERO.neighbors4d().size());
         System.out.println("passed");
     }
 
