@@ -59,7 +59,7 @@ class Day16 extends AocPuzzle {
 		}
 
 		Seq<Integer> invalidFields(Seq<Rule> rules) {
-			return fields.filterNot(val -> rules.exists(r -> r.matches(val)));
+			return fields.removeAll(val -> rules.exists(r -> r.matches(val)));
 		}
 		
 		int field(int idx) {

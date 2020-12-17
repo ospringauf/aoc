@@ -3,13 +3,13 @@ package aoc2020;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Function;
 
 import common.AocPuzzle;
-import common.Point;
 import common.PointMap;
-import io.vavr.collection.List;
+import io.vavr.collection.Array;
+import io.vavr.collection.HashSet;
+import io.vavr.collection.Seq;
 
 // --- Day 17: Conway Cubes ---
 // https://adventofcode.com/2020/day/17
@@ -17,128 +17,164 @@ import io.vavr.collection.List;
 @SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day17 extends AocPuzzle {
 
-	private static final char ACTIVE = '#';
-	private static final char INACTIVE = '.';
+    static final char ACTIVE = '#';
+    static final char INACTIVE = '.';
 
-	public static void main(String[] args) {
+    /**
+     * point in 4-dim space
+     */
+    static record Cube(int x, int y, int z, int w) {
 
-		System.out.println("=== test");
-		new Day17().test();
-		
-		var t0 = System.currentTimeMillis();
+        static final Cube ZERO = new Cube(0,0,0,0); 
+        
+        // neighbor delta in any direction
+        static final Array<Integer> OFFSET = Array.of(-1,0,+1);
+        
+        // pre-calc relative neighbor vectors in 3d
+        static final Array<Cube> VECTORS_3D = 
+                OFFSET
+                .crossProduct(3)
+                .map(v -> v.append(0)) // set w=0 fixed
+                .map(Cube::new)
+                .toArray()
+                .remove(ZERO);
 
-		System.out.println("=== part 1"); // 291
-		new Day17().part1();
-		System.out.format("=== end (%d ms)\n", System.currentTimeMillis() - t0);
+        // pre-calc relative neighbor vectors in 4d as (-1,0,+1) x ... x (-1,0,+1)
+        static final Array<Cube> VECTORS_4D = OFFSET.crossProduct(4).map(Cube::new).toArray().remove(ZERO);
+        
+        private Cube(Array<Integer> v) {
+            this(v.get(0), v.get(1), v.get(2), v.get(3));
+        }
 
-		System.out.println("=== part 2"); // 1524
-		new Day17().part2();
-		System.out.format("=== end (%d ms)\n", System.currentTimeMillis() - t0);
-	}
-	
-	record P4(int x, int y, int z, int w) {
-		public List<P4> neighbors3d() {
-			List<P4> n = List.rangeClosed(x-1, x+1)
-					.flatMap(_x -> List.rangeClosed(y-1, y+1)
-							.flatMap(_y -> List.rangeClosed(z-1, z+1)
-									.map(_z -> new P4(_x,_y,_z,0))));
-			return n.remove(this);
-		}
-		
-		public List<P4> neighbors4d() {
-			List<P4> n = List.rangeClosed(x-1, x+1)
-					.flatMap(_x -> List.rangeClosed(y-1, y+1)
-							.flatMap(_y -> List.rangeClosed(z-1, z+1)
-									.flatMap(_z -> List.rangeClosed(w-1, w+1)
-											.map(_w -> new P4(_x,_y,_z, _w)))));
-			return n.remove(this);
-			
-//			var n = List.rangeClosed(w-1, w+1).flatMap(_w -> neighbors3d().map(p -> new P4(p.x, p.y, p.z, _w)));
-//			return n.remove(this);
-		}
+        Cube shift(Cube delta) {
+            return new Cube(x+delta.x, y+delta.y, z+delta.z, w+delta.w);
+        }
+        
+        Seq<Cube> neighbors3d() {
+            return VECTORS_3D.map(this::shift);
+        }
 
-		public P4(Point p, int z, int w) {
-			this(p.x(), p.y(), z, w);
-		}
-	}
+        Seq<Cube> neighbors4d() {
+            return VECTORS_4D.map(this::shift);
+        }
+    }
+    
+    
+    /**
+     * map: cube -> current status (ACTIVE/INACTIVE)
+     */
+    static class ConwayPocket extends HashMap<Cube, Character> {
+        
+        void expand(Function<Cube, Seq<Cube>> neighbors) {
+            var source = HashSet.ofAll(keySet());
+            
+            // optimization: expand only active points 
+            source = source.filter(p -> get(p) == ACTIVE);
+            
+            var newNeighbors = source
+                    .flatMap(p -> neighbors.apply(p))
+                    .removeAll(keySet());
+            
+            putAll(newNeighbors.toMap(p->p, p->INACTIVE).toJavaMap());
+        }        
+        
+        /**
+         * single conway cycle, produces a new map (configuration)
+         */
+        ConwayPocket singleCycle(Function<Cube, Seq<Cube>> neighbors) {
+            
+            expand(neighbors);
+            ConwayPocket next = new ConwayPocket();
 
-	void part1() {
-		conway(input, 6, P4::neighbors3d);
-	}
+            for (Cube p : keySet()) {
+                int activeNeighbors = neighbors.apply(p).count(n -> this.getOrDefault(n, '?') == ACTIVE);
 
-	void part2() {
-		conway(input, 6, P4::neighbors4d);
-	}
+                if (this.get(p) == ACTIVE) { 
+                    next.put(p, (activeNeighbors == 2 || activeNeighbors == 3) ? ACTIVE : INACTIVE);
+                } else {
+                    next.put(p, (activeNeighbors == 3) ? ACTIVE : INACTIVE);
+                }
+            }
+            return next;            
+        }
+    }
+    
+    public static void main(String[] args) {
+        
+        System.out.println("=== test");
+        new Day17().test();
+        
+        var t0 = System.currentTimeMillis();
+        
+        System.out.println("=== part 1"); // 291
+        new Day17().part1();
+        System.out.format("=== end (%d ms)\n", System.currentTimeMillis() - t0);
+        
+        System.out.println("=== part 2"); // 1524
+        new Day17().part2();
+        System.out.format("=== end (%d ms)\n", System.currentTimeMillis() - t0);
+    }
+    
+    void part1() {
+        solve(input, 6, Cube::neighbors3d);
+    }
 
-	private void conway(String data, int cycles, Function<P4, List<P4>> neighbors) {
-		
-		// read 2d map
-		var start = new PointMap<Character>();
-		start.read(data.split("\n"), c->c);
-		
-		var map = new HashMap<P4, Character>();
-		for (var p : start.keySet())
-			map.put(new P4(p,0,0), start.get(p));
-		expand(map, neighbors);
-		
-		
-		for (int i=0; i<cycles; ++i) {
-			final var old = map;
-			var next = new HashMap<P4, Character>();
-			
-			for (var p : old.keySet()) {
+    void part2() {
+        solve(input, 6, Cube::neighbors4d);
+    }
 
-				var active = neighbors.apply(p).count(n -> old.getOrDefault(n, '?') == ACTIVE);
-				
-				if (old.get(p) == ACTIVE) { //active
-					next.put(p, (active == 2 || active == 3)? ACTIVE : INACTIVE);					
-				} else {
-					next.put(p, (active == 3)? ACTIVE : INACTIVE);
-				}
-			}
-			map = next;
-			expand(map, neighbors);
-		}
-		
-		var r = map.values().stream().filter(v -> v==ACTIVE).count();
-		System.out.println(r);
-	}
+    void solve(String initial, int cycles, Function<Cube, Seq<Cube>> neighbors) {
 
-	private void expand(Map<P4, Character> map, Function<P4, List<P4>> neighbors) {
-		var t0 = System.currentTimeMillis();
-		
-		var n = List.ofAll(map.keySet()).flatMap(p -> neighbors.apply(p));
-		for (var p : n) {
-			if (!map.containsKey(p)) 
-				map.put(p, '.');
-		}
-		System.out.format("--- expanded to %d point (%d ms)\n", map.size(), (System.currentTimeMillis()-t0));
-	}
+        // read initial 2d configuration
+        var start = new PointMap<Character>();
+        start.read(initial.split("\n"), c -> c);
 
-	void test() {
-		var p0 = new P4(0,0,0,0);
-		
-		assertEquals(26, p0.neighbors3d().size());
-		assertEquals(80, p0.neighbors4d().size());
-		
-		System.out.println("passed");
-	}
+        // transform to 2d-slice of n-dim map
+        var map = new ConwayPocket();
+        for (var p : start.keySet())
+            map.put(new Cube(p.x(), p.y(), 0, 0), start.get(p));
 
-	static String example = """
-.#.
-..#
-###
-			""";
-	
-	static String input = """
-##.#....
-...#...#
-.#.#.##.
-..#.#...
-.###....
-.##.#...
-#.##..##
-#.####..			
-			""";
+        // simulate (6) cycles
+        for (int i = 1; i <= cycles; ++i) {
+            map = map.singleCycle(neighbors);
+            
+            var totalActive = map.values().stream().filter(v -> v == ACTIVE).count();
+            System.out.println(i + " --> " + totalActive);
+        }
+    }
+    
+
+    void test() {       
+        var diff = Array.of(-1,0,1);
+        var c1 = diff.crossProduct(diff);
+        System.out.println(c1.toList());
+        
+        var c3 = diff.crossProduct(3).toList();
+        assertEquals(27, c3.size());
+
+        var c4 = diff.crossProduct(4).toList();
+        assertEquals(81, c4.size());
+
+        assertEquals(26, Cube.ZERO.neighbors3d().size());
+        assertEquals(80, Cube.ZERO.neighbors4d().size());
+        System.out.println("passed");
+    }
+
+    static String example = """
+            .#.
+            ..#
+            ###
+            			""";
+
+    static String input = """
+            ##.#....
+            ...#...#
+            .#.#.##.
+            ..#.#...
+            .###....
+            .##.#...
+            #.##..##
+            #.####..
+            			""";
 
 }
