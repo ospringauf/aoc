@@ -19,7 +19,7 @@ public class AocPuzzle {
 		// turn checked exception into RuntimeException
 		return Try.of(() -> List.ofAll(Files.lines(path(fname)))).get();
 	}
-
+	
 	public String readString(String fname) {
 		// turn checked exception into RuntimeException
 		return Try.of(() -> Files.readString(path(fname))).get();

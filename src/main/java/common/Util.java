@@ -2,17 +2,23 @@ package common;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.function.Predicate;
 
 import io.vavr.collection.List;
+import io.vavr.collection.Seq;
 
 public class Util {
 
-	public static List<String> splitLine(String s) {
+	public static List<String> splitFields(String s) {
 		return List.of(s.split("\\s+"));
 	}
 
 	public static List<Integer> string2ints(String input) {
-		return splitLine(input).map(Integer::valueOf);
+		return splitFields(input).map(Integer::valueOf);
+	}
+	
+	public static List<String> splitLines(String s)  {
+		return List.of(s.split("\n"));
 	}
 
 	public static int[] string2intArray(String input) {
@@ -38,6 +44,16 @@ public class Util {
 		return hexStringBuffer.toString();
 	}
 
+	public static <T> Seq<Seq<T>> split(Seq<T> l, Predicate<T> sep) {
+		List<Seq<T>> coll = List.empty();
+		while (!l.isEmpty()) {
+			var p = l.splitAt(sep);
+			coll = coll.append(p._1);
+			l = (p._2.isEmpty()) ? p._2 : p._2.tail();
+		}
+		return coll;
+	}
+	
 	// least common multiple
 	// https://www.geeksforgeeks.org/lcm-of-given-array-elements/
 	public static long lcm(int... numbers) {
@@ -94,7 +110,7 @@ public class Util {
 	public static long gcd(long a, long b) {
 		return BigInteger.valueOf(a).gcd(BigInteger.valueOf(b)).longValue();
 	}
-	
+
 	public static long modInv(long a, long n) {
 		return BigInteger.valueOf(a).modInverse(BigInteger.valueOf(n)).longValue();
 	}

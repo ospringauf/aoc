@@ -19,7 +19,7 @@ class Day04 extends AocPuzzle {
 		new Day04().part2();
 	}
 
-	final List<List<String>> data = lines("input04.txt").map(l -> Util.splitLine(l));
+	final List<List<String>> data = lines("input04.txt").map(l -> Util.splitFields(l));
 
 	void part1() {
 		var r = data.count(pw -> pw.size() == pw.distinct().size());
