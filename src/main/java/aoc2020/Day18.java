@@ -77,7 +77,7 @@ class Day18 extends AocPuzzle {
 		var r = 0L;
 		var op = Token.ADD;
 
-		while (!tokens.isEmpty()) {
+		while ( ! tokens.isEmpty()) {
 			var next = tokens.peek();
 			tokens = tokens.pop();
 
@@ -103,7 +103,7 @@ class Day18 extends AocPuzzle {
 	List<Token> eval2(List<Token> tokens) {
 		List<Token> flat = List.empty();
 
-		while (!tokens.isEmpty()) {
+		while ( ! tokens.isEmpty()) {
 //			System.out.println(tokens.mkString());
 			var next = tokens.peek();
 			tokens = tokens.pop();
