@@ -4,18 +4,18 @@ import java.util.function.Function;
 
 import io.vavr.collection.List;
 
-public record Pose(Heading heading, Point pos) {
+public record Pose(Direction heading, Point pos) {
 
-	public Pose(Heading h, int x, int y) {
+	public Pose(Direction h, int x, int y) {
 		this(h, new Point(x, y));
 	}
 
 	public Pose(int x, int y) {
-		this(Heading.NORTH, new Point(x, y));
+		this(Direction.NORTH, new Point(x, y));
 	}
 
 	public Pose() {
-		this(Heading.NORTH, new Point(0, 0));
+		this(Direction.NORTH, new Point(0, 0));
 	}
 
 	public Pose turn(boolean right) {

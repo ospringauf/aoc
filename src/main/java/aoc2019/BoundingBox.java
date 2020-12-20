@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
-public class BoundingBox {
+class BoundingBox {
 
     int xMin, xMax, yMin, yMax;
 

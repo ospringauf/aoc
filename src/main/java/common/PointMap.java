@@ -9,6 +9,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import io.vavr.Tuple2;
 import io.vavr.collection.List;
 
 public class PointMap<T> extends HashMap<Point, T> {
@@ -100,6 +101,18 @@ public class PointMap<T> extends HashMap<Point, T> {
 
 	public void printS(Function<T, String> val2Text) {
 		boundingBox().printS(p -> val2Text.apply(get(p)));
+	}
+	
+	public void shiftToOrigin() {
+		var bb = boundingBox();
+		Function<Point, Point> shift = p -> new Point(p.x()-bb.xMin(), p.y()-bb.yMin());
+		transformPoints(shift);
+	}
+	
+	public void transformPoints(Function<Point, Point> f) {
+		var newEntries = List.ofAll(entrySet()).map(e -> new Tuple2<Point,T>(f.apply(e.getKey()), e.getValue()));
+		clear();
+		newEntries.forEach(t -> put(t._1, t._2));
 	}
 
 

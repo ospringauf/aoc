@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import common.Heading;
+import common.Direction;
 import common.Pose;
 
 public class PoseTest {
@@ -12,13 +12,13 @@ public class PoseTest {
 	@Test
 	public void testPoseOps() {
 		
-		assertEquals(new Pose(Heading.NORTH, -1, 0), new Pose(Heading.NORTH, 0, 0).left());
+		assertEquals(new Pose(Direction.NORTH, -1, 0), new Pose(Direction.NORTH, 0, 0).left());
 
-		assertEquals(new Pose(Heading.WEST, 1, 0), new Pose(Heading.WEST, 1, 1).right());
+		assertEquals(new Pose(Direction.WEST, 1, 0), new Pose(Direction.WEST, 1, 1).right());
 		
-		assertEquals(new Pose(Heading.NORTH, 0, 1), new Pose(Heading.NORTH, 0, 0).behind());
+		assertEquals(new Pose(Direction.NORTH, 0, 1), new Pose(Direction.NORTH, 0, 0).behind());
 		
-		assertEquals(new Pose(Heading.SOUTH, 0, 5), new Pose(Heading.SOUTH, 0, 0).ahead(5));
+		assertEquals(new Pose(Direction.SOUTH, 0, 5), new Pose(Direction.SOUTH, 0, 0).ahead(5));
 	}
 	
 }

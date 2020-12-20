@@ -114,4 +114,9 @@ public class Util {
 	public static long modInv(long a, long n) {
 		return BigInteger.valueOf(a).modInverse(BigInteger.valueOf(n)).longValue();
 	}
+
+	public static String reverse(String s) {
+		return new StringBuilder(s).reverse().toString();
+		
+	}
 }

@@ -24,11 +24,11 @@ public record Point(int x, int y) {
         return Point.of(x+dx, y+dy);
     }
 
-	public Point translate(Heading h) {
+	public Point translate(Direction h) {
         return translate(h, 1);
     }
 	
-	Point translate(Heading h, int d) {
+	Point translate(Direction h, int d) {
 		return Point.of(x + d*h.dx, y + d*h.dy);
 	}
 	
@@ -75,7 +75,16 @@ public record Point(int x, int y) {
     public Point rotRight() {
     	return new Point(-y, x);
 	}
+
+    public Point flipY() {
+    	return new Point(x, -y);
+	}
     
+    public Point flipX() {
+    	return new Point(-x, y);
+	}
+
+
     public Point repeat(int n, Function<Point, Point> f) {
     	var p = this;
     	for (int i=0; i<n; ++i) {

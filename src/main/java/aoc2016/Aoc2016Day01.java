@@ -1,6 +1,6 @@
 package aoc2016;
 
-import common.Heading;
+import common.Direction;
 import common.Pose;
 import io.vavr.collection.List;
 
@@ -27,7 +27,7 @@ public class Aoc2016Day01 {
 
 	private void part1() {
 		var cmds = List.of(input.split(", ")).map(Cmd::new);
-		Pose p0 = new Pose(Heading.NORTH, 0, 0);
+		Pose p0 = new Pose(Direction.NORTH, 0, 0);
 		
 		var destination = cmds.foldLeft(p0, (p,cmd) -> p.turn(cmd.right).ahead(cmd.dist));
 		
@@ -37,7 +37,7 @@ public class Aoc2016Day01 {
 	
 	private void part2() {
 		List<Cmd> cmds = List.of(input.split(", ")).map(Cmd::new);
-		Pose p0 = new Pose(Heading.NORTH, 0, 0);
+		Pose p0 = new Pose(Direction.NORTH, 0, 0);
 		
 		List<Pose> start = List.of(p0);		
 		var path = cmds.foldLeft(start, (l, cmd) -> l.appendAll(l.last().turn(cmd.right).aheads(cmd.dist))).map(Pose::pos);

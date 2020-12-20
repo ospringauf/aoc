@@ -1,7 +1,7 @@
 package aoc2017;
 
 import common.AocPuzzle;
-import common.Heading;
+import common.Direction;
 import common.Point;
 import common.PointMap;
 import io.vavr.Function2;
@@ -45,7 +45,7 @@ class Day03 extends AocPuzzle {
 		var p = new Point(0, 0);
 		int runlength = 1;
 		long val = 1;
-		var heading = Heading.EAST;
+		var heading = Direction.EAST;
 		m.put(p, val);
 
 		// counter-clockwise spiral structure:

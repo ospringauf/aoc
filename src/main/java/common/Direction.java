@@ -1,6 +1,6 @@
 package common;
 
-public enum Heading {
+public enum Direction {
 
 	NORTH(0, -1), EAST(1, 0), SOUTH(0, 1), WEST(-1, 0),
 
@@ -9,16 +9,16 @@ public enum Heading {
 	int dx;
 	int dy;
 
-	Heading(int dx, int dy) {
+	Direction(int dx, int dy) {
 		this.dx = dx;
 		this.dy = dy;
 	}
 	
-	public Heading turn(boolean right) {
+	public Direction turn(boolean right) {
 		return right ? right() : left();
 	}
 
-	public Heading left() {
+	public Direction left() {
 		return switch (this) {
 		case NORTH -> WEST;
 		case WEST -> SOUTH;
@@ -31,8 +31,23 @@ public enum Heading {
 		case RIGHT -> UP;
 		};
 	}
+	
+	public Direction opposite() {
+		return switch (this) {
+		case NORTH -> SOUTH;
+		case WEST -> EAST;
+		case SOUTH -> NORTH;
+		case EAST -> WEST;
 
-	public Heading right() {
+		case UP -> DOWN;
+		case LEFT -> RIGHT;
+		case DOWN -> UP;
+		case RIGHT -> LEFT;
+		};
+	}
+
+
+	public Direction right() {
 		return switch (this) {
 		case NORTH -> EAST;
 		case EAST -> SOUTH;

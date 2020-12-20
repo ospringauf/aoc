@@ -22,7 +22,7 @@ class Day12 extends AocPuzzle {
 //	List<String> data = List.of(example.split("\n"));
 
 	void part1() {
-		Pose p = new Pose(Heading.EAST, 0, 0);
+		Pose p = new Pose(Direction.EAST, 0, 0);
 		
 		for (String s : data) {
 			int value = Integer.valueOf(s.substring(1));

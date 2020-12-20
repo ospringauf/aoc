@@ -4,7 +4,7 @@ import io.vavr.collection.List;
 
 class Meta {
 
-	static List<Integer> order = List.of(1,2,3,4,5,6,7,8,17,9,16,18,15,19,10,14,20,11,13,0,12,0,0,0,0);
+	static List<Integer> order = List.of(1,2,3,4,5,6,7,8,17,9,16,18,15,19,10,14,20,11,13,21,12,0,0,0,0);
 	
 	static String puzzles = """
 --- Day 1: Report Repair ---
@@ -26,6 +26,7 @@ class Meta {
 --- Day 17: Conway Cubes ---
 --- Day 18: Operation Order ---
 --- Day 19: Monster Messages ---
+--- Day 20: Jurassic Jigsaw ---
 			""";
 	
 	public static void main(String[] args) {
