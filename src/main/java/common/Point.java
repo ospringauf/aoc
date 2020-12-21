@@ -2,6 +2,7 @@ package common;
 
 import java.util.function.Function;
 
+import io.vavr.Tuple2;
 import io.vavr.collection.List;
 
 
@@ -15,6 +16,9 @@ public record Point(int x, int y) {
         return Math.abs(a.x - x) + Math.abs(a.y - y);
     }
 
+	public static Point of(Tuple2<Integer, Integer> xy) {
+		return new Point(xy._1, xy._2);
+	}
 
 	public static Point of(int x, int y) {
 	    return new Point(x,y);

@@ -8,7 +8,6 @@ import static common.Direction.WEST;
 import java.util.function.Function;
 
 import common.AocPuzzle;
-import common.BoundingBox;
 import common.Direction;
 import common.Point;
 import common.PointMap;
@@ -23,106 +22,91 @@ class Day20 extends AocPuzzle {
 	
 	class Tile extends PointMap<Character> {
 		int number;
+		int max; // length-1 of each side, works only for square tiles!
 		List<String> edges;
 		List<Tile> variants;
-		BoundingBox bb;
 		
+		// construct a transformed variant 
 		Tile(Tile base, Function<Point, Point> f) {
 			this.number = base.number;
-			base.keySet().forEach(p -> put(f.apply(p), base.get(p)));
-			shiftToOrigin();
-			bb = boundingBox();
+			this.max = base.max;
+			base.keySet().forEach(p -> put(f.apply(p), base.get(p)));			
 		}
 
+		// parse input block
 		Tile(String[] block) {
-			// parse input block
 			number = Integer.valueOf(block[0].split("[: ]")[1]);
 			read(List.of(block).drop(1));
+			max = block[1].length()-1;
 			
-			bb = boundingBox();
-			makeVariants();
-		}
-		
-		void makeVariants() {
 			Function<Point, Point> id = p -> p;
-			Function<Point, Point> rot = p -> p.rotLeft();
-			Function<Point, Point> flip = p -> p.flipY();
-			Function<Point, Point> rot2 = rot.andThen(rot); 
-			Function<Point, Point> rot3 = rot2.andThen(rot);
-			Function<Point, Point> r1f = rot.andThen(flip);
+			Function<Point, Point> rot1 = p -> new Point(p.y(), max-p.x());
+			Function<Point, Point> flip = p -> new Point(p.x(), max-p.y());
+			Function<Point, Point> rot2 = rot1.andThen(rot1); 
+			Function<Point, Point> rot3 = rot2.andThen(rot1);
+			Function<Point, Point> r1f = rot1.andThen(flip);
 			Function<Point, Point> r2f = rot2.andThen(flip);
 			Function<Point, Point> r3f = rot3.andThen(flip);
 			
-			var transformations = List.of(id, rot, rot2, rot3, flip, r1f, r2f, r3f);
+			var transformations = List.of(id, rot1, rot2, rot3, flip, r1f, r2f, r3f);
 			variants = transformations.map(tf -> new Tile(this, tf));			
 			edges = variants.map(v -> v.edge(NORTH));
 		}
-	
 		
 		String edge(Direction h) {
-			List<Integer> xrange = List.rangeClosed(0, bb.xMax());			
+			List<Integer> xrange = List.rangeClosed(0, max);			
 			List<Integer> yrange = xrange;
 			
 			return switch (h) {
 			case NORTH -> xrange.map(n -> getOrDefault(new Point(n, 0), '?')).mkString();
-			case SOUTH -> xrange.map(n -> getOrDefault(new Point(n, bb.yMax()), '?')).mkString();
-			case EAST  -> yrange.map(n -> getOrDefault(new Point(bb.xMax(),n), '?')).mkString();
-			case WEST  -> yrange.map(n -> getOrDefault(new Point(0,n), '?')).mkString();
+			case SOUTH -> xrange.map(n -> getOrDefault(new Point(n, max), '?')).mkString();
+			case EAST  -> yrange.map(n -> getOrDefault(new Point(max, n), '?')).mkString();
+			case WEST  -> yrange.map(n -> getOrDefault(new Point(0, n), '?')).mkString();
 			default -> null;
 			};
 		}
 		
 		String innerLine(int y) {
-			return List.rangeClosed(1, bb.xMax()-1).map(x -> get(new Point(x,y))).mkString();
+			return List.rangeClosed(1, max-1).map(x -> get(new Point(x,y))).mkString();
 		}
 	}
 	
 	
-	class CandMap extends PointMap<List<Tile>> {
-
-		List<Tile> candidates(Point p) {
-			return get(p);
-		}
+	class Puzzle extends PointMap<Tile> {
 		
-		void update(Point p, List<Tile> allcand) {
-			if (containsKey(p) && candidates(p).size() == 1)
-				// already unique
+		void update(Point p, List<Tile> remaining) {
+			if (containsKey(p))
+				// already solved
 				return;
 			
 			if (! p.neighbors().exists(x -> containsKey(x)))
 				// no neighbors to check
 				return;
 			
-			var cand = getOrDefault(p, allcand);
-			cand = allcand.retainAll(cand);
+			var cand = remaining.flatMap(c -> c.variants);
 			
 			cand = matchNeighbor(p, NORTH, cand);
 			cand = matchNeighbor(p, SOUTH, cand);
 			cand = matchNeighbor(p, EAST, cand);
 			cand = matchNeighbor(p, WEST, cand);
 			
-			put(p, cand);
+			if (cand.size() == 1)
+				put(p, cand.single());
 		}
 
-		List<Tile> matchNeighbor(Point p, Direction dir, List<Tile> pcand) {
+		List<Tile> matchNeighbor(Point p, Direction dir, List<Tile> cand) {
 			Point nei = p.translate(dir);
 			if (containsKey(nei)) {
-				var nedges = candidates(nei).map(x -> x.edge(dir.opposite())); 
-				return pcand.filter(c -> nedges.contains(c.edge(dir)));
+				var nedge = get(nei).edge(dir.opposite()); 
+				return cand.filter(c -> nedge.equals(c.edge(dir)));
 			}
 			else
-				return pcand;
+				return cand;
 		}
 		
-		List<Integer> distinctTileNumbers(Point p) {
-			return candidates(p).map(t -> t.number).distinct();
-		}
-		
-		Set<Integer> placedTiles() {
-			// points where only one tile fits (modulo variants)
-			List<Point> points = List.ofAll(keySet());
-			List<Point> uniqp = points.filter(p -> distinctTileNumbers(p).size() == 1);
-			return uniqp.map(p -> distinctTileNumbers(p).single()).toSet();
+		Set<Integer> placedTileNumbers() {
+			var points = List.ofAll(keySet());
+			return points.map(p -> get(p).number).toSet();
 		}
 		
 	}
@@ -153,45 +137,32 @@ class Day20 extends AocPuzzle {
 		System.out.println("corner tiles: " + corners.map(t -> t.number).mkString(", ")); 
 		System.out.println("result: " + corners.map(t -> t.number).product());
 		
-		System.out.println("=== verify unique fit");
-		
-		for (var t : tiles.sortBy(x -> x.number))
-			System.out.println(t.number + " --> " + t.edges.map(e -> otherEdges(t).count(oe -> oe.equals(e))).mkString(" "));
+//		System.out.println("=== verify unique fit");
+//		
+//		for (var t : tiles.sortBy(x -> x.number))
+//			System.out.println(t.number + " --> " + t.edges.map(e -> otherEdges(t).count(oe -> oe.equals(e))).mkString(" "));
 
-		// TODO use unique fit to work with remaining tiles instead of variants
-		
 		System.out.println("=== part 2");
 		
 		// choose north-west corner tile
-		// TODO 0,2,3 work but not 1 ???!??! test data: choose 2
-		var tile00 = corners.get(0);
-		var tile00variant = tile00.variants.filterNot(v -> otherEdges(v).contains(v.edge(NORTH)) || otherEdges(v).contains(v.edge(WEST)));
+		var tile00 = corners
+//				.flatMap(t -> t.variants)
+				.filterNot(v -> otherEdges(v).contains(v.edge(NORTH)) || otherEdges(v).contains(v.edge(WEST)))
+				.head();
 		
-		if (tile00variant.size() == 0)
-			throw new RuntimeException("wrong tile in 0,0");
+		var puzzle = new Puzzle();
+		puzzle.put(new Point(0, 0), tile00);
 		
-		
-		var candidateMap = new CandMap();
-		candidateMap.put(Point.of(0, 0), tile00variant);
-		
-		var allPositions = List.range(0, width).crossProduct().map(x -> new Point(x._1, x._2)).toList();
-		var remaining = tiles.flatMap(t -> t.variants);
+		var allPositions = List.range(0, width).crossProduct().map(x -> Point.of(x)).toList();
+		var remainingTiles = tiles;
 		
 		System.out.println("=== part 2 find tile arrangement");
-		
-		boolean found = false;
-		while (! found) {
-			for (var p : allPositions) {
-				candidateMap.update(p, remaining);
-			}
-			var placed = candidateMap.placedTiles();
-			remaining = remaining.filter(v -> ! placed.contains(v.number));
-			
-			System.out.println("remaining candidates: " + remaining.size());
-//			candidateMap.printS(c -> String.format("%4d", c.size()));
-			
-			// single tile variant at every position?
-			found = allPositions.forAll(p -> candidateMap.candidates(p).size() == 1);
+
+		// neighbors are unambiguous --> place tiles in single pass
+		for (var p : allPositions) {
+			puzzle.update(p, remainingTiles);
+			var placed = puzzle.placedTileNumbers();
+			remainingTiles = remainingTiles.filter(v -> ! placed.contains(v.number));
 		}
 		
 		System.out.println("=== part 2 compose final image");
@@ -202,40 +173,40 @@ class Day20 extends AocPuzzle {
 				var line = 
 				List.range(0, width)
 					.map(x -> new Point(x, yo))
-					.map(p -> candidateMap.get(p).single())
-					.map(t -> t.innerLine(yi))
+					.map(p -> puzzle.get(p))
+					.map(tile -> tile.innerLine(yi))
 					.mkString();
 				bitmap = bitmap.append(line);
 			}
 		
-		Tile img = new Tile(bitmap.toJavaArray(String.class));
+		Tile image = new Tile(bitmap.toJavaArray(String.class));
 		
 		System.out.println("=== part 2 find monsters [2129]");
-		for (var v : img.variants)
+		for (var v : image.variants)
 			searchForMonsters(v);
 	}
 	
-	void searchForMonsters(Tile map) {
-		var points = List.ofAll(map.keySet());
-		var hits = points.filter(p -> isMonsterStart(map, p));
+	void searchForMonsters(Tile image) {
+		var points = List.ofAll(image.keySet());
+		var hits = points.filter(p -> isMonsterStart(image, p));
 		if (hits.isEmpty())
 			return;
 			
 		for (Point p : hits)
-			monster(p).forEach(x -> map.put(x, 'O'));
+			monster(p).forEach(x -> image.put(x, 'O'));
 		
-		map.print();
+		image.print();
 		System.out.println("monsters: " + hits.size());
-		System.out.println("roughness: " + map.countValues('#'));
+		System.out.println("roughness: " + image.countValues('#'));
 	}
 
-	boolean isMonsterStart(Tile map, Point p) {
-		return monster(p).forAll(x -> map.getOrDefault(x, '?') == '#');
+	boolean isMonsterStart(Tile image, Point p) {
+		return monster(p).forAll(x -> image.getOrDefault(x, '?') == '#');
 	}
 
 	
 	List<Point> monster(Point p) {
-		List<Point> r = List.of(p);
+		var r = List.of(p);
 		r = r.append(r.last().south().east());
 		r = r.append(r.last().east(3));
 		r = r.append(r.last().north().east());
