@@ -17,76 +17,77 @@ import io.vavr.collection.Set;
 class Day21 extends AocPuzzle {
 
 	public static void main(String[] args) {
-
 		new Day21().solve();
 	}
 
-	record Ingredients(Set<String> foods, Set<String> allergens) {
-
-		static Ingredients parse(String s) {
+	record Food(Set<String> ingredients, Set<String> allergens) {
+		static Food parse(String s) {
 			var a = s.split(" \\(contains ");
-			var f = a[0].split("\\s+");
-			var r = a[1].replaceAll("\\)", "").split(", ");
-			return new Ingredients(HashSet.of(f), HashSet.of(r));
+			var ing = a[0].split("\\s+");
+			var alg = a[1].replaceAll("\\)", "").split(", ");
+			return new Food(HashSet.of(ing), HashSet.of(alg));
 		}
 	}
 
 	void solve() {
-		List<Ingredients> data = lines("input21.txt").map(Ingredients::parse);
-//		List<R> data = List.of(example.split("\n")).map(R::parse);
+		List<Food> foods = lines("input21.txt").map(Food::parse);
+//		List<Food> foods = List.of(example.split("\n")).map(Food::parse);
 
-		var allF = data.flatMap(x -> x.foods).toSet();
-		var allA = data.flatMap(x -> x.allergens).toSet();
+		var ingredients = foods.flatMap(x -> x.ingredients).toSet();
+		var allergens = foods.flatMap(x -> x.allergens).toSet();
 
-		System.out.println("foods: " + allF.mkString(", "));
-		System.out.println("allergens: " + allA.mkString(", "));
+		System.out.println("ingredients: " + ingredients.mkString(", "));
+		System.out.println("allergens: " + allergens.mkString(", "));
 
+		
 		System.out.println("=== part 1"); // 2262
 		
-		Map<String, Set<String>> a2f = new HashMap<>();
-		for (var a : allA) {
-			var fs = intersect(data.filter(d -> d.allergens.contains(a)).map(d -> d.foods));
-			a2f.put(a, fs);
+		// a->i: allergen -> ingredient candidates
+		Map<String, Set<String>> a2i = new HashMap<>();
+		for (var a : allergens) {
+			Seq<Set<String>> containedIn = foods.filter(f -> f.allergens.contains(a)).map(f -> f.ingredients);
+			a2i.put(a, intersection(containedIn));
 		}
 
-		boolean repeat = true;
-		while (repeat) {
-			repeat = false;
-			var knownA = allA.filter(a -> a2f.getOrDefault(a, HashSet.empty()).size() == 1);
-			var knownAF = knownA.flatMap(f -> a2f.get(f));
-			for (var a : allA) {
-				var f = a2f.getOrDefault(a, HashSet.empty());
-				if (f.size() > 1) {
-					repeat = true;
-					a2f.put(a, f.removeAll(knownAF));
-				}
+		Set<String> knownAllergens;
+		Set<String> dangerousIngredients;
+		
+		// narrow the a->i relation until we know the single dangerous ingredient for each allergen 
+		do {
+			knownAllergens = allergens.filter(a -> a2i.get(a).size() == 1);
+			dangerousIngredients = knownAllergens.flatMap(a2i::get);
+			
+			Set<String> unknownAllergens = allergens.removeAll(knownAllergens);
+			
+			for (var a : unknownAllergens) {
+				a2i.put(a, a2i.get(a).removeAll(dangerousIngredients));
 			}
-		}
-		System.out.println(a2f);
+			System.out.println("  known: " + knownAllergens);
+		} while (! knownAllergens.containsAll(allergens));
+		
+		System.out.println("A->I: " + a2i);
 
-		var knownA = allA.filter(a -> a2f.getOrDefault(a, HashSet.empty()).size() == 1);
-		var knownAF = knownA.flatMap(f -> a2f.get(f));
-		var noAF = allF.removeAll(knownAF).toList();
+		var harmlessIngredients = ingredients.removeAll(dangerousIngredients).toList();
+		System.out.println("no allergens in: " + harmlessIngredients);
 
-		System.out.println("no allerg: " + noAF);
-		var sum = noAF.map(x -> data.count(d -> d.foods.contains(x))).sum();
-		System.out.println("part 1 result: " + sum);
+		var sum = harmlessIngredients.map(i -> foods.count(f -> f.ingredients.contains(i))).sum();
+		System.out.println("=> result: " + sum);
 
+		
+		
 		System.out.println("=== part 2"); // cxsvdm,glf,rsbxb,xbnmzr,txdmlzd,vlblq,mtnh,mptbpz
-		Map<String, String> f2a = new HashMap<>();
-		for (var e : a2f.entrySet()) {
-			if (e.getValue().size() == 1)
-				f2a.put(e.getValue().single(), e.getKey());
-		}
-		System.out.println(f2a);
+		
+		// now that a->i is bijective, invert the relation
+		var i2a = allergens.toMap(a -> a2i.get(a).single(), a -> a);
+		System.out.println("I->A: " + i2a);
 
-		var r2 = List.ofAll(knownAF).sorted(Comparator.comparing(f -> f2a.get(f))).mkString(",");
-		System.out.println("part 2 result: " + r2);
-
+		Comparator<String> byAllergen = Comparator.comparing(f -> i2a.get(f).get());
+		var canonicalDangerousIngredList = List.ofAll(dangerousIngredients).sorted(byAllergen).mkString(",");
+		System.out.println("=> result: " + canonicalDangerousIngredList);
 	}
 
-	private Set<String> intersect(Seq<Set<String>> a) {
-		return a.fold(a.get(0), (x, y) -> x.intersect(y));
+	Set<String> intersection(Seq<Set<String>> sets) {
+		return sets.fold(sets.head(), (a, b) -> a.intersect(b));
 	}
 
 	static String example = """
