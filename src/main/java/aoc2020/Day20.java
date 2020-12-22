@@ -17,6 +17,10 @@ import io.vavr.collection.Set;
 // --- Day 20: Jurassic Jigsaw ---
 // https://adventofcode.com/2020/day/20
 
+// lessons learned:
+// - analyze the problem first - it turns out that all border-matches are unambiguous!
+// - rotate, flip, shift with point-transformation functions
+
 @SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day20 extends AocPuzzle {
 	

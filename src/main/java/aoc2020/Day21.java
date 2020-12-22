@@ -13,6 +13,10 @@ import io.vavr.collection.Set;
 // --- Day 21: Allergen Assessment ---
 // https://adventofcode.com/2020/day/21
 
+// lessons learned:
+// choose good variable names! 
+
+
 @SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day21 extends AocPuzzle {
 
@@ -29,19 +33,19 @@ class Day21 extends AocPuzzle {
 		}
 	}
 
-	void solve() {
-		List<Food> foods = lines("input21.txt").map(Food::parse);
-//		List<Food> foods = List.of(example.split("\n")).map(Food::parse);
+	List<Food> foods = lines("input21.txt").map(Food::parse);
+//	List<Food> foods = Util.splitLines(example).map(Food::parse);
 
+	
+	void solve() {
 		var ingredients = foods.flatMap(x -> x.ingredients).toSet();
 		var allergens = foods.flatMap(x -> x.allergens).toSet();
 
 		System.out.println("ingredients: " + ingredients.mkString(", "));
 		System.out.println("allergens: " + allergens.mkString(", "));
 
-		
 		System.out.println("=== part 1"); // 2262
-		
+
 		// a->i: allergen -> ingredient candidates
 		Map<String, Set<String>> a2i = new HashMap<>();
 		for (var a : allergens) {
@@ -51,20 +55,20 @@ class Day21 extends AocPuzzle {
 
 		Set<String> knownAllergens;
 		Set<String> dangerousIngredients;
-		
-		// narrow the a->i relation until we know the single dangerous ingredient for each allergen 
+
+		// narrow the a->i relation until we know the single dangerous ingredient for each allergen
 		do {
 			knownAllergens = allergens.filter(a -> a2i.get(a).size() == 1);
 			dangerousIngredients = knownAllergens.flatMap(a2i::get);
-			
+
 			Set<String> unknownAllergens = allergens.removeAll(knownAllergens);
-			
+
 			for (var a : unknownAllergens) {
 				a2i.put(a, a2i.get(a).removeAll(dangerousIngredients));
 			}
 			System.out.println("  known: " + knownAllergens);
-		} while (! knownAllergens.containsAll(allergens));
-		
+		} while (!knownAllergens.containsAll(allergens));
+
 		System.out.println("A->I: " + a2i);
 
 		var harmlessIngredients = ingredients.removeAll(dangerousIngredients).toList();
@@ -73,10 +77,8 @@ class Day21 extends AocPuzzle {
 		var sum = harmlessIngredients.map(i -> foods.count(f -> f.ingredients.contains(i))).sum();
 		System.out.println("=> result: " + sum);
 
-		
-		
 		System.out.println("=== part 2"); // cxsvdm,glf,rsbxb,xbnmzr,txdmlzd,vlblq,mtnh,mptbpz
-		
+
 		// now that a->i is bijective, invert the relation
 		var i2a = allergens.toMap(a -> a2i.get(a).single(), a -> a);
 		System.out.println("I->A: " + i2a);

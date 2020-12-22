@@ -9,7 +9,10 @@ import io.vavr.collection.List;
 // --- Day 18: Operation Order ---
 // https://adventofcode.com/2020/day/18
 
-// stack based approach
+// lessons learned:
+// - follow the rules of compiler construction - first scan, then parse, then evaluate 
+// - a recursive stack parser is not that complicated if done right
+// - better don't write parsers by hand, there are better solutions ready-to-use (-> parsington approach) 
 
 @SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day18 extends AocPuzzle {
