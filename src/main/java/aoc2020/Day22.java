@@ -10,7 +10,7 @@ import io.vavr.collection.List;
 // https://adventofcode.com/2020/day/22
 
 // lessons learned:
-// - Java records and vavr collections are a great match, no need to write equals/hashCode
+// - Java records and Vavr collections are a great match, no need to write equals/hashCode
 // - it helps to read all the text in the problem description (subgame decks!)
 
 @SuppressWarnings({ "deprecation", "preview", "serial" })
@@ -20,12 +20,12 @@ class Day22 extends AocPuzzle {
 	 * card deck of a single player
 	 */
 	record Deck(List<Integer> deck) {
-		public Deck(String s) {
-			this(List.of(s.split("\n")).drop(1).map(Integer::parseInt));
-		}
-
 		boolean noMoreCards() {
 			return deck.isEmpty();
+		}
+
+		Integer topCard() {
+			return deck.head();
 		}
 
 		Deck takeCard(Integer loserCard) {
@@ -48,6 +48,10 @@ class Day22 extends AocPuzzle {
 		Deck subgame() {
 			return new Deck(deck.tail().take(deck.head()));
 		}
+
+		public String toString() {
+			return deck.mkString("[", " ", "]");
+		}
 	}
 
 	/**
@@ -60,9 +64,9 @@ class Day22 extends AocPuzzle {
 
 		Cards next(int winner) {
 			if (winner == 1)
-				return new Cards(p1.takeCard(p2.deck.head()), p2.loseCard());
+				return new Cards(p1.takeCard(p2.topCard()), p2.loseCard());
 			else
-				return new Cards(p1.loseCard(), p2.takeCard(p1.deck.head()));
+				return new Cards(p1.loseCard(), p2.takeCard(p1.topCard()));
 		}
 
 		boolean canRecurse() {
@@ -78,7 +82,18 @@ class Day22 extends AocPuzzle {
 		}
 
 		int roundWinner() {
-			return (p1.deck.head() > p2.deck.head()) ? 1 : 2;
+			return (p1.topCard() > p2.topCard()) ? 1 : 2;
+		}
+
+		public static Cards parse(String input) {
+			String[] blocks = input.split("\n\n");
+			List<Integer> d1 = List.of(blocks[0].split("\n")).drop(1).map(Integer::parseInt);
+			List<Integer> d2 = List.of(blocks[1].split("\n")).drop(1).map(Integer::parseInt);
+			return new Cards(new Deck(d1), new Deck(d2));
+		}
+
+		public String toString() {
+			return "P1:" + p1 + " -  P2:" + p2;
 		}
 	}
 
@@ -88,7 +103,7 @@ class Day22 extends AocPuzzle {
 	class Combat {
 		Cards cards;
 
-		public Combat(Cards c) {
+		Combat(Cards c) {
 			cards = c;
 		}
 
@@ -96,10 +111,10 @@ class Day22 extends AocPuzzle {
 			int round = 1;
 			int winner = 0;
 			while (!cards.exhausted()) {
+//				System.out.println(round + ": " + cards);
 
 				winner = cards.roundWinner();
 				cards = cards.next(winner);
-//				System.out.println(round + " -> " + cards.p1 + " / " + cards.p2);
 				round++;
 			}
 			return winner;
@@ -107,20 +122,23 @@ class Day22 extends AocPuzzle {
 	}
 
 	/**
-	 * Recursice Combat game
+	 * Recursive Combat game
 	 */
 	class RecursiveCombat {
 		Cards cards;
+		int depth;
 		Set<Cards> seen = new HashSet<>();
 
-		public RecursiveCombat(Cards c) {
-			cards = c;
+		RecursiveCombat(Cards cards, int depth) {
+			this.cards = cards;
+			this.depth = depth;
 		}
 
 		int play() {
 			int round = 1;
 			int winner = 0;
 			while (!cards.exhausted()) {
+//				System.out.println("\t".repeat(depth) + round + ": " + cards);
 
 				if (seen.contains(cards)) {
 					return 1;
@@ -129,13 +147,12 @@ class Day22 extends AocPuzzle {
 
 				if (cards.canRecurse()) {
 					// play sub-game
-					winner = new RecursiveCombat(cards.subgame()).play();
-				} else {				
+					winner = new RecursiveCombat(cards.subgame(), depth + 1).play();
+				} else {
 					winner = cards.roundWinner();
 				}
-				
+
 				cards = cards.next(winner);
-//				System.out.println(round + " -> " + cards.p1 + " / " + cards.p2);
 				round++;
 			}
 			return winner;
@@ -146,18 +163,14 @@ class Day22 extends AocPuzzle {
 //	String input = example;
 
 	void part1() {
-		var blocks = input.split("\n\n");
-		Cards cards = new Cards(new Deck(blocks[0]), new Deck(blocks[1]));
-		var game = new Combat(cards);
+		var game = new Combat(Cards.parse(input));
 		game.play();
 
 		System.out.println(game.cards.score());
 	}
 
 	void part2() {
-		var blocks = input.split("\n\n");
-		Cards cards = new Cards(new Deck(blocks[0]), new Deck(blocks[1]));
-		var game = new RecursiveCombat(cards);
+		var game = new RecursiveCombat(Cards.parse(input), 0);
 		game.play();
 
 		System.out.println(game.cards.score());
@@ -168,6 +181,7 @@ class Day22 extends AocPuzzle {
 		System.out.println("=== part 1"); // 33098
 		new Day22().part1();
 
+		// ca 1M rounds, 800ms
 		System.out.println("=== part 2"); // 35055
 		new Day22().part2();
 	}
