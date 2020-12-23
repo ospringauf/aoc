@@ -4,7 +4,8 @@ import common.AocPuzzle;
 import io.vavr.collection.List;
 import io.vavr.collection.Stream;
 
-// https://adventofcode.com/2017/day/x
+// --- Day 10: Knot Hash ---
+// https://adventofcode.com/2017/day/10
 
 @SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day10 extends AocPuzzle {

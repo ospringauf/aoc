@@ -10,6 +10,8 @@ import io.vavr.control.Try;
 
 public class AocPuzzle {
 	
+	static long t0 = System.currentTimeMillis();
+	
 	private Path path(String fname) throws URISyntaxException {
 		var path = Paths.get(getClass().getResource(fname).toURI());
 		return path;
@@ -31,6 +33,16 @@ public class AocPuzzle {
 
 	public List<Long> longs(String fname) {
 		return lines(fname).map(Long::valueOf);
+	}
+	
+	public static void resetStopwatch() {
+		t0 = System.currentTimeMillis();
+	}
+	
+	public static void printLapTime() {
+		var t1 = System.currentTimeMillis();
+		System.out.format("--- laptime: %d ms ---\n", t1 - t0);
+		t0 = t1;
 	}
 	
 }

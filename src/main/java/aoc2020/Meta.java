@@ -4,7 +4,7 @@ import io.vavr.collection.List;
 
 class Meta {
 
-	static List<Integer> order = List.of(1,2,3,4,5,6,7,8,17,9,16,18,15,19,10,14,20,11,13,21,12,22,23,0,0,0);
+	static List<Integer> order = List.of(1,2,3,4,5,6,7,8,17,9,16,18,15,19,10,14,20,11,13,21,12,22,23,24,25);
 	
 	static String puzzles = """
 --- Day 1: Report Repair ---
@@ -29,12 +29,15 @@ class Meta {
 --- Day 20: Jurassic Jigsaw ---
 --- Day 21: Allergen Assessment ---
 --- Day 22: Crab Combat ---
+--- Day 23: Crab Cups ---
+--- Day 24: x
+--- Day 25: x
 			""";
 	
 	public static void main(String[] args) {
 		var pz = List.of(puzzles.split("\n"));
-		var pz1 = pz.map(s -> s.split(": ")[1].charAt(0)).mkString() + "______________";
-		var x = order.map(i -> i==0?26:i).map(i -> pz1.charAt(i-1)).mkString();
+		var pz1 = pz.map(s -> s.split(": ")[1].charAt(0)).mkString();
+		var x = order.map(i -> pz1.charAt(i-1)).mkString();
 		System.out.println(x);
 	}
 }
