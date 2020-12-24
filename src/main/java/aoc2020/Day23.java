@@ -15,7 +15,7 @@ class Day23 extends AocPuzzle {
 
 	static class Cup {
 
-		long label;
+		final long label;
 		Cup next;
 
 		Cup(long label) {
@@ -54,42 +54,42 @@ class Day23 extends AocPuzzle {
 		var min = labels.min().get();
 		var max = labels.max().get();
 
-		Cup cup0 = Cup.buildCyclicList(labels);
+		Cup start = Cup.buildCyclicList(labels);
 
-		// fast cup lookup via map:label->cup
-		var cupMap = Stream.iterate(cup0, c -> c.next).take(labels.size()).toMap(c -> c.label, c -> c);
+		// fast cup lookup via label->cup map
+		var cupMap = Stream.iterate(start, c -> c.next).take(labels.size()).toMap(c -> c.label, c -> c);
 
-		Cup current = cup0;
+		Cup current = start;
 
 		for (int i = 1; i <= rounds; ++i) {
 			
 			if (verbose) {
-				System.out.print(cups2String(labels, cup0, current));
+				System.out.print(cups2String(labels, start, current));
 			}		
 
 			// cut 3 cups
-			var rem3 = current.next;
-//			var removed = rem3.collectLabels(3);
+			var pick3 = current.next;
 			current.next = current.next.next.next.next;
 
+			// select destination cup
 			var destLabel = current.label;
 			do {
 				destLabel--;
 				if (destLabel < min)
 					destLabel = max;
-//			} while (removed.contains(destLabel));
-			} while (destLabel == rem3.label || destLabel == rem3.next.label || destLabel == rem3.next.next.label);
+			} while (destLabel == pick3.label || destLabel == pick3.next.label || destLabel == pick3.next.next.label);
 			
 			if (verbose) {
 				System.out.println("  dest: " + destLabel);
 			}
 
-			var dest = cupMap.get(destLabel).get();
+			var destination = cupMap.get(destLabel).get();
 			
-			// insert cut cups
-			rem3.next.next.next = dest.next;
-			dest.next = rem3;
+			// insert cut cups after destination
+			pick3.next.next.next = destination.next;
+			destination.next = pick3;
 
+			// next current cup
 			current = current.next;
 			
 			if (i % 1_000_000 == 0) System.out.println("..." + i + " rounds played");
@@ -139,7 +139,7 @@ class Day23 extends AocPuzzle {
 		var labels = List.of(input.split("")).map(Long::valueOf);
 		
 		// generate labels up to 1M
-		labels = labels.appendAll(Stream.from(labels.max().get() + 1).take(1_000_000 - labels.size()));
+		labels = labels.appendAll(List.rangeClosed(labels.max().get() + 1, 1_000_000));
 
 		var cup1 = playCrabCups(labels, 10_000_000, false);
 
