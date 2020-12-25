@@ -9,7 +9,7 @@ import io.vavr.collection.List;
 // --- Day 22: Crab Combat ---
 // https://adventofcode.com/2020/day/22
 
-// lessons learned:
+// - a simple 2-player card game, extended by recursive sub-games to determine the winner of each round
 // - Java records and Vavr collections are a great match, no need to write equals/hashCode
 // - it helps to read all the text in the problem description (subgame decks!)
 

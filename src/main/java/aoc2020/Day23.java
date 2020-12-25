@@ -7,8 +7,9 @@ import io.vavr.collection.Stream;
 // --- Day 23: Crab Cups ---
 // https://adventofcode.com/2020/day/23
 
-// lessons learned
-// - cyclic linked list - again, after 2017.10 (knot hash) and 2018.9 (marble mania)
+// - moving sub-sequences withing a large cyclic linked list 
+// - similar to 2017.10 (knot hash) and 2018.9 (marble mania)
+// - approach: custom data structure, works better than any collection library
 
 @SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day23 extends AocPuzzle {

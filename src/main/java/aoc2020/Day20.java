@@ -17,7 +17,8 @@ import io.vavr.collection.Set;
 // --- Day 20: Jurassic Jigsaw ---
 // https://adventofcode.com/2020/day/20
 
-// lessons learned:
+// - arrange image tiles into a final image and find "sea monster" pattern in that image
+// - basically a puzzle style problem where tiles can be mirrored and rotated
 // - analyze the problem first - it turns out that all border-matches are unambiguous!
 // - rotate, flip, shift with point-transformation functions
 

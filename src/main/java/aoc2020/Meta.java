@@ -31,7 +31,7 @@ class Meta {
 --- Day 22: Crab Combat ---
 --- Day 23: Crab Cups ---
 --- Day 24: Lobby Layout ---
---- Day 25: x
+--- Day 25: Combo Breaker ---
 			""";
 	
 	public static void main(String[] args) {

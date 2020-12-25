@@ -13,8 +13,9 @@ import io.vavr.collection.Set;
 // --- Day 21: Allergen Assessment ---
 // https://adventofcode.com/2020/day/21
 
-// lessons learned:
-// choose good variable names! 
+// - determine allergen/ingredient relation from fuzzy input
+// - based on set theory and expression logic
+// - choosíng good variable names helps to understand own code :-) 
 
 
 @SuppressWarnings({ "deprecation", "preview", "serial" })
