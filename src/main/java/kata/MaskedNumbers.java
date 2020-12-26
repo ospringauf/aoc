@@ -8,8 +8,8 @@ import io.vavr.collection.List;
  * 
  * expand a "masked" number (eg X01110X0X) to all possible numbers
  *
- * from
- * Day 14: Docking Data https://adventofcode.com/2020/day/14
+ * from Day 2020/14: Docking Data 
+ * https://adventofcode.com/2020/day/14
  */
 public class MaskedNumbers {
 

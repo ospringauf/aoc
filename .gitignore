@@ -11,6 +11,8 @@ tmp/
 
 # manual
 /target/
+/adventofcode.com/
+/site-rip.txt
 /.settings/
 aoc.code-workspace
 /2020_12_24_06h43.pdf
