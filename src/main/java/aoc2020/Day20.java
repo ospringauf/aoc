@@ -152,7 +152,7 @@ class Day20 extends AocPuzzle {
 		// choose north-west corner tile
 		var tile00 = corners
 //				.flatMap(t -> t.variants)
-				.filterNot(v -> otherEdges(v).contains(v.edge(NORTH)) || otherEdges(v).contains(v.edge(WEST)))
+				.filter(v -> ! otherEdges(v).contains(v.edge(NORTH)) && ! otherEdges(v).contains(v.edge(WEST)))
 				.head();
 		
 		var puzzle = new Puzzle();

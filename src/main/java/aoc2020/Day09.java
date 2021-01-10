@@ -34,7 +34,7 @@ class Day09 extends AocPuzzle {
 
 	long part1() {
 		var r = data.sliding(preamble + 1)
-				.filterNot(w -> lastIsSumOfTwo(w))
+				.filter(w -> ! lastIsSumOfTwo(w))
 				.map(w -> w.last())
 				.single();
 

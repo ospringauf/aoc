@@ -1,5 +1,7 @@
 package aoc2017;
 
+import java.util.function.Function;
+
 import common.AocPuzzle;
 import io.vavr.collection.List;
 import io.vavr.collection.Stream;
@@ -58,38 +60,18 @@ class Day10 extends AocPuzzle {
 		}
 	}
 
-	public static void main(String[] args) {
-
-		System.out.println("=== test");
-		new Day10().test();
-
-		System.out.println("=== part 1"); // 52070
-		new Day10().part1();
-
-		System.out.println("=== part 2"); // 7f94112db4e32e19cf6502073c66f9bb
-		new Day10().part2();
-	}
-
 	final String input = "46,41,212,83,1,255,157,65,139,52,39,254,2,86,0,204";
 	
-	private void test() {
-		int[] lengths = { 3, 4, 1, 5 };
-		var e0 = Element.buildCyclicList(5);
-
-		e0.printAll();
-
-		int skip = 0;
-		var e = e0;
-
-		for (int l : lengths) {
-			e.reverse(l);
-			e = e.fwd(l + skip);
-			e0.printAll();
-			skip++;
-		}
-
-		var x = List.of(65, 27, 9, 1, 4, 3, 40, 50, 91, 7, 6, 0, 2, 5, 68, 22).reduce((a,b)->a^b);
-		System.out.println(x);
+	public static void main(String[] args) {
+	
+		System.out.println("=== test");
+		new Day10().test();
+	
+		System.out.println("=== part 1"); // 52070
+		new Day10().part1();
+	
+		System.out.println("=== part 2"); // 7f94112db4e32e19cf6502073c66f9bb
+		new Day10().part2();
 	}
 
 
@@ -115,6 +97,47 @@ class Day10 extends AocPuzzle {
 //		var input = "1,2,3";
 //		var input = "AoC 2017";
 		
+		var khash = knothash(input);
+		
+		var hex = hexString(khash);
+//		System.out.println(hex);
+		System.out.println(hex);
+	}
+
+
+	private void test() {
+		int[] lengths = { 3, 4, 1, 5 };
+		var e0 = Element.buildCyclicList(5);
+	
+		e0.printAll();
+	
+		int skip = 0;
+		var e = e0;
+	
+		for (int l : lengths) {
+			e.reverse(l);
+			e = e.fwd(l + skip);
+			e0.printAll();
+			skip++;
+		}
+	
+		var x = List.of(65, 27, 9, 1, 4, 3, 40, 50, 91, 7, 6, 0, 2, 5, 68, 22).reduce((a,b)->a^b);
+		System.out.println(x);
+	}
+
+
+	static String hexString(List<Integer> khash) {
+		return khash.map(i -> String.format("%02x", i)).mkString();
+	}
+
+
+	static String bitString(List<Integer> khash) {
+		Function<Integer, String> bit8 = i -> String.format("%8s", Integer.toBinaryString(i)).replace(' ', '0');		
+		return khash.map(i -> bit8.apply(i)).mkString();		
+	}
+
+
+	static List<Integer> knothash(String input) {
 		List<Integer> lengths = List.ofAll(input.toCharArray()).map(c -> (int) c);
 		lengths = lengths.appendAll(List.of(17, 31, 73, 47, 23));
 
@@ -132,14 +155,9 @@ class Day10 extends AocPuzzle {
 				skip++;
 			}
 		}
-		var r = Stream.iterate(e0, x->x.next).map(x->x.number).take(256).toList();
-//		System.out.println(r);
-		var r2 = r.sliding(16, 16).map(l -> l.reduce((a,b) -> a ^ b)).toList();
-//		System.out.println(r2);
-		
-		var hex = r2.map(i -> String.format("%02x", i));
-//		System.out.println(hex);
-		System.out.println(hex.mkString());
+		var values = Stream.iterate(e0, x->x.next).map(x->x.number).take(256).toList();
+		var red = values.sliding(16, 16).map(l -> l.reduce((a,b) -> a ^ b)).toList();
+		return red;
 	}
 
 }

@@ -1,0 +1,31 @@
+ 	b = 109900
+	c = b+17000
+
+
+L2: f = 1
+	d = 2
+
+L5:	e = 2
+L4: 
+	if (d*e==b)
+		f=0
+	e += 1
+	if (e!=b) -> L4
+
+	d += 1
+	if (d!=b) -> L5
+
+	if (f==0)
+		h += 1
+	if (b==c) -> END 
+	b += 17
+	-> L2
+
+	
+for (int b=109900; b<109900+17000; b+=17) {
+	boolean f = false;
+	for (int d=2; d<b; ++d)
+		for (int e=2; e<b; ++e)
+			f |= e*d == b;
+	if (f) h++;
+}

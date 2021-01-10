@@ -45,4 +45,15 @@ public class AocPuzzle {
 		t0 = t1;
 	}
 	
+	public static void timed(Runnable r) {
+		timed("", r);
+	}
+	
+	public static void timed(String tag, Runnable r) {
+		var t0 = System.currentTimeMillis();
+		r.run();
+		var t1 = System.currentTimeMillis();
+		System.out.println("--- " + tag + " time: " + (t1-t0) + " ms");
+	}
+
 }

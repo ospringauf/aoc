@@ -17,7 +17,7 @@ import io.vavr.collection.Set;
 // TODO we're not done yet - the result from this code is off by 1, but only for my input !?!
 
 @SuppressWarnings({ "deprecation", "preview", "serial" })
-class Day23 extends AocPuzzle {
+class Day23ok extends AocPuzzle {
 
 	record Point3d(long x, long y, long z) {
 		
@@ -85,17 +85,17 @@ class Day23 extends AocPuzzle {
 		System.out.println("clique size: " + clique.size());
 		
 		var result = clique.map(it -> it.location.dist() - it.radius).max();
-		System.out.println(result);		
+		System.out.println(result);
 	}
 
 	public static void main(String[] args) {
 
 		System.out.println("=== part 1"); // 659
-		new Day23().part1();
+		new Day23ok().part1();
 
 		// TODO this program calculates 98565590, but the correct answer is 98565591 ?!? 
 		System.out.println("=== part 2"); // 98565591
-		new Day23().part2();
+		new Day23ok().part2();
 		
 		// wrong: 60949105, 89402056, 98565590
 	}

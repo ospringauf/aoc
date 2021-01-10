@@ -20,15 +20,15 @@ public record BoundingBox(int xMin, int xMax, int yMin, int yMax) {
         Stream.of(points).mapToInt(p -> p.y()).max().orElse(0));
     }
 
-    Iterable<Integer> xRange() {
+    public Iterable<Integer> xRange() {
         return IntStream.rangeClosed(xMin, xMax).boxed()::iterator;
     }
 
-    Iterable<Integer> yRange() {
+    public Iterable<Integer> yRange() {
         return IntStream.rangeClosed(yMin, yMax).boxed()::iterator;
     }
 
-    void print(Function<Point, Character> point2String) {
+    public void print(Function<Point, Character> point2String) {
         for (int y : yRange()) {
             for (int x : xRange()) {
                 System.out.print(point2String.apply(new Point(x, y)));
@@ -37,7 +37,7 @@ public record BoundingBox(int xMin, int xMax, int yMin, int yMax) {
         }
     }
     
-    void printS(Function<Point, String> point2String) {
+    public void printS(Function<Point, String> point2String) {
         for (int y : yRange()) {
             for (int x : xRange()) {
                 System.out.print(point2String.apply(new Point(x, y)));
@@ -46,7 +46,7 @@ public record BoundingBox(int xMin, int xMax, int yMin, int yMax) {
         }
     }
 
-	Point center() {
+	public Point center() {
 		return new Point((xMin+xMax)/2, (yMin+yMax)/2);
 	}
 

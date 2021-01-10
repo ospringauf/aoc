@@ -9,6 +9,11 @@ public record Pose(Direction heading, Point pos) {
 	public Pose(Direction h, int x, int y) {
 		this(h, new Point(x, y));
 	}
+	
+	public Pose(Direction heading, Point pos) {
+		this.heading = heading;
+		this.pos = pos;
+	}
 
 	public Pose(int x, int y) {
 		this(Direction.NORTH, new Point(x, y));
