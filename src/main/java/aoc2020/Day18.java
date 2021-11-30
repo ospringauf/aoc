@@ -84,7 +84,10 @@ class Day18 extends AocPuzzle {
 			var next = tokens.peek();
 			tokens = tokens.pop();
 
-			switch (next.typ) {
+			// workaround due to Eclipse bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=576026
+			var typ = next.typ;
+			switch (typ) {
+//			switch (next.typ) {
 			case LPAREN -> {
 				tokens = eval1(tokens);
 			}
@@ -111,7 +114,10 @@ class Day18 extends AocPuzzle {
 			var next = tokens.peek();
 			tokens = tokens.pop();
 
-			switch (next.typ) {
+            // workaround due to Eclipse bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=576026
+          var typ = next.typ;
+          switch (typ) {
+//            switch (next.typ) {
 			case LPAREN -> {
 				tokens = eval2(tokens);
 			}

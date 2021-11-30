@@ -8,8 +8,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>15</maven.compiler.source>
-		<maven.compiler.target>15</maven.compiler.target>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
 	</properties>
 
 	<dependencies>
@@ -27,7 +27,7 @@
 			<groupId>io.vavr</groupId>
 			<artifactId>vavr</artifactId>
 			<!-- <version>1.0.0-alpha-3</version> -->
-			<version>0.10.3</version>
+			<version>0.10.4</version>
 		</dependency>
 		<!-- https://github.com/scijava/parsington -->
 		<dependency>
