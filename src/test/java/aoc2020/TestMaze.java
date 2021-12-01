@@ -16,7 +16,7 @@ public class TestMaze extends AocPuzzle {
 
 	public static void main(String[] args) throws Exception {
 		var m = new PointMap<Character>();
-		m.read(new TestMaze().lines("maze_1.txt"));
+		m.read(new TestMaze().file2lines("maze_1.txt"));
 		
 		new TestMaze().solve(m);
 	}

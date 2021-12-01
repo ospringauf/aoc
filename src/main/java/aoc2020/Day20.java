@@ -117,7 +117,7 @@ class Day20 extends AocPuzzle {
 	}
 
 	List<Tile> tiles;
-	String[] blocks = readString("input20.txt").split("\n\n");
+	String[] blocks = file2string("input20.txt").split("\n\n");
 //	String[] blocks = readString("input20_test.txt").split("\n\n");
 	
 	List<String> otherEdges(Tile t) {

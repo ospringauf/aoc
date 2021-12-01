@@ -22,7 +22,7 @@ class Day10 extends AocPuzzle {
 }
 
 //    final List<Integer> adapters = List.of(example2.split("\n")).map(Integer::valueOf);
-    final List<Integer> adapters = ints("input10.txt");
+    final List<Integer> adapters = file2ints("input10.txt");
 
     void part1() {
         int target = adapters.max().get() + 3;

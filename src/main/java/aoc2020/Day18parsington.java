@@ -31,7 +31,7 @@ class Day18parsington extends AocPuzzle {
 		new Day18parsington().part2();
 	}
 
-	List<String> lines = lines("input18.txt");
+	List<String> lines = file2lines("input18.txt");
 
 	
 	long eval(SyntaxTree tree) {

@@ -12,7 +12,7 @@ import io.vavr.collection.List;
 class Day16 extends AocPuzzle {
 
 	private static final long BILLION = 1_000_000_000L;
-	List<String> moves = List.of(readString("input16.txt").split(","));
+	List<String> moves = List.of(file2string("input16.txt").split(","));
 
 	Array<Character> spin(Array<Character> x, int n) {
 		return x.rotateRight(n);

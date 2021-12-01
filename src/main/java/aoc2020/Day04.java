@@ -65,7 +65,7 @@ class Day04 extends AocPuzzle {
 	public static void main(String[] args) throws Exception {
 
 //		var data = example;
-		var data = new Day04().readString("input04.txt");
+		var data = new Day04().file2string("input04.txt");
 		var passports = List.of(data.split(BLANK_LINE)).map(Passport::parse);
 
 		System.out.println("=== part 1");

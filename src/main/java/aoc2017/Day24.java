@@ -54,7 +54,7 @@ class Day24 extends AocPuzzle {
 		return bridges.maxBy(cmp).get();
 	}
 
-	Set<Component> comps = lines("input24.txt").map(Component::parse).toSet();
+	Set<Component> comps = file2lines("input24.txt").map(Component::parse).toSet();
 //	Set<Component> comps = Util.splitLines(example).map(Component::parse).toSet(); 
 
 	void part1() {

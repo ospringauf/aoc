@@ -31,7 +31,7 @@ class Day13 extends AocPuzzle {
 	}
 
 //	List<Scanner> data = List.of(example.split("\n")).map(Scanner::parse);
-	List<Scanner> data = lines("input13.txt").map(Scanner::parse);
+	List<Scanner> data = file2lines("input13.txt").map(Scanner::parse);
 
 	void part1() {
 //		System.out.println(data);

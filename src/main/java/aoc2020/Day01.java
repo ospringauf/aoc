@@ -21,7 +21,7 @@ class Day01 extends AocPuzzle {
 		return n.filter(x -> n.contains(sum - x)).map(x -> x*(sum-x)).getOrElse(0);
 	}
 	
-	String data = readString("input01.txt");
+	String data = file2string("input01.txt");
 	List<Integer> numbers = Util.string2ints(data);
 
 	private void part1() {

@@ -26,7 +26,7 @@ class Day11 extends AocPuzzle {
 	}
 
 	void solve() {
-		var data = readString("input11.txt");
+		var data = file2string("input11.txt");
 
 		var dirs = List.of(data.split(","));
 		

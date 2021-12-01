@@ -114,7 +114,7 @@ class Day08 extends AocPuzzle {
         // i1.execute();
 
         // var prog = Arrays.stream(input).map(this::parseLine).collect(Collectors.toList());
-        var prog = lines("input08.txt").map(this::parseLine).toJavaList();
+        var prog = file2lines("input08.txt").map(this::parseLine).toJavaList();
 
         prog.forEach(Instruction::execute);
         prog.forEach(System.out::println);

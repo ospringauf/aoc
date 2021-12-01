@@ -17,7 +17,7 @@ class Day22 extends AocPuzzle {
 	static final char WEAKENED = 'W';
 	static final char FLAGGED = 'F';
 
-	 List<String> lines = lines("input22.txt");
+	 List<String> lines = file2lines("input22.txt");
 //	List<String> lines = Util.splitLines(example);
 
 	void part1() {

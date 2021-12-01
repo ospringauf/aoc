@@ -87,7 +87,7 @@ class Day24 extends AocPuzzle {
 	}
 
 	void solve() {
-		var lines = lines("input24.txt");
+		var lines = file2lines("input24.txt");
 //		var lines = Util.splitLines(example);
 
 		System.out.println("=== part 1");

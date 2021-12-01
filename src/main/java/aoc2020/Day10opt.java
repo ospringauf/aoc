@@ -24,7 +24,7 @@ class Day10opt extends AocPuzzle {
 }
 
 //    final List<Integer> adapters = List.of(example2.split("\n")).map(Integer::valueOf);
-    final List<Integer> adapters = ints("input10.txt");
+    final List<Integer> adapters = file2ints("input10.txt");
 
     void part1() {
         var chain = adapters.append(0).sorted();

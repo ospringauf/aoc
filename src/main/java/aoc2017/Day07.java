@@ -31,7 +31,7 @@ class Day07 extends AocPuzzle {
 	}
 
 //	final List<Prog> data = List.of(example.split("\n")).map(Prog::parse);
-	final List<Prog> data = lines("input07.txt").map(Prog::parse);
+	final List<Prog> data = file2lines("input07.txt").map(Prog::parse);
 	final Map<String, Prog> progs = data.toMap(x -> x.name, x->x);
 	
 	void part1() {

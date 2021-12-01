@@ -29,7 +29,7 @@ class Day18 extends AocPuzzle {
 		new Day18().part2();
 	}
 
-	List<String> lines = lines("input18.txt");
+	List<String> lines = file2lines("input18.txt");
 
 	enum TType {
 		LPAREN, RPAREN, ADD, MUL, NUMBER

@@ -17,7 +17,7 @@ class Day01 extends AocPuzzle {
 		new Day01().part2();
 	}
 
-	final List<Integer> data = List.ofAll(readString("input01.txt").trim().toCharArray()).map(c -> c-'0');
+	final List<Integer> data = List.ofAll(file2string("input01.txt").trim().toCharArray()).map(c -> c-'0');
 
 	void part1() {
 		var data1 = data.append(data.head());

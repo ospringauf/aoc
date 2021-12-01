@@ -15,7 +15,7 @@ public class Day05 extends AocPuzzle {
 		new Day05().part2();
 	}
 
-	final Integer[] instructions = ints("input05.txt").toJavaArray(Integer.class);
+	final Integer[] instructions = file2ints("input05.txt").toJavaArray(Integer.class);
 
 	void part1() throws Exception {
 		int steps = 0;

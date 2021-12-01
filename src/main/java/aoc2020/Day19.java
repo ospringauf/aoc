@@ -29,7 +29,7 @@ class Day19 extends AocPuzzle {
 		new Day19().part2();
 	}
 	
-	String data = readString("input19.txt"); 
+	String data = file2string("input19.txt"); 
 //	String data = example2;
 	static Map<Integer, Rule> RULES;
 	

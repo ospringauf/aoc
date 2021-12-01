@@ -82,12 +82,12 @@ class Day09 extends AocPuzzle {
 
 	void part1() {
 		
-		input(readString("input09.txt"));
+		input(file2string("input09.txt"));
 		System.out.println(parseGroup().score(1));
 	}
 
 	void part2() {
-		input(readString("input09.txt"));
+		input(file2string("input09.txt"));
 		System.out.println(parseGroup().garbageChars());
 	}
 

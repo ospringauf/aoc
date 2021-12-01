@@ -159,7 +159,7 @@ class Day22 extends AocPuzzle {
 		}
 	}
 
-	String input = readString("input22.txt");
+	String input = file2string("input22.txt");
 //	String input = example;
 
 	void part1() {

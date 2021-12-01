@@ -27,7 +27,7 @@ class Day02 extends AocPuzzle {
 	
 	public static void main(String[] args) throws Exception {
 		
-		var rules = new Day02().lines("input02.txt").map(Rule::parse);
+		var rules = new Day02().file2lines("input02.txt").map(Rule::parse);
 		
 		System.out.println("=== part 1");
 		System.out.println(rules.count(Rule::check1));

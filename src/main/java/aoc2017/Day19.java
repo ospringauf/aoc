@@ -15,7 +15,7 @@ class Day19 extends AocPuzzle {
 	
 	void solve() {
 //		var lines = Util.splitLines(example);
-		var lines = lines("input19.txt");
+		var lines = file2lines("input19.txt");
 
 		var map = new PointMap<Character>();
 		map.read(lines);

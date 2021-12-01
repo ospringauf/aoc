@@ -17,7 +17,7 @@ class Day08 extends AocPuzzle {
 	public static void main(String[] args) {
 
 //		var prog = Comp.parseProg(example);
-		var prog = Day08Computer.parseProg(new Day08().lines("input08.txt"));
+		var prog = Day08Computer.parseProg(new Day08().file2lines("input08.txt"));
 
 		System.out.println("=== part 1");
 		var r1 = new Day08().part1(prog);

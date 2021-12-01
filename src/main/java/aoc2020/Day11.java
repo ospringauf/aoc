@@ -34,7 +34,7 @@ class Day11 extends AocPuzzle {
 	}
 
 //	final List<String> = List.of(example.split("\n"));
-	final List<String> data = lines("input11.txt");
+	final List<String> data = file2lines("input11.txt");
 
 	void part1() {
 		var map = new SeatMap();

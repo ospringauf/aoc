@@ -30,7 +30,7 @@ class Day09 extends AocPuzzle {
 //	Array<Long> data = Array.of(example.split("\n")).map(Long::valueOf);
 
 	int preamble = 25;
-	Array<Long> data = longs("input09.txt").toArray();
+	Array<Long> data = file2longs("input09.txt").toArray();
 
 	long part1() {
 		var r = data.sliding(preamble + 1)

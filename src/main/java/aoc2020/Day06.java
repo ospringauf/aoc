@@ -14,7 +14,7 @@ class Day06 extends AocPuzzle {
 
 	public static void main(String[] args) throws Exception {
 
-		String input = new Day06().readString("input06.txt");
+		String input = new Day06().file2string("input06.txt");
 //		String input = example;
 
 		List<String> groups = List.of(input.split("\\n\\n"));

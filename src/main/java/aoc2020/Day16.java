@@ -69,7 +69,7 @@ class Day16 extends AocPuzzle {
 
 	void solve() {
 //		var blocks = example.split("\n\n");
-		var blocks = readString("input16.txt").split("\n\n");
+		var blocks = file2string("input16.txt").split("\n\n");
 
 		var rules = List.of(blocks[0].split("\n")).map(Rule::parse);
 		System.out.println("rules: " + rules);

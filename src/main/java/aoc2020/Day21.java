@@ -34,7 +34,7 @@ class Day21 extends AocPuzzle {
 		}
 	}
 
-	List<Food> foods = lines("input21.txt").map(Food::parse);
+	List<Food> foods = file2lines("input21.txt").map(Food::parse);
 //	List<Food> foods = Util.splitLines(example).map(Food::parse);
 
 	

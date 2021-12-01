@@ -108,7 +108,7 @@ class Day21 extends AocPuzzle {
 		}
 	}
 
-	List<Rule> rules = lines("input21.txt").map(Rule::parse);
+	List<Rule> rules = file2lines("input21.txt").map(Rule::parse);
 //	List<Rule> rules = Util.splitLines(example).map(Rule::parse);
 
 	void part1() {

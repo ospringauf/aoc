@@ -16,7 +16,7 @@ class Day18 extends AocPuzzle {
 
 	void part1() {
 //		var data = List.of(example.split("\n"));
-		var data = lines("input18.txt");
+		var data = file2lines("input18.txt");
 
 		var regs = new HashMap<String, Long>();
 		long sound = 0;
@@ -124,7 +124,7 @@ class Day18 extends AocPuzzle {
 
 	void part2() {
 //		var data = List.of(example2.split("\n"));
-		var data = lines("input18.txt");
+		var data = file2lines("input18.txt");
 		var q01 = new ArrayBlockingQueue<Long>(100);
 		var q10 = new ArrayBlockingQueue<Long>(100);
 

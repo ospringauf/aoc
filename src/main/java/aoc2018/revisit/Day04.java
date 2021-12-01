@@ -87,7 +87,7 @@ class Day04 extends AocPuzzle {
 	
 	
 	List<Shift> parseShifts() throws Exception {		
-		var lines = lines("../day4.txt").sorted();
+		var lines = file2lines("../day4.txt").sorted();
 //		var lines = List.of(example.split("\n")).sorted();
 
 		List<Shift> guards = List.empty();

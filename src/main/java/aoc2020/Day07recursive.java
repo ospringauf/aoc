@@ -21,7 +21,7 @@ class Day07recursive extends AocPuzzle {
 		new Day07recursive().part2();
 	}
 
-	final Set<Rule> rules = lines("input07.txt").map(Rule::parse).toSet();
+	final Set<Rule> rules = file2lines("input07.txt").map(Rule::parse).toSet();
 //    private Set<Rule> rules = List.of(example.split("\\n")).map(Rule::parse).toSet();
 
 	static record Bags(int amount, String color) {

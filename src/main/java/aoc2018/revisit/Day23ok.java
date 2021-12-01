@@ -54,7 +54,7 @@ class Day23ok extends AocPuzzle {
 		}
 	}
 
-	List<Nanobot> bots = lines("../day23.txt").map(Nanobot::parse); // 98565591 (correct) vs 98565590 (this)
+	List<Nanobot> bots = file2lines("../day23.txt").map(Nanobot::parse); // 98565591 (correct) vs 98565590 (this)
 //	List<Nanobot> bots = lines("../day23-other1.txt").map(Nanobot::parse); // 105191907
 //	List<Nanobot> bots = lines("../day23-other2.txt").map(Nanobot::parse); // 113066145
 //	List<Nanobot> bots = lines("../day23-other3.txt").map(Nanobot::parse); // 142473501

@@ -53,12 +53,12 @@ class Day05 extends AocPuzzle {
 	
 
 	private void part1() throws Exception {
-		var passes = lines("input05.txt").map(this::decode);		
+		var passes = file2lines("input05.txt").map(this::decode);		
 		System.out.println(passes.max());
 	}
 
 	private void part2() throws Exception {	
-		var passes = lines("input05.txt").map(this::decode);
+		var passes = file2lines("input05.txt").map(this::decode);
 		var allSeats = List.range(0, passes.max().get());
 		
 		var myseat = allSeats.filter(n -> passes.contains(n-1) && ! passes.contains(n) && passes.contains(n+1));

@@ -23,7 +23,7 @@ class Day03 extends AocPuzzle {
 
 	private void solve() throws Exception {
 //		var data = example.split("\\n");
-		var data = lines("input03.txt");
+		var data = file2lines("input03.txt");
 		
 		var m = new PointMap<Character>();
 		m.read(data, c -> c);

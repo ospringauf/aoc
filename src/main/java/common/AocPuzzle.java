@@ -17,22 +17,22 @@ public class AocPuzzle {
 		return path;
 	}
 	
-	public List<String> lines(String fname)  {
+	public List<String> file2lines(String fname)  {
 		// turn checked exception into RuntimeException
 		return Try.of(() -> List.ofAll(Files.lines(path(fname)))).get();
 	}
 	
-	public String readString(String fname) {
+	public String file2string(String fname) {
 		// turn checked exception into RuntimeException
 		return Try.of(() -> Files.readString(path(fname))).get();
 	}
 
-	public List<Integer> ints(String fname) {
-		return lines(fname).map(Integer::valueOf);
+	public List<Integer> file2ints(String fname) {
+		return file2lines(fname).map(Integer::valueOf);
 	}
 
-	public List<Long> longs(String fname) {
-		return lines(fname).map(Long::valueOf);
+	public List<Long> file2longs(String fname) {
+		return file2lines(fname).map(Long::valueOf);
 	}
 	
 	public static void resetStopwatch() {

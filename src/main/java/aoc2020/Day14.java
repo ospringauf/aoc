@@ -44,7 +44,7 @@ class Day14 extends AocPuzzle {
         System.out.println("passed");
     }
 
-    List<String> data = lines("input14.txt");
+    List<String> data = file2lines("input14.txt");
 
     
     void part1() {

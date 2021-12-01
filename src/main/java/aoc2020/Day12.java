@@ -18,7 +18,7 @@ class Day12 extends AocPuzzle {
 		new Day12().part2();
 	}
 
-	List<String> data = lines("input12.txt");
+	List<String> data = file2lines("input12.txt");
 //	List<String> data = List.of(example.split("\n"));
 
 	void part1() {

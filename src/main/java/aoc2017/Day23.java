@@ -11,7 +11,7 @@ import io.vavr.collection.List;
 @SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day23 extends AocPuzzle {
 
-	List<String> data = lines("input23.txt");
+	List<String> data = file2lines("input23.txt");
 
 	void part1() {
 		int count = 0;
