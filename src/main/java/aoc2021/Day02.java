@@ -8,14 +8,9 @@ import io.vavr.collection.List;
 
 class Day02 extends AocPuzzle {
 
-	record Cmd(String dir, int x) {
-		static Cmd parse(String s) {			
-			String[] field = s.split(" ");
-			return new Cmd(field[0], Integer.valueOf(field[1])); 
-		}
-	}
+	record Cmd(String dir, int x) {}
 	
-	List<Cmd> commands = file2lines("input02.txt").map(Cmd::parse);
+	List<Cmd> commands = file2lines("input02.txt").map(split(" ").andThen(r -> new Cmd(r.s(0), r.i(1))));
 	
 	void part1() {
 		var hpos = 0;
