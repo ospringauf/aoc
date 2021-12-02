@@ -11,7 +11,6 @@ import io.vavr.collection.Stream;
 // --- Day 13: Shuttle Search ---
 // https://adventofcode.com/2020/day/13
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day13 extends AocPuzzle {
 
 	public static void main(String[] args) {

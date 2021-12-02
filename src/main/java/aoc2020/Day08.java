@@ -11,7 +11,6 @@ import io.vavr.collection.List;
 // --- Day 8: Handheld Halting ---
 // https://adventofcode.com/2020/day/8
 
-@SuppressWarnings({ "deprecation", "preview" })
 class Day08 extends AocPuzzle {
 
 	public static void main(String[] args) {

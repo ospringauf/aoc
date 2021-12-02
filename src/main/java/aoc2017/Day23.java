@@ -8,7 +8,6 @@ import io.vavr.collection.List;
 // --- Day 23: Coprocessor Conflagration ---
 // https://adventofcode.com/2017/day/23
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day23 extends AocPuzzle {
 
 	List<String> data = file2lines("input23.txt");

@@ -13,7 +13,6 @@ import io.vavr.collection.List;
 // --- Day 21: Fractal Art ---
 // https://adventofcode.com/2017/day/21
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day21 extends AocPuzzle {
 
 	static class Tile extends PointMap<Character> {

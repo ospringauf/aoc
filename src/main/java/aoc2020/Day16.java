@@ -12,7 +12,6 @@ import io.vavr.collection.Seq;
 // --- Day 16: Ticket Translation ---
 // https://adventofcode.com/2020/day/16
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day16 extends AocPuzzle {
 
 	public static void main(String[] args) {

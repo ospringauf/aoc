@@ -16,7 +16,6 @@ import io.vavr.collection.Set;
 
 // TODO we're not done yet - the result from this code is off by 1, but only for my input !?!
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day23 extends AocPuzzle {
 
 	record Point3d(long x, long y, long z) {

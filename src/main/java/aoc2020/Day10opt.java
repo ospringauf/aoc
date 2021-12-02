@@ -11,7 +11,6 @@ import io.vavr.collection.List;
 
 // rethought, optimized version
 
-@SuppressWarnings({ "deprecation", "preview" })
 class Day10opt extends AocPuzzle {
 
     public static void main(String[] args) {

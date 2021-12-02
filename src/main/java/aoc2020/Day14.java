@@ -11,7 +11,6 @@ import io.vavr.collection.List;
 // --- Day 14: Docking Data ---
 // https://adventofcode.com/2020/day/14
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day14 extends AocPuzzle {
 
     public static void main(String[] args) {

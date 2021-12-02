@@ -9,7 +9,6 @@ import io.vavr.collection.List;
 // --- Day 6: Custom Customs ---
 // https://adventofcode.com/2020/day/6
 
-@SuppressWarnings({ "deprecation", "preview" })
 class Day06 extends AocPuzzle {
 
 	public static void main(String[] args) throws Exception {

@@ -5,7 +5,6 @@ import common.AocPuzzle;
 // --- Day 2: Password Philosophy ---
 // https://adventofcode.com/2020/day/2
 
-@SuppressWarnings( { "deprecation", "preview" })
 class Day02 extends AocPuzzle {
 
 	static record Rule(int low, int high, char letter, String pw) {

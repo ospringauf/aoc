@@ -4,7 +4,6 @@ import common.AocPuzzle;
 
 //https://adventofcode.com/2017/day/5
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 public class Day05 extends AocPuzzle {
 
 	public static void main(String[] args) throws Exception {

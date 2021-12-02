@@ -10,7 +10,6 @@ import io.vavr.collection.Set;
 // --- Day 24: Electromagnetic Moat ---
 // https://adventofcode.com/2017/day/24
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day24 extends AocPuzzle {
 
 	record Component(int a, int b) {

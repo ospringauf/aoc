@@ -17,7 +17,6 @@ import io.vavr.collection.List;
 // - regex!
 // - 42+31+ is not the same as 41{n}31{n} 
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day19 extends AocPuzzle {
 
 	public static void main(String[] args) {

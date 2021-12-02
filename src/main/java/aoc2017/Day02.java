@@ -7,7 +7,6 @@ import io.vavr.collection.List;
 
 // https://adventofcode.com/2017/day/2
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day02 extends AocPuzzle {
 
 	public static void main(String[] args) {

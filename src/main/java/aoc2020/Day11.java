@@ -10,7 +10,6 @@ import io.vavr.collection.List;
 // --- Day 11: Seating System ---
 // https://adventofcode.com/2020/day/11
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day11 extends AocPuzzle {
 
 	private static final char UNDEF = '?';

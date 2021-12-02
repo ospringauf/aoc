@@ -14,7 +14,6 @@ import io.vavr.collection.List;
 // - a recursive stack parser is not that complicated if done right
 // - better don't write parsers by hand, there are better solutions ready-to-use (-> parsington approach) 
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day18 extends AocPuzzle {
 
 	public static void main(String[] args) {

@@ -10,7 +10,6 @@ import io.vavr.collection.Set;
 // --- Day 14: Disk Defragmentation ---
 // https://adventofcode.com/2017/day/14
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day14 extends AocPuzzle {
 
 	void solve() {

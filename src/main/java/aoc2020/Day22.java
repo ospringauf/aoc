@@ -13,7 +13,6 @@ import io.vavr.collection.List;
 // - Java records and Vavr collections are a great match, no need to write equals/hashCode
 // - it helps to read all the text in the problem description (subgame decks!)
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day22 extends AocPuzzle {
 
 	/**

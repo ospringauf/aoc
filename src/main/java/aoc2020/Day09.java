@@ -7,7 +7,6 @@ import io.vavr.collection.List;
 // --- Day 9: Encoding Error ---
 // https://adventofcode.com/2020/day/9
 
-@SuppressWarnings({ "deprecation", "preview" })
 class Day09 extends AocPuzzle {
     
     record Range(int from, int to) {};

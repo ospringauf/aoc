@@ -13,7 +13,6 @@ import io.vavr.collection.List;
 // calculate modular power and modular logarithm (!) 
 // numbers are small -> brute force search will do 
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day25 extends AocPuzzle {
 
 	private static final long M = 20201227;

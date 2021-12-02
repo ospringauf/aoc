@@ -48,9 +48,10 @@ public class PointMap<T> extends HashMap<Point, T> {
 	}
 	
 	public void read(List<String> lines, Function<Character, T> f) {
-		read(lines.toJavaArray(String.class), f);
+		read(lines.toJavaArray(String[]::new), f);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void read(List<String> lines) {
 		read(lines, c->(T)c);		
 	}
@@ -169,7 +170,7 @@ public class PointMap<T> extends HashMap<Point, T> {
 	
 	public PathResult astar(Point start, Point target, Predicate<T> allowed) {
 		final int INF = Integer.MAX_VALUE - 1;
-		var points = this.keySet();
+//		var points = this.keySet();
 		var closed = new HashSet<Point>();
 		
 		var result = new PathResult();

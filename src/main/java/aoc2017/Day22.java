@@ -9,7 +9,6 @@ import io.vavr.collection.List;
 // --- Day 22: Sporifica Virus ---
 // https://adventofcode.com/2017/day/22
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day22 extends AocPuzzle {
 
 	static final char INFECTED = '#';

@@ -8,7 +8,6 @@ import io.vavr.collection.List;
 
 // https://adventofcode.com/2018/day/4
 
-@SuppressWarnings({ "deprecation", "preview" })
 class Day04 extends AocPuzzle {
 
 	static record Shift(int guard, List<Boolean> awake) {

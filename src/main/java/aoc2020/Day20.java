@@ -22,7 +22,6 @@ import io.vavr.collection.Set;
 // - analyze the problem first - it turns out that all border-matches are unambiguous!
 // - rotate, flip, shift with point-transformation functions
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day20 extends AocPuzzle {
 	
 	class Tile extends PointMap<Character> {

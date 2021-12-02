@@ -1,5 +1,6 @@
 package aoc2020;
 
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
@@ -14,7 +15,6 @@ import io.vavr.collection.Seq;
 // --- Day 17: Conway Cubes ---
 // https://adventofcode.com/2020/day/17
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day17 extends AocPuzzle {
 
     static final char ACTIVE = '#';

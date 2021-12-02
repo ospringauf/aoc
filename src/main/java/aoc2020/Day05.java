@@ -8,7 +8,6 @@ import io.vavr.collection.List;
 // --- Day 5: Binary Boarding ---
 // https://adventofcode.com/2020/day/5
 
-@SuppressWarnings({ "deprecation", "preview" })
 class Day05 extends AocPuzzle {
 
 	public static void main(String[] args) throws Exception {

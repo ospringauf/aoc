@@ -9,7 +9,6 @@ import io.vavr.collection.Set;
 // recursive approach
 // https://adventofcode.com/2020/day/7
 
-@SuppressWarnings({ "deprecation", "preview" })
 class Day07recursive extends AocPuzzle {
 
 	public static void main(String[] args) throws Exception {

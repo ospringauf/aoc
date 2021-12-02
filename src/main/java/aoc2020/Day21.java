@@ -18,7 +18,6 @@ import io.vavr.collection.Set;
 // - choosíng good variable names helps to understand own code :-) 
 
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day21 extends AocPuzzle {
 
 	public static void main(String[] args) {

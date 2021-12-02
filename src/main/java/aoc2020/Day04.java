@@ -8,7 +8,6 @@ import io.vavr.collection.Set;
 // -- Day 4: Passport Processing ---
 // https://adventofcode.com/2020/day/4
 
-@SuppressWarnings({ "deprecation", "preview" })
 class Day04 extends AocPuzzle {
 
 	private static final String BLANK_LINE = "\\n\\n";

@@ -9,7 +9,6 @@ import io.vavr.collection.List;
 // --- Day 15: Rambunctious Recitation ---
 // https://adventofcode.com/2020/day/15
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day15 extends AocPuzzle {
 
     public static void main(String[] args) {

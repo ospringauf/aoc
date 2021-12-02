@@ -11,7 +11,6 @@ import io.vavr.collection.Stream;
 // - similar to 2017.10 (knot hash) and 2018.9 (marble mania)
 // - approach: custom data structure, works better than any collection library
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day23 extends AocPuzzle {
 
 	static class Cup {

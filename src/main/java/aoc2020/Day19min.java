@@ -11,7 +11,6 @@ import io.vavr.collection.Map;
 // --- Day 19: Monster Messages ---
 // https://adventofcode.com/2020/day/19
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day19min extends AocPuzzle {
 
 	public static void main(String[] args) {

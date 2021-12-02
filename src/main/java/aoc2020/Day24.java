@@ -17,7 +17,6 @@ import io.vavr.collection.Set;
 // hex coord systems: https://www.redblobgames.com/grids/hexagons/
 // used here: "doubled coordinates"
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day24 extends AocPuzzle {
 
 	static final Boolean BLACK = Boolean.TRUE;

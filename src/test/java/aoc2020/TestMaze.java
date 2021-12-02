@@ -9,7 +9,6 @@ import common.PointMap;
 import io.vavr.collection.HashSet;
 import io.vavr.collection.List;
 
-@SuppressWarnings({ "deprecation", "preview" })
 public class TestMaze extends AocPuzzle {
 	
 	private static final char WALL = '#';

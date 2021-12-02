@@ -4,7 +4,6 @@ import io.vavr.collection.Array;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 
-@SuppressWarnings({ "deprecation", "preview" })
 class Day08Computer {
 
 	public enum Opcode {

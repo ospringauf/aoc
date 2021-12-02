@@ -11,7 +11,6 @@ import io.vavr.collection.Stream;
 // --- Day 13: Packet Scanners ---
 // https://adventofcode.com/2017/day/13
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day13 extends AocPuzzle {
 
 	record Scanner(int depth, int range) {

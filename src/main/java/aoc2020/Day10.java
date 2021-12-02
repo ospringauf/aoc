@@ -9,7 +9,6 @@ import io.vavr.collection.List;
 // --- Day 10: Adapter Array ---
 // https://adventofcode.com/2020/day/10
 
-@SuppressWarnings({ "deprecation", "preview" })
 class Day10 extends AocPuzzle {
 
     public static void main(String[] args) {

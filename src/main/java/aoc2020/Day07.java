@@ -9,7 +9,6 @@ import io.vavr.collection.Set;
 // fixpoint iteration / Convex hull approach
 // https://adventofcode.com/2020/day/7
 
-@SuppressWarnings({ "deprecation", "preview" })
 class Day07 extends AocPuzzle {
 
     public static void main(String[] args) throws Exception {

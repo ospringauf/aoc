@@ -16,7 +16,6 @@ import io.vavr.collection.List;
 
 // alternative solution using "parsington" (https://github.com/scijava/parsington)
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day18parsington extends AocPuzzle {
 
 	public static void main(String[] args) {

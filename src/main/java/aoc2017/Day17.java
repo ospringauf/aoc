@@ -6,7 +6,6 @@ import io.vavr.collection.List;
 // --- Day 17: Spinlock ---
 // https://adventofcode.com/2017/day/17
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day17 extends AocPuzzle {
 
 	private static final int STEP = 369;

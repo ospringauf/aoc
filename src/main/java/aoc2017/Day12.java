@@ -9,7 +9,6 @@ import io.vavr.collection.Set;
 
 // https://adventofcode.com/2017/day/12
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day12 extends AocPuzzle {
 
 	record Pipe(Integer src, Set<Integer> tgts) {

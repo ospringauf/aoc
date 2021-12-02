@@ -8,7 +8,6 @@ import io.vavr.collection.List;
 // https://adventofcode.com/2017/day/16
 
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day16 extends AocPuzzle {
 
 	private static final long BILLION = 1_000_000_000L;

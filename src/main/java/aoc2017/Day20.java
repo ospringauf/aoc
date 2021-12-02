@@ -6,7 +6,6 @@ import io.vavr.collection.List;
 // --- Day 20: Particle Swarm ---
 // https://adventofcode.com/2017/day/20
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day20 extends AocPuzzle {
 
 	record Coord(long x, long y, long z) {

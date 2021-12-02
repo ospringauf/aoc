@@ -21,7 +21,6 @@ import common.AocPuzzle;
 // JooL streams: 3rd place
 // Vavr streams: last, out of memory for the 40M stream!?!
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day15 extends AocPuzzle {
 
 	static final long M = 2_147_483_647; // Integer.MAX_VALUE

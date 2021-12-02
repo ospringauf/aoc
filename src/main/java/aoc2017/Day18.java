@@ -11,7 +11,6 @@ import io.vavr.collection.List;
 // --- Day 18: Duet ---
 // https://adventofcode.com/2017/day/18
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day18 extends AocPuzzle {
 
 	void part1() {

@@ -8,7 +8,6 @@ import io.vavr.collection.Map;
 
 // https://adventofcode.com/2017/day/7
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day07 extends AocPuzzle {
 
 	public static void main(String[] args) {

@@ -10,7 +10,6 @@ import io.vavr.collection.List;
 // --- Day 19: A Series of Tubes ---
 // https://adventofcode.com/2017/day/19
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day19 extends AocPuzzle {
 	
 	void solve() {

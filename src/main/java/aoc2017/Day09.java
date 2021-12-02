@@ -9,7 +9,6 @@ import io.vavr.collection.List;
 
 // https://adventofcode.com/2017/day/9
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day09 extends AocPuzzle {
 
 	record Group(List<Group> inner, boolean garbage, String raw) {

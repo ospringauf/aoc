@@ -7,7 +7,6 @@ import io.vavr.collection.Map;
 // --- Day 25: The Halting Problem ---
 // https://adventofcode.com/2017/day/25
 
-@SuppressWarnings({ "deprecation", "preview", "serial" })
 class Day25 extends AocPuzzle {
 
 	record Rule(int curr, int write, int move, Character nextState) {

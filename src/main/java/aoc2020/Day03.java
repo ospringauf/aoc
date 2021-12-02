@@ -11,7 +11,6 @@ import io.vavr.collection.Stream;
 // --- Day 3: Toboggan Trajectory ---
 // https://adventofcode.com/2020/day/3
 
-@SuppressWarnings({ "deprecation", "preview" })
 class Day03 extends AocPuzzle {
 
 	private static final char TREE = '#';
