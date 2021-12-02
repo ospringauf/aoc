@@ -8,43 +8,8 @@ public class MySplitter extends AocPuzzle {
     record Cmd(String dir, int x) {}
     record Rule(int low, int high, char letter, String pw) {}
     
-    record Bags(int amount, String color) {}
     record BagRule(String color, List<Bags> inner) {}
-
-//    record SplitResult(String[] fields) {
-//
-//        public String s(int i) {
-//            return fields[i];
-//        }
-//
-//        public int i(int i) {
-//            return Integer.valueOf(fields[i]);
-//        }
-//        
-//        public char c(int i) {
-//            return fields[i].charAt(0);
-//        }
-//
-//        public <T> List<T> map(Function<String, T> f) {
-//            return List.of(fields).map(f);
-//        }
-//        
-//        public List<SplitResult> split(String pat) {
-//            return map(s -> MySplitter.split(s, pat)); 
-//        }
-//    }
-//    
-//    static SplitResult split(String s, String pat) {
-//        return new SplitResult(s.split(pat));
-//    }
-//    
-//    static SplitResult lines(String s) {
-//        return new SplitResult(s.split("\n"));
-//    }
-//
-//    static Function<String, SplitResult> split(String pat) {
-//        return s -> split(s, pat);
-//    }
+    record Bags(int amount, String color) {}
 
     public static void main(String[] args) {
 
@@ -63,7 +28,12 @@ public class MySplitter extends AocPuzzle {
             .map(split(" bags contain "))
             .map(r -> new BagRule(r.s(0), split(r.s(1), ", ").split(" ").map(r2 -> new Bags(r2.i(0), r2.s(1) + " " + r2.s(2)))));
         System.out.println(t3);   
-   
+
+        var t3a = lines(test3a)
+                .map(split(" bags contain "))
+                .map(r -> new BagRule(r.s(0), split(r.s(1), ", ").split(" ").map(r2 -> r2.s(0).equals("no")? null : new Bags(r2.i(0), r2.s(1) + " " + r2.s(2)))));
+            System.out.println(t3a);   
+
     }
     
     static String test1 = """
