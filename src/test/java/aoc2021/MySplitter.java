@@ -1,6 +1,9 @@
 package aoc2021;
 
+import java.util.function.Predicate;
+
 import common.AocPuzzle;
+import io.vavr.Function1;
 import io.vavr.collection.List;
 
 public class MySplitter extends AocPuzzle {
@@ -10,6 +13,10 @@ public class MySplitter extends AocPuzzle {
     
     record BagRule(String color, List<Bags> inner) {}
     record Bags(int amount, String color) {}
+    
+    public static <T> Function1<String,T> nullIf(Predicate<String> p, Function1<String,T> f) {
+    	return s -> p.test(s) ? null : f.apply(s);
+    }
 
     public static void main(String[] args) {
 
@@ -29,9 +36,10 @@ public class MySplitter extends AocPuzzle {
             .map(r -> new BagRule(r.s(0), split(r.s(1), ", ").split(" ").map(r2 -> new Bags(r2.i(0), r2.s(1) + " " + r2.s(2)))));
         System.out.println(t3);   
 
+        Function1<String, Bags> parseBags = nullIf(s -> s.startsWith("no"),  split(" ").andThen(r -> new Bags(r.i(0), r.s(1) + " " + r.s(2))));
         var t3a = lines(test3a)
                 .map(split(" bags contain "))
-                .map(r -> new BagRule(r.s(0), split(r.s(1), ", ").split(" ").map(r2 -> r2.s(0).equals("no")? null : new Bags(r2.i(0), r2.s(1) + " " + r2.s(2)))));
+                .map(r -> new BagRule(r.s(0), split(r.s(1), ", ").map(parseBags)));
             System.out.println(t3a);   
 
     }

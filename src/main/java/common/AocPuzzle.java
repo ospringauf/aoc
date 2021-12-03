@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.function.Function;
 
+import io.vavr.Function1;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
 
@@ -57,7 +58,7 @@ public class AocPuzzle {
         }
 
         public <T> List<T> map(Function<String, T> f) {
-            return List.of(fields).map(f);
+        	return List.of(fields).map(f);
         }
         
         public List<SplitResult> split(String pat) {
@@ -73,7 +74,7 @@ public class AocPuzzle {
         return new SplitResult(s.split("\n"));
     }
 
-    public static Function<String, SplitResult> split(String pat) {
+    public static Function1<String, SplitResult> split(String pat) {
         return s -> split(s, pat);
     }
 
