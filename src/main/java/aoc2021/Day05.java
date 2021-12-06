@@ -1,5 +1,8 @@
 package aoc2021;
 
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.CoreMatchers.*;
+
 import common.AocPuzzle;
 import common.Point;
 import common.PointMap;
@@ -69,6 +72,7 @@ class Day05 extends AocPuzzle {
 		map.print();
 		var overlap = map.findPoints(v -> v > 1);
 		System.out.println(overlap.size());
+		assertThat(overlap.size(), is(12));
 	}
 
 	public static void main(String[] args) {

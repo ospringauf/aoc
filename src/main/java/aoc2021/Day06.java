@@ -1,43 +1,44 @@
 package aoc2021;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import common.AocPuzzle;
+import io.vavr.Tuple;
 import io.vavr.collection.List;
 
-//--- Day x: ---
-// https://adventofcode.com/2021/day/x
+//--- Day 6: Lanternfish ---
+// https://adventofcode.com/2021/day/6
 
 class Day06 extends AocPuzzle {
 
-	void part1() {
-		List<String> data = file2lines("input0x.txt");
+	List<Integer> data = split(input, ",").map(Integer::parseInt);
+//	List<Integer> data = split(example, ",").map(Integer::parseInt);
+
+//	void part1() {
+//		for (int i = 1; i <= 80; ++i) {
+//			data = data.map(x -> (x == 0) ? 6 : (x - 1)).appendAll(data.filter(x -> x == 0).map(x -> 8));
+//		}
+//		System.out.println(data.length());
+//	}
+
+	void simDays(int days) {
+		var m = List.range(0, 8).toMap(i -> i, i -> (long) data.count(x -> x == i));
+		for (int d = 1; d <= days; ++d) {
+			var offspring = m.getOrElse(0, 0L);
+			m = m.remove(0).map((a, b) -> Tuple.of(a - 1, b));
+			m = m.put(6, m.getOrElse(6, 0L) + offspring);
+			m = m.put(8, offspring);
+		}
+		System.out.println(m.values().sum());
 	}
 
-	void part2() {
-		
-	}
-
-	void test() {
-		assertEquals(1, 1);
-		System.out.println("passed");
-	}
-
-	
 	public static void main(String[] args) {
-	
-		System.out.println("=== test");
-		new Day06().test();
-	
-		System.out.println("=== part 1");
-		new Day06().part1();
-	
-		System.out.println("=== part 2");
-		new Day06().part2();
+		System.out.println("=== part 1"); // 345387
+		new Day06().simDays(80);
+
+		System.out.println("=== part 2"); // 1574445493136
+		new Day06().simDays(256);
 	}
 
-	static String example = """
-
-			""";
+	static final String example = "3,4,3,1,2";
+	static final String input = "2,5,3,4,4,5,3,2,3,3,2,2,4,2,5,4,1,1,4,4,5,1,2,1,5,2,1,5,1,1,1,2,4,3,3,1,4,2,3,4,5,1,2,5,1,2,2,5,2,4,4,1,4,5,4,2,1,5,5,3,2,1,3,2,1,4,2,5,5,5,2,3,3,5,1,1,5,3,4,2,1,4,4,5,4,5,3,1,4,5,1,5,3,5,4,4,4,1,4,2,2,2,5,4,3,1,4,4,3,4,2,1,1,5,3,3,2,5,3,1,2,2,4,1,4,1,5,1,1,2,5,2,2,5,2,4,4,3,4,1,3,3,5,4,5,4,5,5,5,5,5,4,4,5,3,4,3,3,1,1,5,2,4,5,5,1,5,2,4,5,4,2,4,4,4,2,2,2,2,2,3,5,3,1,1,2,1,1,5,1,4,3,4,2,5,3,4,4,3,5,5,5,4,1,3,4,4,2,2,1,4,1,2,1,2,1,5,5,3,4,1,3,2,1,4,5,1,5,5,1,2,3,4,2,1,4,1,4,2,3,3,2,4,1,4,1,4,4,1,5,3,1,5,2,1,1,2,3,3,2,4,1,2,1,5,1,1,2,1,2,1,2,4,5,3,5,5,1,3,4,1,1,3,3,2,2,4,3,1,1,2,4,1,1,1,5,4,2,4,3";
 
 }
