@@ -3,7 +3,6 @@ package aoc2021;
 import common.AocPuzzle;
 import common.Util;
 import io.vavr.collection.List;
-import io.vavr.collection.Seq;
 
 //--- Day 3: Binary Diagnostic ---
 // https://adventofcode.com/2021/day/3

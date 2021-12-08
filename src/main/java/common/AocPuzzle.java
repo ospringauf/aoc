@@ -58,11 +58,15 @@ public class AocPuzzle {
         }
 
         public <T> List<T> map(Function<String, T> f) {
-        	return List.of(fields).map(f);
+        	return toList().map(f);
         }
         
         public List<SplitResult> split(String pat) {
             return map(s -> AocPuzzle.split(s, pat)); 
+        }
+        
+        public List<String> toList() {
+            return List.of(fields);
         }
     }
     

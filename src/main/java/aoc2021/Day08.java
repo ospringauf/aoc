@@ -8,57 +8,59 @@ import io.vavr.collection.Array;
 import io.vavr.collection.HashSet;
 import io.vavr.collection.List;
 import io.vavr.collection.Set;
-import io.vavr.collection.Stream;
 
 //--- Day 8: Seven Segment Search ---
 // https://adventofcode.com/2021/day/8
 
 class Day08 extends AocPuzzle {
 
-	// 0 1 2 3 4 5 6 7 8 9
-	// 6 2 5 5 4 5 6 3 7 6
-	String SEGMENTS = "abcefg cf acdeg acdfg bcdf abdfg abdefg acf abcdefg abcdfg";
-	List<Set<Character>> NUMBERS = List.of(SEGMENTS.split(" ")).map(s -> HashSet.ofAll(s.toCharArray()));
+    static final String SEGMENTS = "abcefg cf acdeg acdfg bcdf abdfg abdefg acf abcdefg abcdfg";
+	static final Array<Set<Character>> DIGITS = Array.of(SEGMENTS.split(" ")).map(s -> HashSet.ofAll(s.toCharArray()));
 
-	HashSet<Character> applyPermutation(String s, Array<Character> perm) {
-		return HashSet.ofAll(s.toCharArray()).map(c -> (char) perm.get(c - 'a'));
+	record Permutation(Array<Character> perm) {
+	    
+	    Set<Character> apply(String s) {
+	        return HashSet.ofAll(s.toCharArray()).map(c -> (char) perm.get(c - 'a'));
+	    }
+	    
+	    boolean isAnyDigit(String s) {
+	        return DIGITS.contains(apply(s));
+	    }
+
+	    int digitOf(String s) {
+	        return DIGITS.indexOf(apply(s));
+	    }
 	}
 	
-	boolean isAnyNumber(String s, Array<Character> perm) {
-		var p = applyPermutation(s, perm);
-		return NUMBERS.exists(n -> n.eq(p));
-	}
-
-	
-	int numberOf(String s, Array<Character> perm) {
-		var p = applyPermutation(s, perm);
-		return NUMBERS.indexWhere(n -> n.eq(p));
-	}
-
-//	List<String> data = file2lines("input08.txt");
+//	List<String> data = Util.splitLines(example1);
 //	List<String> data = Util.splitLines(example2); // 26 61229
-	List<String> data = Util.splitLines(example1);
+	List<String> data = file2lines("input08.txt");
 	
 	void solve() {
-
-		var allPermutations = Stream.ofAll(Generator.permutation('a', 'b', 'c', 'd', 'e', 'f', 'g').simple().stream().map(Array::ofAll)).toList();
+	    var allPermutations = List.ofAll(
+	            Generator.permutation('a', 'b', 'c', 'd', 'e', 'f', 'g')
+	                .simple()
+	                .stream()
+	                .map(Array::ofAll)
+	                .map(Permutation::new));
 
 		int result1 = 0;
 		int result2 = 0;
 
 		for (var entry : data) {
-			var remainingPerm = List.ofAll(allPermutations);
-//			var l = split(entry, " \\| ").map(split(" ").andThen(List::of));
-//			System.out.println(l);
-			var patterns = List.of(entry.split(" \\| ")[0].split(" "));
-			var out = List.of(entry.split(" \\| ")[1].split(" "));
+			
+			var f = entry.split(" \\| ");
+			var patterns = Util.splitFields(f[0]);
+			var output = Util.splitFields(f[1]);
+			
+//			var remainingPerm = List.ofAll(allPermutations);
+//			for (var s : patterns) {
+//				remainingPerm = remainingPerm.filter(p -> p.isAnyDigit(s));
+//			}
+//			var permutation = remainingPerm.single();
+			var permutation = allPermutations.filter(p -> patterns.forAll(s -> p.isAnyDigit(s))).single(); // one-liner
 
-			for (var s : patterns) {
-				remainingPerm = remainingPerm.filter(p -> isAnyNumber(s, p));
-			}
-			var permutation = remainingPerm.single();
-
-			var nums = out.map(x -> numberOf(x, permutation));
+			var nums = output.map(permutation::digitOf);
 
 			result1 += nums.count(List.of(1, 4, 7, 8)::contains);
 			result2 += nums.foldLeft(0, (R,x) -> 10*R + x);
