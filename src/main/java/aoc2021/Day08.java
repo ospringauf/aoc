@@ -14,7 +14,7 @@ import io.vavr.collection.Set;
 
 class Day08 extends AocPuzzle {
 
-    static final String[] SEGMENTS = "abcefg cf acdeg acdfg bcdf abdfg abdefg acf abcdefg abcdfg".split(" ");
+    static final String[] SEGMENTS = "abcefg cf acdeg acdfg bcdf abdfg abdefg acf abcdefg abcdfg".split(" "); // 0 .. 9 patterns
 	static final Array<Set<Character>> DIGITS = Array.of(SEGMENTS).map(s -> HashSet.ofAll(s.toCharArray()));
 
 	// "dcfgeab" means abcdefg->dcfgeab (i.e.  a->d, b->c, c->f, d->g ...) 
@@ -24,13 +24,17 @@ class Day08 extends AocPuzzle {
 	        return HashSet.ofAll(s.toCharArray()).map(c -> perm.get(c - 'a'));
 	    }
 	    
-	    boolean isDigit(String s) {
-	        return DIGITS.contains(apply(s));
+	    boolean isDigit(String pattern) {
+	        return DIGITS.contains(apply(pattern));
 	    }
 
-	    int toDigit(String s) {
-	        return DIGITS.indexOf(apply(s));
+	    int toDigit(String pattern) {
+	        return DIGITS.indexOf(apply(pattern));
 	    }
+
+        boolean validForAll(List<String> patterns) {
+            return patterns.forAll(this::isDigit);
+        }
 	}
 	
 //	List<String> input = Util.splitLines(example1);
@@ -50,17 +54,13 @@ class Day08 extends AocPuzzle {
 			var patterns = Util.splitFields(f[0]);
 			var output = Util.splitFields(f[1]);
 			
-//			var remainingPerm = List.ofAll(allPermutations);
-//			for (var s : patterns) {
-//				remainingPerm = remainingPerm.filter(p -> p.isAnyDigit(s));
-//			}
-//			var permutation = remainingPerm.single();
-			var permutation = allPermutations.filter(perm -> patterns.forAll(s -> perm.isDigit(s))).single(); // one-liner
+			// find the one permutation that produces valid digits for all seen patterns 
+			var permutation = allPermutations.filter(perm -> perm.validForAll(patterns)).single();
 
-			var nums = output.map(permutation::toDigit);
+			var outputDigits = output.map(permutation::toDigit);
 
-			result1 += nums.count(List.of(1, 4, 7, 8)::contains);
-			result2 += nums.foldLeft(0, (R,x) -> 10*R + x);
+			result1 += outputDigits.count(List.of(1, 4, 7, 8)::contains);
+			result2 += Integer.parseInt(outputDigits.mkString()); 
 		}
 		System.out.println(result1);
 		System.out.println(result2);
