@@ -14,40 +14,37 @@ import io.vavr.collection.Set;
 
 class Day08 extends AocPuzzle {
 
-    static final String SEGMENTS = "abcefg cf acdeg acdfg bcdf abdfg abdefg acf abcdefg abcdfg";
-	static final Array<Set<Character>> DIGITS = Array.of(SEGMENTS.split(" ")).map(s -> HashSet.ofAll(s.toCharArray()));
+    static final String[] SEGMENTS = "abcefg cf acdeg acdfg bcdf abdfg abdefg acf abcdefg abcdfg".split(" ");
+	static final Array<Set<Character>> DIGITS = Array.of(SEGMENTS).map(s -> HashSet.ofAll(s.toCharArray()));
 
+	// "dcfgeab" means abcdefg->dcfgeab (i.e.  a->d, b->c, c->f, d->g ...) 
 	record Permutation(Array<Character> perm) {
 	    
-	    Set<Character> apply(String s) {
-	        return HashSet.ofAll(s.toCharArray()).map(c -> (char) perm.get(c - 'a'));
+	    private Set<Character> apply(String s) {
+	        return HashSet.ofAll(s.toCharArray()).map(c -> perm.get(c - 'a'));
 	    }
 	    
-	    boolean isAnyDigit(String s) {
+	    boolean isDigit(String s) {
 	        return DIGITS.contains(apply(s));
 	    }
 
-	    int digitOf(String s) {
+	    int toDigit(String s) {
 	        return DIGITS.indexOf(apply(s));
 	    }
 	}
 	
-//	List<String> data = Util.splitLines(example1);
-//	List<String> data = Util.splitLines(example2); // 26 61229
-	List<String> data = file2lines("input08.txt");
+//	List<String> input = Util.splitLines(example1);
+//	List<String> input = Util.splitLines(example2); // 26 61229
+	List<String> input = file2lines("input08.txt"); // 272 1007675
 	
 	void solve() {
-	    var allPermutations = List.ofAll(
-	            Generator.permutation('a', 'b', 'c', 'd', 'e', 'f', 'g')
-	                .simple()
-	                .stream()
-	                .map(Array::ofAll)
-	                .map(Permutation::new));
+	    var generator = Generator.permutation('a', 'b', 'c', 'd', 'e', 'f', 'g').simple();
+        var allPermutations = List.ofAll(generator).map(l -> new Permutation(Array.ofAll(l)));
 
 		int result1 = 0;
 		int result2 = 0;
 
-		for (var entry : data) {
+		for (var entry : input) {
 			
 			var f = entry.split(" \\| ");
 			var patterns = Util.splitFields(f[0]);
@@ -58,9 +55,9 @@ class Day08 extends AocPuzzle {
 //				remainingPerm = remainingPerm.filter(p -> p.isAnyDigit(s));
 //			}
 //			var permutation = remainingPerm.single();
-			var permutation = allPermutations.filter(p -> patterns.forAll(s -> p.isAnyDigit(s))).single(); // one-liner
+			var permutation = allPermutations.filter(perm -> patterns.forAll(s -> perm.isDigit(s))).single(); // one-liner
 
-			var nums = output.map(permutation::digitOf);
+			var nums = output.map(permutation::toDigit);
 
 			result1 += nums.count(List.of(1, 4, 7, 8)::contains);
 			result2 += nums.foldLeft(0, (R,x) -> 10*R + x);
@@ -70,8 +67,7 @@ class Day08 extends AocPuzzle {
 	}
 
 	public static void main(String[] args) {
-
-		new Day08().solve(); // 272 1007675
+		new Day08().solve(); 
 	}
 
 	static String example1 = "acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf";

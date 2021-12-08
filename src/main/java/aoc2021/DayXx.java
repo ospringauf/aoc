@@ -11,7 +11,7 @@ import io.vavr.collection.List;
 class DayXx extends AocPuzzle {
 
 	void part1() {
-		List<String> data = file2lines("input0x.txt");
+		List<String> input = file2lines("input0x.txt");
 	}
 
 	void part2() {
