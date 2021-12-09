@@ -9,7 +9,7 @@ import io.vavr.collection.List;
 //--- Day x: ---
 // https://adventofcode.com/2021/day/x
 
-class DayXx extends AocPuzzle {
+class Day10 extends AocPuzzle {
 
 	List<String> input = Util.splitLines(example);
 //	List<String> input = file2lines("input0x.txt");
@@ -30,13 +30,13 @@ class DayXx extends AocPuzzle {
 	public static void main(String[] args) {
 	
 		System.out.println("=== test");
-		new DayXx().test();
+		new Day10().test();
 	
 		System.out.println("=== part 1");
-		new DayXx().part1();
+		new Day10().part1();
 	
 		System.out.println("=== part 2");
-		new DayXx().part2();
+		new Day10().part2();
 	}
 
 	static String example = """
