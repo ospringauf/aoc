@@ -1,19 +1,18 @@
 package aoc2021;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import common.AocPuzzle;
 import common.Util;
 import io.vavr.collection.List;
 
-// --- Day x: ---
-// https://adventofcode.com/2021/day/x
+// --- Day 11: ---
+// https://adventofcode.com/2021/day/11
 
-class DayXx extends AocPuzzle {
+class Day11 extends AocPuzzle {
 
 	List<String> input = Util.splitLines(example);
-//	List<String> input = file2lines("input0x.txt");
+//	List<String> input = file2lines("input11.txt");
 	
 	void part1() {
 	}
@@ -23,7 +22,7 @@ class DayXx extends AocPuzzle {
 	}
 
 	void test() {
-		assertThat(1, is(1));
+		assertEquals(1, 1);
 		System.out.println("passed");
 	}
 
@@ -31,13 +30,13 @@ class DayXx extends AocPuzzle {
 	public static void main(String[] args) {
 	
 		System.out.println("=== test");
-		new DayXx().test();
+		new Day11().test();
 	
 		System.out.println("=== part 1");
-		new DayXx().part1();
+		new Day11().part1();
 	
 		System.out.println("=== part 2");
-		new DayXx().part2();
+		new Day11().part2();
 	}
 
 	static String example = """

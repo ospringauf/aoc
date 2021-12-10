@@ -15,7 +15,9 @@ import io.vavr.collection.Set;
 
 class Day09 extends AocPuzzle {
 
-	PointMap<Integer> map = new PointMap<>();
+	private static final int HIGHEST = 9;
+
+    PointMap<Integer> map = new PointMap<>();
 
 	List<String> input = file2lines("input09.txt");
 //	List<String> input = Util.splitLines(example);
@@ -23,7 +25,7 @@ class Day09 extends AocPuzzle {
 	void solve() {
 		map.read(input, c -> c - '0');
 
-		Predicate<Point> localMin = p -> p.neighbors().forAll(n -> map.getOrDefault(p, 9) < map.getOrDefault(n, 9));
+		Predicate<Point> localMin = p -> p.neighbors().forAll(n -> map.getOrDefault(p, HIGHEST) < map.getOrDefault(n, HIGHEST));
 		var lowpoints = List.ofAll(map.keySet()).filter(localMin);
 		var result1 = lowpoints.map(p -> map.get(p) + 1).sum();
 
@@ -43,7 +45,7 @@ class Day09 extends AocPuzzle {
 		int size = 1;
 		do {
 			size = b.size();
-			b = b.addAll(b.flatMap(x -> x.neighbors()).filter(x -> map.getOrDefault(x, 9) != 9));
+			b = b.addAll(b.flatMap(Point::neighbors).filter(x -> map.getOrDefault(x, HIGHEST) < HIGHEST));
 		} while (b.size() > size);
 		return b;
 	}

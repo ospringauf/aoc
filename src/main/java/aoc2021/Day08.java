@@ -19,7 +19,6 @@ class Day08 extends AocPuzzle {
 
 	// "dcfgeab" means abcdefg->dcfgeab (i.e.  a->d, b->c, c->f, d->g ...) 
 	record Permutation(Array<Character> perm) {
-	    
 	    private Set<Character> apply(String s) {
 	        return HashSet.ofAll(s.toCharArray()).map(c -> perm.get(c - 'a'));
 	    }
@@ -67,7 +66,7 @@ class Day08 extends AocPuzzle {
 	}
 
 	public static void main(String[] args) {
-		new Day08().solve(); 
+		timed(() -> new Day08().solve()); 
 	}
 
 	static String example1 = "acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf";
