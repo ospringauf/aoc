@@ -13,33 +13,33 @@ import io.vavr.collection.List;
 
 class Day10 extends AocPuzzle {
 
-    static final HashMap<Character, Integer> POINTS1 = HashMap.of(')', 3, ']', 57, '}', 1197, '>', 25137);
-    static final HashMap<Character, Long> POINTS2 = HashMap.of(')', 1L, ']', 2L, '}', 3L, '>', 4L);
+    static final HashMap<Character, Integer> SCORE_1 = HashMap.of(')', 3, ']', 57, '}', 1197, '>', 25137);
+    static final HashMap<Character, Integer> SCORE_2 = HashMap.of(')', 1, ']', 2,  '}', 3,    '>', 4);
     static final HashMap<Character, Character> BRACKETS = HashMap.of('(', ')', '[', ']', '{', '}', '<', '>');
 
     // List<String> input = Util.splitLines(example);
     List<String> input = file2lines("input10.txt");
 
     int parse1(String s) {
+    	// two stacks
         var tokens = List.ofAll(s.toCharArray());
         var expect = List.empty();
 
         while (tokens.nonEmpty()) {
             var t = tokens.head();
+            tokens = tokens.pop();
 
             if (BRACKETS.containsKey(t)) {
-                // opening bracket
+                // opening bracket: expect corresponding closing bracket
                 expect = expect.push(BRACKETS.get(t).get());
-                tokens = tokens.pop();
             } else if (t == expect.head()) {
-                // closing bracket, match
-                tokens = tokens.pop();
+                // closing bracket, matches expectation
                 expect = expect.pop();
             } else {
                 // mismatch - corrupt chunk
-                // score based on unexpected/illegal token 
+                // score based on unexpected/illegal token t 
                 // System.out.println(" exp " + expect.head() + " but found " + h);
-                return POINTS1.get(t).get();
+                return SCORE_1.get(t).get();
             }
         }
         return 0;
@@ -51,19 +51,19 @@ class Day10 extends AocPuzzle {
     }
 
     long parse2(String s) {
+    	// two stacks
         List<Character> tokens = List.ofAll(s.toCharArray());
         List<Character> expect = List.empty();
 
         while (tokens.nonEmpty()) {
             var t = tokens.head();
+            tokens = tokens.pop();
 
             if (BRACKETS.containsKey(t)) {
-                // opening bracket
+                // opening bracket: expect corresponding closing bracket
                 expect = expect.push(BRACKETS.get(t).get());
-                tokens = tokens.pop();
             } else if (t == expect.head()) {
-                // closing bracket, match
-                tokens = tokens.pop();
+            	// closing bracket, matches expectation
                 expect = expect.pop();
             } else {
                 // mismatch - corrupt input should be ignored in part 2
@@ -72,7 +72,8 @@ class Day10 extends AocPuzzle {
         }
         
         // score remaining "expected" (closing brackets)
-        return expect.map(c -> POINTS2.get(c).get()).foldLeft(0L, (R, x) -> 5 * R + x);
+        //return expect.map(c -> SCORE_2.get(c).get()).foldLeft(0L, (R, x) -> 5 * R + x);
+        return expect.map(SCORE_2.asPartialFunction()).foldLeft(0L, (R, x) -> 5 * R + x);
     }
 
     void part2() {

@@ -1,6 +1,7 @@
 package aoc2021;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.CoreMatchers.*;
 
 import common.AocPuzzle;
 import common.Util;
@@ -22,7 +23,7 @@ class Day11 extends AocPuzzle {
 	}
 
 	void test() {
-		assertEquals(1, 1);
+		assertThat(1, is(1));
 		System.out.println("passed");
 	}
 

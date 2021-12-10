@@ -17,17 +17,17 @@ class Day09 extends AocPuzzle {
 
 	private static final int HIGHEST = 9;
 
-    PointMap<Integer> map = new PointMap<>();
+    PointMap<Integer> heightmap = new PointMap<>();
 
 	List<String> input = file2lines("input09.txt");
 //	List<String> input = Util.splitLines(example);
 
 	void solve() {
-		map.read(input, c -> c - '0');
+		heightmap.read(input, c -> c - '0');
 
-		Predicate<Point> localMin = p -> p.neighbors().forAll(n -> map.getOrDefault(p, HIGHEST) < map.getOrDefault(n, HIGHEST));
-		var lowpoints = List.ofAll(map.keySet()).filter(localMin);
-		var result1 = lowpoints.map(p -> map.get(p) + 1).sum();
+		Predicate<Point> localMin = p -> p.neighbors().forAll(n -> heightmap.getOrDefault(p, HIGHEST) < heightmap.getOrDefault(n, HIGHEST));
+		var lowpoints = List.ofAll(heightmap.keySet()).filter(localMin);
+		var result1 = lowpoints.map(p -> heightmap.get(p) + 1).sum();
 
 		System.out.println("=== part 1"); // 498
 		System.out.println(result1);
@@ -45,7 +45,7 @@ class Day09 extends AocPuzzle {
 		int size = 1;
 		do {
 			size = b.size();
-			b = b.addAll(b.flatMap(Point::neighbors).filter(x -> map.getOrDefault(x, HIGHEST) < HIGHEST));
+			b = b.addAll(b.flatMap(Point::neighbors).filter(x -> heightmap.getOrDefault(x, HIGHEST) < HIGHEST));
 		} while (b.size() > size);
 		return b;
 	}
