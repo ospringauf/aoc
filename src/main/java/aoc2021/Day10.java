@@ -37,6 +37,7 @@ class Day10 extends AocPuzzle {
                 expect = expect.pop();
             } else {
                 // mismatch - corrupt chunk
+                // score based on unexpected/illegal token 
                 // System.out.println(" exp " + expect.head() + " but found " + h);
                 return POINTS1.get(t).get();
             }
@@ -69,6 +70,8 @@ class Day10 extends AocPuzzle {
                 throw new RuntimeException("corrupt");
             }
         }
+        
+        // score remaining "expected" (closing brackets)
         return expect.map(c -> POINTS2.get(c).get()).foldLeft(0L, (R, x) -> 5 * R + x);
     }
 
@@ -80,6 +83,8 @@ class Day10 extends AocPuzzle {
     }
 
     void test() {
+        assertThat(parse1("(>"), is(25137));
+        assertThat(parse1("([>"), is(25137));
         assertThat(parse1("{([(<{}[<>[]}>{[]{[(<()>"), is(1197));
         assertThat(parse1("[[<[([]))<([[{}[[()]]]"), is(3));
         System.out.println("passed");
