@@ -68,6 +68,10 @@ public class AocPuzzle {
         public List<String> toList() {
             return List.of(fields);
         }
+        
+        public <T> T to(Function1<SplitResult, T> f) {
+        	return f.apply(this);
+        }
     }
     
 	public static SplitResult split(String s, String pat) {

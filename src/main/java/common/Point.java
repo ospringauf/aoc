@@ -113,4 +113,11 @@ public record Point(int x, int y) {
     public String toString() {
     	return String.format("(%d,%d)", x,y);
     }
+    
+    public static Point parse(String s) {
+    	var f = s.split("\\W+"); // non-word characters
+//    	var f = s.split("[^\\+\\-0-9]+");
+    	return new Point(Integer.parseInt(f[0]), Integer.parseInt(f[1]));
+		
+	}
 }
