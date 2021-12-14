@@ -38,7 +38,7 @@ class Day13 extends AocPuzzle {
 		System.out.println("=== part 1"); // 785
 		System.out.println(points.size());
 
-		points = rules.foldLeft(points, (p, rule) -> p.map(rule)); 
+		points = rules.tail().foldLeft(points, (p, rule) -> p.map(rule)); 
 
 		var paper = new PointMap<Character>();
 		points.forEach(p -> paper.put(p, '#'));
