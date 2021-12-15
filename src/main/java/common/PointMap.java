@@ -126,7 +126,7 @@ public class PointMap<T> extends HashMap<Point, T> {
 
 	// calc paths and distances in one go
 	public PathResult dijkstraAll(Point start, Predicate<T> allowed, Predicate<T> via) {
-		final int INF = Integer.MAX_VALUE - 1;
+		final int INF = Integer.MAX_VALUE / 2;
 		var points = this.keySet();
 
 		var result = new PathResult();
@@ -169,7 +169,6 @@ public class PointMap<T> extends HashMap<Point, T> {
 
 	public PathResult astar(Point start, Point target, Predicate<T> allowed) {
 		final int INF = Integer.MAX_VALUE / 2;
-//		var points = this.keySet();
 		var closed = new HashSet<Point>();
 
 		var result = new PathResult();

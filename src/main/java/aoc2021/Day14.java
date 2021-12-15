@@ -16,7 +16,7 @@ class Day14 extends AocPuzzle {
 	static List<String> inputReal = new Day14().file2lines("input14.txt");
 
 	List<Rule> rules;
-	Map<Prod, Freq> cache = new HashMap<>();
+	Map<Param, Histogram> cache = new HashMap<>();
 
 	record Rule(char a, char b, char c) {
 		static Rule parse(String s) {
@@ -28,37 +28,45 @@ class Day14 extends AocPuzzle {
 		}
 	}
 
-	// vector of element occurences
-	record Freq(Array<Long> f) {
-		Freq plus(Freq f2) {
-			return new Freq(f.zip(f2.f).map(t -> t._1 + t._2).toArray());
+	// cache key
+	record Param(int step, char a, char b) {}
+	
+	// histogram: vector of element occurences
+	record Histogram(Array<Long> a) {
+		Histogram plus(Histogram h2) {
+			return new Histogram(a.zip(h2.a).map(t -> t._1 + t._2).toArray());
 		}
 
-		Freq minus(Freq f2) {
-			return new Freq(f.zip(f2.f).map(t -> t._1 - t._2).toArray());
+		Histogram minus(Histogram h2) {
+			return new Histogram(a.zip(h2.a).map(t -> t._1 - t._2).toArray());
 		}
 		
-		Freq plus(char c) {
-			return new Freq(f.update(c, f.get(c)+1));
+		Histogram plus(char c) {
+			return new Histogram(a.update(c, a.get(c)+1));
 		}
 
-		Freq minus(char c) {
-			return new Freq(f.update(c, f.get(c)-1));
+		Histogram minus(char c) {
+			return new Histogram(a.update(c, a.get(c)-1));
 		}
 
-		static Freq of(List<Character> l) {
-		    return l.foldLeft(empty(), (f, c) -> f.plus(c));
+		static Histogram of(List<Character> l) {
+		    return l.foldLeft(empty(), (h, c) -> h.plus(c));
 		}
 
-		static Freq empty() {
-			return new Freq(Array.fill('Z'+1, 0L));
+		static Histogram empty() {
+			return new Histogram(Array.fill('Z'+1, 0L));
 		}
+
+        public long min() {
+            return a.filter(x -> x>0).min().get();
+        }
+
+        public long max() {
+            return a.max().get();
+        }
 	}
 
-	// cache key
-	record Prod(int step, char a, char b) {	}
-
-	List<Character> expand1(char a, char b) {
+	List<Character> processPolymer(char a, char b) {
 		var t = rules.find(r -> r.match(a, b));
 		if (t.isDefined())
 			return List.of(a, t.get().c, b);
@@ -75,7 +83,7 @@ class Day14 extends AocPuzzle {
     	for (var i : List.range(0, steps)) {
     		polymer = polymer
     				.sliding(2)
-    				.flatMap(x -> expand1(x.get(0), x.get(1)).tail())
+    				.flatMap(x -> processPolymer(x.get(0), x.get(1)).tail())
     				.toList()
     				.prepend(polymer.head());
     	}
@@ -84,52 +92,52 @@ class Day14 extends AocPuzzle {
     	System.out.println(freq.last() - freq.head());
     }
 
-    Freq expandN(int steps, char a, char b) {
-		var f = cache.getOrDefault(new Prod(steps, a, b), null);
-		if (f != null)
-			return f;
+	// now again, but clever --------------------------------------------------
+	
+    Histogram processPolymer(int steps, char a, char b) {
+		Param key = new Param(steps, a, b);
+        var h = cache.getOrDefault(key, null);
+		if (h != null)
+			return h;
 
-		Freq f0 = Freq.of(List.of(a, b));
+		Histogram h0 = Histogram.of(List.of(a, b));
+		Histogram result = null;
 		
 		if (steps == 0) {
-			cache.put(new Prod(0, a, b), f0);
-			return f0;
+			result = h0;
+		} else {
+    		var rule = rules.find(r -> r.match(a, b));
+    		if (rule.isDefined()) {		
+    			// AB -> C
+    			var c = rule.get().c;
+    			var h1 = processPolymer(steps-1, a, c);
+    			var h2 = processPolymer(steps-1, c, b);
+    			result = h1.plus(h2).minus(c); // c was counted twice
+    		} else {		
+    			result = h0;
+    		}
 		}
 
-		Freq result = null;
-		var rule = rules.find(r -> r.match(a, b));
-		if (rule.isDefined()) {		
-			// AB -> C
-			var c = rule.get().c;
-			var f1 = expandN(steps-1, a, c);
-			var f2 = expandN(steps-1, c, b);
-			result = f1.plus(f2).minus(c);
-		} else {		
-			result = f0;
-		}
-
-		cache.put(new Prod(steps, a, b), result);
+		cache.put(key, result);
 		return result;
 	}
 
 	void solve(List<String> input, int steps) {
+		List<Character> template = List.ofAll(input.head().toCharArray());
 		rules = input.drop(2).map(Rule::parse);
 
-		List<Character> template = List.ofAll(input.head().toCharArray());
-
-		var freq = template
+		Histogram result = template
 		        .sliding(2)
-		        .map(x -> expandN(steps, x.get(0), x.get(1))) // pairwise results
-		        .foldLeft(Freq.empty(), (f1, f2) -> f1.plus(f2));
+		        .map(pair -> processPolymer(steps, pair.get(0), pair.get(1))) // pairwise results
+		        .foldLeft(Histogram.empty(), (h1, h2) -> h1.plus(h2));
 
-		// all inner elements are counted twice
-		freq = freq
-		        .minus(Freq.of(template))
+		// all inner elements were counted twice -> fix result
+		result = result
+		        .minus(Histogram.of(template))
 		        .plus(template.head())
 		        .plus(template.last());
 		
-		var r = freq.f.filter(x -> x > 0).sorted();
-		System.out.println(r.last() - r.head());
+		System.out.println(result.max() - result.min());
 	}
 	
 

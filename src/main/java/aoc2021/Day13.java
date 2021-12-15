@@ -33,11 +33,13 @@ class Day13 extends AocPuzzle {
 		var points = Util.splitLines(blocks[0]).map(Point::parse).toSet();
 		var rules = Util.splitLines(blocks[1]).map(FoldRule::parse);
 		
+		// first fold
 		points = points.map(rules.head());
 		
 		System.out.println("=== part 1"); // 785
 		System.out.println(points.size());
 
+		// remaining folds
 		points = rules.tail().foldLeft(points, (p, rule) -> p.map(rule)); 
 
 		var paper = new PointMap<Character>();
