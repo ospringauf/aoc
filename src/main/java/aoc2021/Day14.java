@@ -108,7 +108,7 @@ class Day14 extends AocPuzzle {
 		} else {
     		var rule = rules.find(r -> r.match(a, b));
     		if (rule.isDefined()) {		
-    			// AB -> C
+    			// AB -> C   (ie. AB becomes ACB)
     			var c = rule.get().c;
     			var h1 = processPolymer(steps-1, a, c);
     			var h2 = processPolymer(steps-1, c, b);
