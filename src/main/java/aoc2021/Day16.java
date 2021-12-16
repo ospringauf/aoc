@@ -13,15 +13,15 @@ class Day16 extends AocPuzzle {
 
     String myInput = file2string("input16.txt");
 
-    class Bitstream {
+    static class Bitstream {
         private List<Integer> bits;
 
         Bitstream(String hexMessage) {
-            bits = List.ofAll(hexMessage.toCharArray()).flatMap(c -> bits(c));
+            this.bits = List.ofAll(hexMessage.toCharArray()).flatMap(c -> nibble(c));
         }
 
-        Bitstream(List<Integer> subBits) {
-            bits = subBits;
+        Bitstream(List<Integer> bits) {
+            this.bits = bits;
         }
 
         static Long readLong(List<Integer> bits) {
@@ -42,12 +42,12 @@ class Day16 extends AocPuzzle {
             return r;
         }
 
-        public boolean exhausted() {
+        boolean exhausted() {
             return bits.isEmpty();
         }
     }
 
-    class Packet {
+    static class Packet {
         List<Packet> packets = List.empty();
         int version;
         int typeid;
@@ -91,7 +91,7 @@ class Day16 extends AocPuzzle {
             return r;
         }
 
-        void readOperator(Bitstream b) {
+        void readOperator(final Bitstream b) {
             int lenghtType = b.readInt(1);
 
             if (lenghtType == 0) {
@@ -113,7 +113,7 @@ class Day16 extends AocPuzzle {
             }
         }
 
-        void readLiteral(Bitstream b) {
+        void readLiteral(final Bitstream b) {
             List<Integer> bits = List.empty();
             int prefix;
             do {
@@ -124,7 +124,7 @@ class Day16 extends AocPuzzle {
         }
     }
 
-    static List<Integer> bits(char hex) {
+    static List<Integer> nibble(char hex) {
         var v = (hex >= 'A') ? (hex - 'A' + 10) : (hex - '0');
         return List.range(0, 4).map(i -> (v >> (3 - i)) & 1);
     }
@@ -136,8 +136,8 @@ class Day16 extends AocPuzzle {
     }
 
     void test() {
-        assertThat(bits('1').mkString(), is("0001"));
-        assertThat(bits('B').mkString(), is("1011"));
+        assertThat(nibble('1').mkString(), is("0001"));
+        assertThat(nibble('B').mkString(), is("1011"));
         assertThat(new Bitstream("D2FE28").bits.mkString(), is("110100101111111000101000"));
 
         assertThat(new Packet("D2FE28").version, is(6));
