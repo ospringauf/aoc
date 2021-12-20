@@ -5,6 +5,8 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import io.vavr.collection.List;
+
 public record BoundingBox(int xMin, int xMax, int yMin, int yMax) {
 
     static <T extends Point> BoundingBox of(Collection<T> points) {
@@ -26,6 +28,14 @@ public record BoundingBox(int xMin, int xMax, int yMin, int yMax) {
 
     public Iterable<Integer> yRange() {
         return IntStream.rangeClosed(yMin, yMax).boxed()::iterator;
+    }
+    
+    public Iterable<Point> generatePoints() {
+        return List.ofAll(xRange()).crossProduct(List.ofAll(yRange())).map(Point::of);        
+    }
+    
+    public BoundingBox expand(int dx, int dy) {
+        return new BoundingBox(xMin-dx, xMax+dx, yMin-dy, yMax+dy);
     }
 
     public void print(Function<Point, Character> point2String) {

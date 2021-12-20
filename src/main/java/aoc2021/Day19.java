@@ -145,59 +145,59 @@ class Day19 extends AocPuzzle {
 	}
 
 	static Function1<Pos, Pos> id = b -> b;
-	static Function1<Pos, Pos> tx = b -> new Pos(b.x, -b.z, b.y);
-	static Function1<Pos, Pos> ty = b -> new Pos(b.z, b.y, -b.x);
-	static Function1<Pos, Pos> tz = b -> new Pos(b.y, -b.x, b.z);
+	static Function1<Pos, Pos> rotx = b -> new Pos(b.x, -b.z, b.y);
+	static Function1<Pos, Pos> roty = b -> new Pos(b.z, b.y, -b.x);
+	static Function1<Pos, Pos> rotz = b -> new Pos(b.y, -b.x, b.z);
 
 	static List<Function1<Pos, Pos>> allRot = List.of(
 //			1.  I
 			id,
 //			2.  X = YXZ
-			tx,
+			rotx,
 //			3.  Y = ZYX
-			ty,
+			roty,
 //			4.  Z = XZY
-			tz,
+			rotz,
 //			5.  XX = XYXZ = YXXY = YXYZ = YXZX = YYZZ = YZXZ = ZXXZ = ZZYY
-			tx.andThen(tx),
+			rotx.andThen(rotx),
 //			6.  XY = YZ = ZX = XZYX = YXZY = ZYXZ
-			tx.andThen(ty),
+			rotx.andThen(roty),
 //			7.  XZ = XXZY = YXZZ = YYYX = ZYYY
-			tx.andThen(tz),
+			rotx.andThen(rotz),
 //			8.  YX = XZZZ = YYXZ = ZYXX = ZZZY
-			ty.andThen(tx),
+			roty.andThen(rotx),
 //			9.  YY = XXZZ = XYYX = YZYX = ZXYX = ZYXY = ZYYZ = ZYZX = ZZXX
-			ty.andThen(ty),
+			roty.andThen(roty),
 //			10. ZY = XXXZ = XZYY = YXXX = ZZYX
-			tz.andThen(ty),
+			rotz.andThen(roty),
 //			11. ZZ = XXYY = XYZY = XZXY = XZYZ = XZZX = YYXX = YZZY = ZXZY
-			tz.andThen(tz),
+			rotz.andThen(rotz),
 //			12. XXX
-			tx.andThen(tx).andThen(tx),
+			rotx.andThen(rotx).andThen(rotx),
 //			13. XXY = XYZ = XZX = YZZ = ZXZ
-			tx.andThen(tx).andThen(ty),
+			rotx.andThen(rotx).andThen(roty),
 //			14. XXZ = ZYY
-			tx.andThen(tx).andThen(tz),
+			rotx.andThen(rotx).andThen(rotz),
 //			15. XYX = YXY = YYZ = YZX = ZXX
-			tx.andThen(ty).andThen(tx),
+			rotx.andThen(roty).andThen(rotx),
 //			16. XYY = YZY = ZXY = ZYZ = ZZX
-			tx.andThen(ty).andThen(ty),
+			rotx.andThen(roty).andThen(roty),
 //			17. XZZ = YYX
-			tx.andThen(tz).andThen(tz),
+			rotx.andThen(rotz).andThen(rotz),
 //			18. YXX = ZZY
-			ty.andThen(tx).andThen(tx),
+			roty.andThen(rotx).andThen(rotx),
 //			19. YYY
-			ty.andThen(ty).andThen(ty),
+			roty.andThen(roty).andThen(roty),
 //			20. ZZZ
-			tz.andThen(tz).andThen(tz),
+			rotz.andThen(rotz).andThen(rotz),
 //			21. XXXY = XXYZ = XXZX = XYZZ = XZXZ = YZZZ = ZXZZ = ZYYX
-			tx.andThen(tx).andThen(tx).andThen(ty),
+			rotx.andThen(rotx).andThen(rotx).andThen(roty),
 //			22. XXYX = XYXY = XYYZ = XYZX = XZXX = YXYY = YYZY = YZXY = YZYZ = YZZX = ZXXY = ZXYZ = ZXZX = ZYZZ = ZZXZ
-			tx.andThen(tx).andThen(ty).andThen(tx),
+			rotx.andThen(rotx).andThen(roty).andThen(rotx),
 //			23. XYXX = XZZY = YXYX = YYXY = YYYZ = YYZX = YZXX = ZXXX
-			tx.andThen(ty).andThen(tx).andThen(tx),
+			rotx.andThen(roty).andThen(rotx).andThen(rotx),
 //			24. XYYY = YXXZ = YZYY = ZXYY = ZYZY = ZZXY = ZZYZ = ZZZX
-			tx.andThen(ty).andThen(ty).andThen(ty));
+			rotx.andThen(roty).andThen(roty).andThen(roty));
 
 	static List<Function1<Pos, Integer>> allAxes = List.of(b -> b.x, b -> b.y, b -> b.z);
 
