@@ -62,17 +62,16 @@ class Day22 extends AocPuzzle {
 	}
 
 	void part1() {
-		Set<Pos> c = HashSet.empty();
-
-		var instr = data.map(Cuboid::parse).map(Cuboid::part1);
-		for (var i : instr) {
-			var d = i.points();
-			if (i.on)
-				c = c.addAll(d);
+		Set<Pos> result = HashSet.empty();
+		var cubes = data.map(Cuboid::parse).map(Cuboid::part1);
+		
+		for (var c : cubes) {
+			if (c.on)
+				result = result.addAll(c.points());
 			else
-				c = c.removeAll(d);
+				result = result.removeAll(c.points());
 		}
-		System.out.println(c.size());
+		System.out.println(result.size());
 	}
 
 	List<Range> intervals(List<Range> r) {

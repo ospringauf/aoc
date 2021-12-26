@@ -16,7 +16,10 @@ import io.vavr.control.Option;
 // --- Day 23: Amphipod ---
 // https://adventofcode.com/2021/day/23
 
-class Day23 extends AocPuzzle {
+// TODO make this work for part 1 *and* part 2
+// TODO make faster (current: 3 min)
+
+class Day23p2 extends AocPuzzle {
 
 	static PointMap<Character> map = new PointMap<Character>();
 	static PointMap<Character> goal = new PointMap<Character>();
@@ -24,23 +27,23 @@ class Day23 extends AocPuzzle {
 
 	static final boolean TRACE = false;
 
-	static Set<Point> rooms;
 	static int bottom;
 	static Set<Point> hallway;
-	static Map<Character, Set<Point>> dest;
+	static Map<Character, Set<Point>> rooms;
 	static List<Point> points;
 	static Map<Point, List<List<Point>>> allPaths;
 	static Set<Point> doors;
-	static List<Character> colors = List.of('A', 'B', 'C', 'D');
+	static final List<Character> colors = List.of('A', 'B', 'C', 'D');
+	static final Map<Character, Integer> stepCost = HashMap.of('A', 1, 'B', 10, 'C', 100, 'D', 1000);
 
-	Day23() {
+	Day23p2() {
 		map.read(Util.splitLines(input));
 		goal.read(Util.splitLines(goalMap));
 		empty.read(Util.splitLines(emptyMap));
+		
 		hallway = empty.findPoints('.').filter(p -> p.y() == 1).toSet();
 		doors = empty.findPoints('.').filter(p -> p.y() == 2).toSet();
-		rooms = empty.findPoints('.').filter(p -> p.y() >= 2).toSet();
-		dest = colors.toMap(c -> c, c -> goal.findPoints(c).toSet());
+		rooms = colors.toMap(c -> c, c -> goal.findPoints(c).toSet());
 
 		points = goal.findPoints(c -> c != '#');
 		allPaths = points.toMap(t -> t,
@@ -60,17 +63,15 @@ class Day23 extends AocPuzzle {
 	interface FreePath extends Predicate<List<Point>> {
 	};
 
-	record Amphipod(char color, Point pos, int cost, boolean locked) {
-
-		static final Map<Character, Integer> stepCost = HashMap.of('A', 1, 'B', 10, 'C', 100, 'D', 1000);
-
-		Amphipod move(Point d, boolean locked) {
+	record Amphipod(char color, Point pos, int cost, boolean arrived) {
+		Amphipod move(Point d, boolean arrived) {
 			if (TRACE)
 				System.out.println("move " + this + " -> " + d + " for " + costTo(d));
-			return new Amphipod(color, d, cost + costTo(d), locked);
+			return new Amphipod(color, d, cost + costTo(d), arrived);
 		}
 
-		int remainingLB() {
+		int remainingCost() {
+			// lower bound!
 			return myDest().map(d -> costTo(d)).min().get();
 		}
 
@@ -78,12 +79,12 @@ class Day23 extends AocPuzzle {
 			return dist(pos, d) * stepCost.getOrElse(color, 0);
 		}
 
-		int cost(List<Point> path) {
-			return (path.size() - 1) * stepCost.getOrElse(color, 0);
-		}
+//		int cost(List<Point> path) {
+//			return (path.size() - 1) * stepCost.getOrElse(color, 0);
+//		}
 
 		Option<List<Point>> pathToDest(FreePath free) {
-			if (locked)
+			if (arrived)
 				return Option.none();
 
 			var paths = myDest().map(d -> path(pos, d)).filter(free);
@@ -91,11 +92,11 @@ class Day23 extends AocPuzzle {
 		}
 
 		Set<Point> myDest() {
-			return dest.get(color).get().remove(pos);
+			return rooms.get(color).get().remove(pos);
 		}
 
-		boolean finished() {
-			return dest.get(color).get().contains(pos);
+		boolean inHomeRoom() {
+			return rooms.get(color).get().contains(pos);
 		}
 
 		Set<Point> hallwayDest(FreePath free) {
@@ -115,11 +116,12 @@ class Day23 extends AocPuzzle {
 		}
 
 		boolean finished() {
-			return pods.forAll(Amphipod::finished);
+			//return pods.forAll(Amphipod::finished);
+			return pods.forAll(Amphipod::arrived);
 		}
 
 		boolean goon() {
-			return cost + pods.map(p -> p.remainingLB()).sum().intValue() < bestCost;
+			return cost + pods.map(p -> p.remainingCost()).sum().intValue() < bestCost;
 		}
 
 		boolean freePath(List<Point> path) {
@@ -143,14 +145,15 @@ class Day23 extends AocPuzzle {
 				return;
 			}
 
-			var tryPods = pods.filter(a -> a.pos.y() != 1 && !a.locked);
+			// candidates for moving into the hallway
+			var tryPods = pods.filter(a -> a.pos.y() != 1 && !a.arrived);
 
 			// move any one Pod out of the way (from room to hallway)
 			for (var a : tryPods) {
 				for (var d : a.hallwayDest(this::freePath)) {
 					// move as many Pods as possible to their destinations
 					var game = move(a, d, false);
-					game = moveToDest(game);
+					game = movePodsHome(game);
 					if (game.goon())
 						game.play();
 				}
@@ -165,19 +168,19 @@ class Day23 extends AocPuzzle {
 			System.out.println();
 		}
 
-		static Game moveToDest(Game g) {
+		static Game movePodsHome(Game g) {
 
 			boolean moved = true;
 			do {
 				moved = false;
 				for (var a : g.pods) {
-					if (!a.locked) {
+					if (!a.arrived) {
 						var ptd = a.pathToDest(g::freePath);
 						if (ptd.isDefined()) {
 							Point dst = ptd.get().last();
 
 							boolean canMove = (dst.y() == bottom);
-							canMove |= g.pods.exists(x -> x.pos.equals(dst.south()) && x.locked);
+							canMove |= g.pods.exists(x -> x.pos.equals(dst.south()) && x.arrived);
 							if (canMove) {
 								g = g.move(a, dst, true);
 								moved = true;
@@ -202,17 +205,17 @@ class Day23 extends AocPuzzle {
 		bottom = pods0.map(p -> p.pos.y()).max().get();
 		var south = pods0.filter(p -> p.pos.y() >= 2 && p.pos.y() <= bottom).toMap(p -> p,
 				p -> pods0.find(s -> p.pos.south().equals(s.pos)).getOrElse((Amphipod) null));
-		var fin = pods0.filter(a -> a.finished()).toArray();
-		var locked5 = fin.filter(a -> a.pos.y() == bottom).toSet();
-		var locked4 = locked5.addAll(fin.filter(a -> a.pos.y() == 4 && locked5.contains(south.get(a).get())));
-		var locked3 = locked4.addAll(fin.filter(a -> a.pos.y() == 3 && locked4.contains(south.get(a).get())));
-		var locked2 = locked3.addAll(fin.filter(a -> a.pos.y() == 2 && locked3.contains(south.get(a).get())));
+		var home = pods0.filter(a -> a.inHomeRoom()).toArray();
+		var arrived5 = home.filter(a -> a.pos.y() == bottom).toSet();
+		var arrived4 = arrived5.addAll(home.filter(a -> a.pos.y() == 4 && arrived5.contains(south.get(a).get())));
+		var arrived3 = arrived4.addAll(home.filter(a -> a.pos.y() == 3 && arrived4.contains(south.get(a).get())));
+		var arrived2 = arrived3.addAll(home.filter(a -> a.pos.y() == 2 && arrived3.contains(south.get(a).get())));
 
-		var pods = pods0.map(a -> new Amphipod(a.color, a.pos, 0, locked2.contains(a)));
+		var pods = pods0.map(a -> new Amphipod(a.color, a.pos, 0, arrived2.contains(a)));
 //		var pods = pods0;
 
 		var game = new Game(pods, null);
-		game = Game.moveToDest(game);
+		game = Game.movePodsHome(game);
 		game.play();
 
 		System.out.println("=== best game");
@@ -221,7 +224,9 @@ class Day23 extends AocPuzzle {
 	}
 
 	public static void main(String[] args) {
-		timed(() -> new Day23().solve());
+		// part 1: 13455
+		// part 2: 43567 (takes ca 3 minutes) 
+		timed(() -> new Day23p2().solve());
 	}
 
 	static String example1 = """
