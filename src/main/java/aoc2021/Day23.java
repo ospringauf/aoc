@@ -6,6 +6,7 @@ import common.AocPuzzle;
 import common.Point;
 import common.PointMap;
 import common.Util;
+import io.vavr.Function1;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
@@ -19,7 +20,7 @@ import io.vavr.control.Option;
 // TODO make this work for part 1 *and* part 2
 // TODO make faster (current: 3 min)
 
-class Day23p2 extends AocPuzzle {
+class Day23 extends AocPuzzle {
 
 	static PointMap<Character> map = new PointMap<Character>();
 	static PointMap<Character> goal = new PointMap<Character>();
@@ -33,14 +34,23 @@ class Day23p2 extends AocPuzzle {
 	static List<Point> points;
 	static Map<Point, List<List<Point>>> allPaths;
 	static Set<Point> doors;
+	
 	static final List<Character> colors = List.of('A', 'B', 'C', 'D');
 	static final Map<Character, Integer> stepCost = HashMap.of('A', 1, 'B', 10, 'C', 100, 'D', 1000);
 
-	Day23p2() {
-		map.read(Util.splitLines(input));
-		goal.read(Util.splitLines(goalMap));
-		empty.read(Util.splitLines(emptyMap));
-		
+	Day23(boolean part2) {
+		Function1<String, List<String>> reader = Util::splitLines;
+		if (!part2) {
+			reader = reader.andThen(l -> l.removeAt(3).removeAt(3));
+		}
+
+		map.clear();
+		goal.clear();
+		empty.clear();
+		map.read(reader.apply(input));
+		goal.read(reader.apply(goalMap));
+		empty.read(reader.apply(emptyMap));
+
 		hallway = empty.findPoints('.').filter(p -> p.y() == 1).toSet();
 		doors = empty.findPoints('.').filter(p -> p.y() == 2).toSet();
 		rooms = colors.toMap(c -> c, c -> goal.findPoints(c).toSet());
@@ -116,7 +126,7 @@ class Day23p2 extends AocPuzzle {
 		}
 
 		boolean finished() {
-			//return pods.forAll(Amphipod::finished);
+			// return pods.forAll(Amphipod::finished);
 			return pods.forAll(Amphipod::arrived);
 		}
 
@@ -173,18 +183,17 @@ class Day23p2 extends AocPuzzle {
 			boolean moved = true;
 			do {
 				moved = false;
-				for (var a : g.pods) {
-					if (!a.arrived) {
-						var ptd = a.pathToDest(g::freePath);
-						if (ptd.isDefined()) {
-							Point dst = ptd.get().last();
+				for (var a : g.pods.filter(x -> !x.arrived)) {
+					var ptd = a.pathToDest(g::freePath);
+					if (ptd.isDefined()) {
+						Point dst = ptd.get().last();
 
-							boolean canMove = (dst.y() == bottom);
-							canMove |= g.pods.exists(x -> x.pos.equals(dst.south()) && x.arrived);
-							if (canMove) {
-								g = g.move(a, dst, true);
-								moved = true;
-							}
+						// rule: only move into a room if the room contains no other colors
+						boolean canMove = (dst.y() == bottom);
+						canMove |= g.pods.exists(x -> x.pos.equals(dst.south()) && x.arrived);
+						if (canMove) {
+							g = g.move(a, dst, true);
+							moved = true;
 						}
 					}
 				}
@@ -200,11 +209,13 @@ class Day23p2 extends AocPuzzle {
 
 	void solve() {
 
+		// find out which amphipods are already in their final position ...
 		var pods0 = map.findPoints(colors::contains).map(p -> new Amphipod(map.get(p), p, 0, false));
 
 		bottom = pods0.map(p -> p.pos.y()).max().get();
 		var south = pods0.filter(p -> p.pos.y() >= 2 && p.pos.y() <= bottom).toMap(p -> p,
 				p -> pods0.find(s -> p.pos.south().equals(s.pos)).getOrElse((Amphipod) null));
+
 		var home = pods0.filter(a -> a.inHomeRoom()).toArray();
 		var arrived5 = home.filter(a -> a.pos.y() == bottom).toSet();
 		var arrived4 = arrived5.addAll(home.filter(a -> a.pos.y() == 4 && arrived5.contains(south.get(a).get())));
@@ -214,6 +225,7 @@ class Day23p2 extends AocPuzzle {
 		var pods = pods0.map(a -> new Amphipod(a.color, a.pos, 0, arrived2.contains(a)));
 //		var pods = pods0;
 
+		Game.bestCost = Integer.MAX_VALUE;		
 		var game = new Game(pods, null);
 		game = Game.movePodsHome(game);
 		game.play();
@@ -225,8 +237,12 @@ class Day23p2 extends AocPuzzle {
 
 	public static void main(String[] args) {
 		// part 1: 13455
-		// part 2: 43567 (takes ca 3 minutes) 
-		timed(() -> new Day23p2().solve());
+		System.out.println("=== part 1");
+		timed(() -> new Day23(false).solve());
+
+		// part 2: 43567 (takes ca 3 minutes)
+		System.out.println("=== part 2");
+		timed(() -> new Day23(true).solve());
 	}
 
 	static String example1 = """
@@ -238,9 +254,6 @@ class Day23p2 extends AocPuzzle {
 			###A#D#C#A###
 			#############
 									""";
-
-	static String example2 = """
-			""";
 
 	static String input = """
 			#############

@@ -1,12 +1,8 @@
 package aoc2021;
 
-import static org.hamcrest.MatcherAssert.*;
-
-import static org.hamcrest.CoreMatchers.*;
-
 import common.AocPuzzle;
-import common.PointMap;
 import common.Point;
+import common.PointMap;
 import common.Util;
 import io.vavr.collection.HashSet;
 import io.vavr.collection.List;
