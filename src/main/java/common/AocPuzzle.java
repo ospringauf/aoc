@@ -52,7 +52,11 @@ public class AocPuzzle {
         public int i(int i) {
             return Integer.valueOf(fields[i]);
         }
-        
+
+        public long l(int i) {
+            return Long.valueOf(fields[i]);
+        }
+
         public char c(int i) {
             return fields[i].charAt(0);
         }
