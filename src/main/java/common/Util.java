@@ -17,8 +17,8 @@ public class Util {
 		return splitFields(input).map(Integer::valueOf);
 	}
 	
-	public static List<Integer> strings2ints(String[] split) {
-		return List.of(split).map(Integer::valueOf);
+	public static List<Integer> strings2ints(String[] strings) {
+		return List.of(strings).map(Integer::valueOf);
 	}
 
 	public static List<String> splitLines(String s)  {

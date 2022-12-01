@@ -7,16 +7,16 @@ import io.vavr.collection.List;
 //--- Day x:  ---
 // https://adventofcode.com/2022/day/x
 
-class DayXx extends AocPuzzle {
+class Day02 extends AocPuzzle {
 
 	public static void main(String[] args) {
 		System.out.println("=== part 1"); 
-		new DayXx().part1();
+		new Day02().part1();
 		System.out.println("=== part 2"); 
-		new DayXx().part2();
+		new Day02().part2();
 	}
 
-	List<Integer> data = file2ints("input01.txt");
+	List<Integer> data = file2ints("input02.txt");
 	
 	void part1() {
 	    System.out.println(data.size());
