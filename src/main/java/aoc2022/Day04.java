@@ -9,24 +9,24 @@ import io.vavr.collection.List;
 
 class Day04 extends AocPuzzle {
 
-	public static void main(String[] args) {
-		System.out.println("=== part 1");
-		new Day04().part1();
-		System.out.println("=== part 2");
-		new Day04().part2();
-	}
+    public static void main(String[] args) {
+        System.out.println("=== part 1");
+        new Day04().part1();
+        System.out.println("=== part 2");
+        new Day04().part2();
+    }
 
-	List<Integer> data = file2ints("input04.txt");
+    List<Integer> data = file2ints("input04.txt");
 
-	void part1() {
-		System.out.println(data.size());
-	}
+    void part1() {
+        System.out.println(data.size());
+    }
 
-	void part2() {
-	}
+    void part2() {
+    }
 
-	static String example = """
+    static String example = """
 
-			""";
+            """;
 
 }
