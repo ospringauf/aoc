@@ -11,10 +11,10 @@ class Day05 extends AocPuzzle {
 
     public static void main(String[] args) {
         System.out.println("=== part 1"); // VWLCWGSDQ
-        new Day05().solve(Crane.CrateMover9000);
+        timed(() -> new Day05().solve(Crane.CrateMover9000));
         
         System.out.println("=== part 2"); // TCGLQSLPW
-        new Day05().solve(Crane.CrateMover9001);
+        timed(() -> new Day05().solve(Crane.CrateMover9001));
     }
 
     static enum Crane { CrateMover9000, CrateMover9001 }; 
@@ -31,20 +31,21 @@ class Day05 extends AocPuzzle {
 
     
     List[] parseStacks(String input) {
-        var config = Util.splitLines(input).reverse();
+        var config = Util.splitLines(input);
         
         // find max stack number
-        String stackNumbers = config.head();
+        String stackNumbers = config.last();
         var numStacks = Util.string2ints(stackNumbers.trim()).max().get();
         System.out.println("stacks: " + numStacks);
         
-        // find stack index positions in input (1+4*s)
+        // find stack column indexes in input (1, 5, 9, 13 ...)
         var pos = List.rangeClosed(0, numStacks).map(i -> stackNumbers.indexOf(i.toString()));
 
         // build initial stacks (top = head)
-        var stacks = new List[numStacks+1];        
+        var stacks = new List[numStacks+1];
+        var crates = config.removeLast(x -> true);
         List.rangeClosed(1, numStacks)
-        .forEach(s -> stacks[s] = config.drop(1).map(x -> x.charAt(pos.get(s))).filter(c -> c != ' ').reverse());
+        .forEach(s -> stacks[s] = crates.map(line -> line.charAt(pos.get(s))).removeAll(' '));
         
         return stacks;
     }
@@ -64,7 +65,7 @@ class Day05 extends AocPuzzle {
             stacks[move.to] = stacks[move.to].pushAll(crates); 
         }
         
-        var tops = List.range(1, stacks.length).map(x -> stacks[x].headOption().getOrElse(' '));
+        var tops = List.range(1, stacks.length).map(x -> stacks[x].head());
         System.out.println(tops.mkString());
     }
 }
