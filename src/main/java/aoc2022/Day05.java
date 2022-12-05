@@ -29,25 +29,32 @@ class Day05 extends AocPuzzle {
 //    String data = file2string("input05_example.txt");
     String data = file2string("input05.txt");
 
-    void solve(Crane crane) {
-        var inputParts = data.split("\n\n");
-        var config = Util.splitLines(inputParts[0]).reverse();
+    
+    List[] parseStacks(String input) {
+        var config = Util.splitLines(input).reverse();
         
         // find max stack number
-        String stackIndex = config.head();
-        var numStacks = Util.string2ints(stackIndex.trim()).max().get();
+        String stackNumbers = config.head();
+        var numStacks = Util.string2ints(stackNumbers.trim()).max().get();
         System.out.println("stacks: " + numStacks);
         
         // find stack index positions in input (1+4*s)
-        var pos = List.rangeClosed(0, numStacks).map(i -> stackIndex.indexOf(i.toString()));
+        var pos = List.rangeClosed(0, numStacks).map(i -> stackNumbers.indexOf(i.toString()));
 
         // build initial stacks (top = head)
         var stacks = new List[numStacks+1];        
         List.rangeClosed(1, numStacks)
         .forEach(s -> stacks[s] = config.drop(1).map(x -> x.charAt(pos.get(s))).filter(c -> c != ' ').reverse());
         
+        return stacks;
+    }
+    
+    void solve(Crane crane) {
+        var inputBlocks = data.split("\n\n");
         
-        var moves = Util.splitLines(inputParts[1]).map(Move::parse);        
+        var stacks = parseStacks(inputBlocks[0]);
+        
+        var moves = Util.splitLines(inputBlocks[1]).map(Move::parse);        
         
         for (var move : moves) {
             var crates = stacks[move.from].take(move.num);
@@ -57,7 +64,7 @@ class Day05 extends AocPuzzle {
             stacks[move.to] = stacks[move.to].pushAll(crates); 
         }
         
-        var tops = List.rangeClosed(1, numStacks).map(x -> stacks[x].headOption().getOrElse(' '));
+        var tops = List.range(1, stacks.length).map(x -> stacks[x].headOption().getOrElse(' '));
         System.out.println(tops.mkString());
     }
 }
