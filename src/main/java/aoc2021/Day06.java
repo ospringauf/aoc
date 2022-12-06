@@ -9,7 +9,7 @@ import io.vavr.collection.List;
 
 class Day06 extends AocPuzzle {
 
-    String input = example;
+    String input = myInput;
 	List<Integer> data = split(input, ",").map(Integer::parseInt);
 
 //	void part1() {
