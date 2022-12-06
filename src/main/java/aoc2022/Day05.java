@@ -30,9 +30,10 @@ class Day05 extends AocPuzzle {
     String data = file2string("input05.txt");
 
     
-    List[] parseStacks(String input) {
+    List<Character>[] parseStacks(String input) {
         var config = Util.splitLines(input);
         
+        // look at the last line containing the stack numbers
         // find max stack number
         String stackNumbers = config.last();
         var numStacks = Util.string2ints(stackNumbers.trim()).max().get();
@@ -41,7 +42,7 @@ class Day05 extends AocPuzzle {
         // find stack column indexes in input (1, 5, 9, 13 ...)
         var pos = List.rangeClosed(0, numStacks).map(i -> stackNumbers.indexOf(i.toString()));
 
-        // build initial stacks (top = head)
+        // build initial stacks (top = head), reading the corresponding columns
         var stacks = new List[numStacks+1];
         var crates = config.removeLast(x -> true);
         List.rangeClosed(1, numStacks)

@@ -6,6 +6,7 @@ import aoc2016.Day22.Node;
 import common.AocPuzzle;
 import common.Point;
 import common.PointMap;
+import common.Util;
 import io.vavr.Function1;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
@@ -28,6 +29,7 @@ class Day22 extends AocPuzzle {
 	}
 
 	List<Node> nodes = file2lines("day22.txt").drop(2).map(Node::parse);
+//	List<Node> nodes = Util.splitLines(example).drop(2).map(Node::parse);
 	Map<Point, Node> grid = nodes.toMap(n -> n.p, n -> n);
 	int NONE = Integer.MAX_VALUE;
 	Node start;
@@ -42,46 +44,38 @@ class Day22 extends AocPuzzle {
 
 		var r = nodes.filter(a -> a.used > 0).map(a -> nodes.remove(a).count(b -> b.avail() >= a.used)).sum();
 		System.out.println(r);
+		
+		var r2 = nodes.crossProduct().count(ab -> ab._1 != ab._2 && ab._1.used > 0 && ab._2.avail() >= ab._1.used);
+		System.out.println(r2);
 	}
 
 	void part2() {
-		var cost = moveData(start, start.used, grid, List.empty());
-		System.out.println(cost);
+//		System.out.println("from: " + start);
+//		System.out.println("to: " + target);
 
-//	    Node BLOCK = new Node(Point.of(100,100), 0, 0, 0);
-//	    //Predicate<Node> immobile = n -> n.p.neighbors().forAll(a -> grid.getOrDefault(a, BLOCK).size < n.used);
-//	    Predicate<Node> immobile = n -> 100*n.used/n.size > 80;
-//	    Predicate<Node> empty = n -> n.used == 0;
-//	    Function1<Node, Character> fprint = n -> immobile.test(n)? '#' : empty.test(n)? '-' : '.';
-//	    
-//	    grid.print(fprint);
-
+	    Predicate<Node> immobile = n -> n.size > 100;
+	    Predicate<Node> empty = n -> n.used == 0;
+	    Function1<Node, Character> fprint = n -> immobile.test(n)? '#' : empty.test(n)? 'E' : (n==start)? 'S' : (n==target)?'T':'.';
+	    
+	    PointMap<Node> m = new PointMap<>();
+	    grid.forEach(t -> m.put(t._1, t._2));
+	    m.print(fprint);
+	    
+	    // find the empty node E
+	    // move E to left of S, around the walls #
+	    // move S right, E again to left of S, repeat until T	   
 	}
+	
 
-	int moveData(Node n, int data, Map<Point, Node> grid, List<Point> visited) {
-		if (n == target && n.avail() >= data)
-			return 0;
-
-		if (n.size < data)
-			return NONE;
-
-		if (n == target) {
-//	        var c = makeRoom(n, data);
-//	        return c;
-		}
-
-		return NONE;
-	}
-
-	public static void main(String[] args) {
-		System.out.println("=== part 1");
+    public static void main(String[] args) {
+		System.out.println("=== part 1"); // 941
 		timed(() -> new Day22().part1());
 
-		System.out.println("=== part 2");
+		System.out.println("=== part 2"); // 249
 		timed(() -> new Day22().part2());
 	}
 
-	String example = """
+	static String example = """
 			root@ebhq-gridcenter# df -h
 			Filesystem            Size  Used  Avail  Use%
 			/dev/grid/node-x0-y0   10T    8T     2T   80%
