@@ -32,7 +32,7 @@ public record Point(int x, int y) {
         return translate(h, 1);
     }
 	
-	Point translate(Direction h, int d) {
+	public Point translate(Direction h, int d) {
 		return Point.of(x + d*h.dx, y + d*h.dy);
 	}
 	
