@@ -60,4 +60,22 @@ public enum Direction {
 		case LEFT -> UP;
 		};
 	}
+	
+	public static Direction parse(String s) {
+		return parse(s.trim().charAt(0));
+	}
+	
+	public static Direction parse(Character c) {
+		return switch (Character.toUpperCase(c)) {
+		case 'N' -> NORTH;
+		case 'S' -> SOUTH;
+		case 'E' -> EAST;
+		case 'W' -> WEST;
+		case 'U' -> UP;
+		case 'D' -> DOWN;
+		case 'L' -> LEFT;
+		case 'R' -> RIGHT;
+		default -> throw new IllegalArgumentException("Unexpected value: " + c);
+		};
+	}
 }

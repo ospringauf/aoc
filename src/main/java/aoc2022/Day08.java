@@ -20,9 +20,9 @@ class Day08 extends AocPuzzle {
 
     public static void main(String[] args) {
         System.out.println("=== part 1"); // 1803
-        new Day08().part1();
+        timed(() -> new Day08().part1());
         System.out.println("=== part 2"); // 268912
-        new Day08().part2();
+        timed(() -> new Day08().part2());
     }
 
     // List<String> data = Util.splitLines(example);
