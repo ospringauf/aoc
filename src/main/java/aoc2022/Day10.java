@@ -1,6 +1,7 @@
 package aoc2022;
 
 import common.AocPuzzle;
+import common.Ocr;
 import common.Point;
 import common.PointMap;
 import io.vavr.collection.List;
@@ -39,7 +40,7 @@ class Day10 extends AocPuzzle {
 
         System.out.println("=== part 1"); // 12840
         
-        var strengths = List.of(20, 60, 100, 140, 180, 220).map(t -> t * signal.get(t));
+        var strengths = List.rangeBy(20, 1000, 40).take(6).map(t -> t * signal.get(t));
         System.out.println(strengths.sum());
 
         
@@ -53,5 +54,8 @@ class Day10 extends AocPuzzle {
                 crt.put(Point.of(i % 40, i / 40), '#');
         }
         crt.print();
+        
+        var msg = new Ocr().scanLine(crt, 0, 0);
+        System.out.println("OCR: "+ msg);
     }
 }
