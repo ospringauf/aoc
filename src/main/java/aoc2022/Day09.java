@@ -16,46 +16,50 @@ class Day09 extends AocPuzzle {
     public static void main(String[] args) {
         System.out.println("=== part 1"); // 6642
         timed(() -> new Day09().solve(List.of(START, START)));
-        
+
         System.out.println("=== part 2"); // 2765
         timed(() -> new Day09().solve(List.fill(10, START)));
     }
 
-    static final Point START = Point.of(0,0);
-    
+    static final Point START = Point.of(0, 0);
+
 //    List<String> rules = Util.splitLines(example1);
 //    List<String> rules = Util.splitLines(example2);
     List<String> rules = file2lines("input09.txt");
-    
-    
+
     // parse "L 3" into LEFT,LEFT,LEFT
     List<Direction> parse(String s) {
-    	var f = split(s, " ");
-    	var dir = Direction.parse(f.s(0));
-		var dist = f.i(1);
-		return List.fill(dist, dir);
+        var f = split(s, " ");
+        var dir = Direction.parse(f.s(0));
+        var dist = f.i(1);
+        return List.fill(dist, dir);
     }
-    
-    // tail movement: move towards the head
+
     Point moveKnot(Point h, Point t) {
         var dx = h.x() - t.x();
         var dy = h.y() - t.y();
         if (Math.abs(dx) > 1 || Math.abs(dy) > 1)
-        	return t.translate(Integer.signum(dx), Integer.signum(dy));
+            // tail movement: move towards the head
+            return t.translate(Integer.signum(dx), Integer.signum(dy));
         else
             return t;
     }
-    
+
+    List<Point> moveRope(List<Point> rope, Point newHead) {
+        // move each following knot according to its old position and the new
+        // predecessor position
+        List<Point> newRope = List.of(newHead);
+        return rope.tail().foldLeft(newRope, (r, knot) -> r.append(moveKnot(r.last(), knot)));
+    }
+
     void solve(List<Point> rope) {
-    	List<Direction> motions = rules.flatMap(this::parse);        
+        List<Direction> motions = rules.flatMap(this::parse);
         Set<Point> visited = HashSet.empty();
         Point head = rope.head();
-        
+
         for (var dir : motions) {
-        	head = head.translate(dir);
-        	// move each following knot according to its old position and the new predecessor position
-            rope = rope.tail()
-            		.foldLeft(List.of(head), (r, knot) -> r.append(moveKnot(r.last(), knot)));
+            head = head.translate(dir);
+            rope = moveRope(rope, head);
             visited = visited.add(rope.last());
         }
 
