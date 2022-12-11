@@ -9,65 +9,63 @@ import io.vavr.collection.List;
 // --- Day 11: Monkey in the Middle ---
 // https://adventofcode.com/2022/day/11
 
-class Day11 extends AocPuzzle {
+class Day11a extends AocPuzzle {
 
     public static void main(String[] args) {
         System.out.println("=== part 1"); // 54054
-        timed(() -> new Day11().solve(20, 3));
+        new Day11a().solve(20, 3);
         System.out.println("=== part 2"); // 14314925001
-        timed(() -> new Day11().solve(10000, 1));
+        new Day11a().solve(10000, 1);
     }
 
 //    String data = example;
     String data = file2string("input11.txt");
     List<Monkey> monkeys = List.of(data.split("\n\n")).map(s -> Monkey.parse(s));
 
-    
-    record Monkey(int id, List<Long> initialItems, LongFunction<Long> op, int divider, int trueTo, int falseTo) {
+    record Monkey(int id, int trueTo, int falseTo, List<Long> initialItems, LongFunction<Long> op, int divider) {
+
         static Monkey parse(String s) {
             var l = s.split("\n");
             var id = split(l[0], "[ :]").i(1);
             var items = Util.strings2longs(l[1].split(": ")[1].split(", "));
-
             var expr = l[2].split(" = ")[1];
             var arg2 = expr.split(" ")[2];
             LongFunction<Long> op = null;
             if (expr.startsWith("old * old"))
                 op = x -> x * x;
             else if (expr.startsWith("old +"))
-                op = x -> x + Integer.valueOf(arg2);
+                op = x -> x + Integer.parseInt(arg2);
             else
-                op = x -> x * Integer.valueOf(arg2);
+                op = x -> x * Integer.parseInt(arg2);
             ;
-            int divider = Integer.valueOf(l[3].split(" by ")[1]);
-            var trueTo = Integer.valueOf(l[4].split("monkey ")[1]);
-            var falseTo = Integer.valueOf(l[5].split("monkey ")[1]);
-            return new Monkey(id, items, op, divider, trueTo, falseTo);
+            int divider = Integer.parseInt(l[3].split(" by ")[1]);
+            var trueTo = Integer.parseInt(l[4].split("monkey ")[1]);
+            var falseTo = Integer.parseInt(l[5].split("monkey ")[1]);
+            return new Monkey(id, trueTo, falseTo, items, op, divider);
         }
     }
 
     void solve(int rounds, int worryDivisor) {
-        var items = monkeys.toMap(m -> m.id, m -> m.initialItems).toJavaMap();
-        var inspections = monkeys.map(m -> 0);
+        var items = monkeys.toMap(m -> m.id, m -> m.initialItems);
+        var inspect = monkeys.map(m -> 0);
 
-        // TODO: could calc real LCM, but since all dividers are primes ... never mind
-        var lcm = monkeys.map(m -> m.divider).product().longValue();
+        var p = monkeys.map(m -> m.divider).product().longValue();
 
         for (int round = 0; round < rounds; ++round)
             for (var m : monkeys) {
-                var monkeyItems = items.put(m.id, List.empty());
-                for (var wlevel : monkeyItems) {
-                    inspections = inspections.update(m.id, inspections.get(m.id) + 1);
-                    wlevel = m.op.apply(wlevel) % lcm; // LCM doesn't hurt for part 1 
-                    wlevel = wlevel / worryDivisor;
-                    int to = (wlevel % m.divider == 0) ? m.trueTo : m.falseTo;
-                    items.put(to, items.getOrDefault(to, List.empty()).append(wlevel));
+                var it = items.getOrElse(m.id, List.empty());
+                items = items.put(m.id, List.empty());
+                for (var i : it) {
+                    inspect = inspect.update(m.id, inspect.get(m.id) + 1);
+                    i = m.op.apply(i) % p;
+                    i = i / worryDivisor;
+                    int to = (i % m.divider == 0) ? m.trueTo : m.falseTo;
+                    items = items.put(to, items.getOrElse(to, List.empty()).append(i));
                 }
             }
 //        System.out.println(items);
-//        System.out.println(inspections);
-        Number monkeyBusiness = inspections.sorted().reverse().take(2).product();
-        System.out.println(monkeyBusiness);
+//        System.out.println(inspect);
+        System.out.println(inspect.sorted().reverse().take(2).product());
     }
 
     static String example = """
