@@ -57,7 +57,7 @@ class Day23 extends AocPuzzle {
 
 		points = goal.findPoints(c -> c != '#');
 		allPaths = points.toMap(t -> t,
-				t -> points.map(s -> goal.dijkstraAll(t, c -> c != '#', x -> true).path(t, s).reverse()));
+				t -> points.map(s -> goal.dijkstraAll(t, c -> c != '#').path(t, s).reverse()));
 
 	}
 

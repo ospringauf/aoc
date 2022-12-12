@@ -36,8 +36,8 @@ public class TestMaze extends AocPuzzle {
 		
 		System.out.println("=== Dijkstra");
 		
-		var bfs = map.dijkstraAll(start, allowed, c -> true);
-		time(() -> List.range(0, 10).forEach(i -> map.dijkstraAll(start, allowed, c -> true)));
+		var bfs = map.dijkstraAll(start, allowed);
+		time(() -> List.range(0, 10).forEach(i -> map.dijkstraAll(start, allowed)));
 		var dist = bfs.distance;
 		System.out.println(dist.get(target));
 		System.out.println(bfs.path(start, target));

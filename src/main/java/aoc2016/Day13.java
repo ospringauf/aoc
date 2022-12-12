@@ -30,7 +30,7 @@ class Day13 extends AocPuzzle {
 	    
 //	    map.print();
 	    
-	    var r = map.dijkstraAll(Point.of(1, 1), c -> c=='.', c -> true);
+	    var r = map.dijkstraAll(Point.of(1, 1), c -> c=='.');
 	    var p = r.path(Point.of(1, 1), Point.of(31,39));
 //	    var p = r.path(Point.of(1, 1), Point.of(7,4));
 

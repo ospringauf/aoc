@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -117,15 +118,19 @@ public class PointMap<T> extends HashMap<Point, T> {
 	}
 
 	public PointMap<Integer> minDistances(Point start, Predicate<T> allowed) {
-		return minDistances(start, allowed, x -> true);
+		return minDistances(start, allowed, (a,b) -> true);
 	}
 
-	public PointMap<Integer> minDistances(Point start, Predicate<T> allowed, Predicate<T> via) {
+	public PointMap<Integer> minDistances(Point start, Predicate<T> allowed, BiPredicate<T, T> via) {
 		return dijkstraAll(start, allowed, via).distance;
 	}
 
+	public PathResult dijkstraAll(Point start, Predicate<T> allowed) {
+	    return dijkstraAll(start, allowed, (a,b)->true);
+	}
+	
 	// calc paths and distances in one go
-	public PathResult dijkstraAll(Point start, Predicate<T> allowed, Predicate<T> via) {
+	public PathResult dijkstraAll(Point start, Predicate<T> allowed, BiPredicate<T, T> via) {
 		final int INF = Integer.MAX_VALUE / 2;
 		var points = this.keySet();
 
@@ -145,8 +150,8 @@ public class PointMap<T> extends HashMap<Point, T> {
 
 				// best neighbor distance?
 				var bestNeighbor = neigbors.apply(current)
-						.filter(x -> via.test(get(x)))
-						.minBy(n -> dist.getOrDefault(n, INF));
+						.filter(x -> via.test(get(x), get(current)))
+						.minBy(n -> dist.getOrDefault(n, INF)); // wrong? should consider cost!
 
 				if (bestNeighbor.isEmpty())
 					continue;
