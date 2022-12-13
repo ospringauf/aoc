@@ -62,6 +62,18 @@ public class Util {
         return coll;
     }
 
+    public static List<String> splitWithDelimiters(String s, String delims) {
+    	return splitWithDelimiters(s, List.ofAll(delims.toCharArray()));
+    }
+
+    // split string and keep delimiters (single-character)
+    // see https://www.baeldung.com/java-split-string-keep-delimiters
+    public static List<String> splitWithDelimiters(String s, List<Character> delims) {
+    	var d = delims.map(c -> "\\" + c).mkString("|");
+    	var re = String.format("((?<=%s)|(?=%s))", d, d);
+    	return List.of(s.split(re));
+    }
+
     // least common multiple
     // https://www.geeksforgeeks.org/lcm-of-given-array-elements/
     public static long lcm(int... numbers) {
