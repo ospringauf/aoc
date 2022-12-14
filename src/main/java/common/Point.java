@@ -114,6 +114,17 @@ public record Point(int x, int y) {
     	return String.format("(%d,%d)", x,y);
     }
     
+    public static List<Point> straightLine(Point a, Point b) {
+        int dx = b.x() - a.x();
+        int dy = b.y() - a.y();
+
+        if (dx == 0) {
+            return List.rangeClosed(0, Math.abs(dy)).map(i -> a.translate(0, i * Integer.signum(dy)));
+        } else {
+            return List.rangeClosed(0, Math.abs(dx)).map(i -> a.translate(i * Integer.signum(dx), 0));
+        }
+    }
+    
     public static Point parse(String s) {
     	var f = s.split("\\W+"); // non-word characters
 //    	var f = s.split("[^\\+\\-0-9]+");
