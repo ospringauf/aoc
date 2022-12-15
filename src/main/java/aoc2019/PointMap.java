@@ -6,7 +6,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class PointMap<T> extends HashMap<Point, T> {
+class PointMap<T> extends HashMap<Point, T> {
 
 	private static final long serialVersionUID = 1L;
 	

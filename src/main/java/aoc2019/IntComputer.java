@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.function.IntFunction;
 import java.util.function.LongSupplier;
 
-public class IntComputer {
+class IntComputer {
 
 	private static final int HCF = 99;
 	private static final int ADD = 1;

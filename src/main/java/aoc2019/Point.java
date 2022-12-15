@@ -2,7 +2,7 @@ package aoc2019;
 
 import java.util.stream.Stream;
 
-public class Point {
+class Point {
     int x;
     int y;
     

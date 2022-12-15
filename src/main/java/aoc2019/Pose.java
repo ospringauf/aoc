@@ -1,6 +1,6 @@
 package aoc2019;
 
-public class Pose extends Point {
+class Pose extends Point {
     Direction heading = Direction.NORTH;
     
     public Pose(int x, int y, Direction h) {        

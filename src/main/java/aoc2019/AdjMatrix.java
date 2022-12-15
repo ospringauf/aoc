@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-public class AdjMatrix<T> {
+class AdjMatrix<T> {
 
 	static final Integer INF = 99999999; // Integer.MAX_VALUE / 2;
 

@@ -1,6 +1,6 @@
 package aoc2019;
 
-public class ZPoint extends Point {
+class ZPoint extends Point {
 
 	int z;
 

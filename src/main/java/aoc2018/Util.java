@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public class Util {
+class Util {
 
     static List<String> lines(String fname) throws IOException {
         return Files.readAllLines(Paths.get("src/main/java", fname));
