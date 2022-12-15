@@ -14,26 +14,27 @@ import common.AocPuzzle;
 class Day01 extends AocPuzzle {
 
     public static void main(String[] args) {
-        System.out.println("=== part 1"); // 69693
-        new Day01().part1();
-        System.out.println("=== part 2"); // 200945
-        new Day01().part2();
+        new Day01().solve();
+        
+//        new Day01().solveJava();
     }
 
     String input = file2string("input01.txt");
 
-    void part1() {
+    void solve() {
         var l = split(input, "\n\n").map(block -> lines(block).map(Integer::parseInt));
 
+        System.out.println("=== part 1"); // 69693
         var sums = l.map(elf -> elf.sum());
         System.out.println(sums.max());
 
+        System.out.println("=== part 2"); // 200945
         var top3 = sums.sorted().reverse().take(3);
         System.out.println(top3.sum());
     }
 
-    // same as pure java
-    void part2() {
+    // same in pure java syntax
+    void solveJava() {
         String[] blocks = input.split("\n\n");
         List<Integer> sums = Arrays.stream(blocks).map(b -> sum(b.split("\n"))).toList();
 
