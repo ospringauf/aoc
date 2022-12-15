@@ -2,12 +2,16 @@ package common;
 
 import java.util.function.Function;
 
+import io.vavr.Function1;
 import io.vavr.Tuple2;
 import io.vavr.collection.List;
 
 
 public record Point(int x, int y) {
 	
+    public static final Function1<Point, Point> ROTL = p -> p.rotLeft();
+    public static final Function1<Point, Point> ROTR = p -> p.rotRight();
+    
 	public int manhattan() {
 		return Math.abs(x) + Math.abs(y);
 	}

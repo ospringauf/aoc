@@ -1,6 +1,12 @@
 package common;
 
+import io.vavr.Function1;
+
 public record Pos3(int x, int y, int z) {
+
+    public static final Function1<Pos3, Pos3> ROTX = b -> new Pos3(b.x, -b.z, b.y);
+    public static final Function1<Pos3, Pos3> ROTY = b -> new Pos3(b.z, b.y, -b.x);
+    public static final Function1<Pos3, Pos3> ROTZ = b -> new Pos3(b.y, -b.x, b.z);
 
     int manhattan(Pos3 b) {
         return Math.abs(b.x - x) + Math.abs(b.y - y) + Math.abs(b.z - z);
