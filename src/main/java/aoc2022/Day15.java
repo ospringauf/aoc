@@ -2,6 +2,7 @@ package aoc2022;
 
 import common.AocPuzzle;
 import common.Point;
+import common.Range;
 import common.Util;
 import io.vavr.collection.List;
 
@@ -22,20 +23,6 @@ class Day15 extends AocPuzzle {
     static final boolean TEST = false;
     List<String> data = TEST ? Util.splitLines(example) : file2lines("input15.txt");
     List<Sensor> sensors = data.map(Sensor::parse);
-
-    record Range(int a, int b) {
-        static Range empty() {
-            return new Range(0, -1);
-        }
-
-        boolean contains(int x) {
-            return (a <= x) && (x <= b);
-        }
-
-        int size() {
-            return b - a + 1;
-        }
-    }
 
     record Sensor(Point pos, Point beacon) {
         static Sensor parse(String s) {
@@ -66,8 +53,8 @@ class Day15 extends AocPuzzle {
         var zones = sensors.map(s -> s.exclusionZone(y));
 
         // count all values of x covered by any exclusion zone
-        var xmin = zones.map(r -> r.a).min().get();
-        var xmax = zones.map(r -> r.b).max().get();
+        var xmin = zones.map(r -> r.min()).min().get();
+        var xmax = zones.map(r -> r.max()).max().get();
         var covered = List.rangeClosed(xmin, xmax).count(x -> zones.exists(r -> r.contains(x)));
 
         // subtract known beacons at y
@@ -85,8 +72,8 @@ class Day15 extends AocPuzzle {
         var zones = sensors.map(s -> s.exclusionZone(y));
 
         // count all values of x covered by any exclusion zone
-        var xmin = zones.map(r -> r.a).min().get();
-        var xmax = zones.map(r -> r.b).max().get();
+        var xmin = zones.map(r -> r.min()).min().get();
+        var xmax = zones.map(r -> r.max()).max().get();
         int covered = 0;
         int x = xmin;
         do {
@@ -94,12 +81,12 @@ class Day15 extends AocPuzzle {
             var zone = zones.find(z -> z.contains(fx));
             if (zone.isDefined()) {
                 // add exclusion zone width, continue after zone
-                int b = zone.get().b + 1;
+                int b = zone.get().max() + 1;
                 covered += b - x;
                 x = b;
             } else {
                 // uncovered area, jump to next zone
-                x = zones.map(z -> z.a).filter(za -> za>=fx).min().getOrElse(xmax);
+                x = zones.map(z -> z.min()).filter(za -> za>=fx).min().getOrElse(xmax);
             }
         } while (x <= xmax);
 
@@ -121,7 +108,7 @@ class Day15 extends AocPuzzle {
                 var zone = zones.find(z -> z.contains(fx));
                 if (zone.isDefined())
                     // continue after this exclusion zone
-                    x = zone.get().b + 1;
+                    x = zone.get().max() + 1;
                 else {
                     // found an uncovered point - we're done
                     System.out.println(Point.of(x, y));

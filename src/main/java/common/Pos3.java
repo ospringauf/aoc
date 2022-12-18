@@ -1,6 +1,7 @@
 package common;
 
 import io.vavr.Function1;
+import io.vavr.collection.List;
 
 public record Pos3(int x, int y, int z) {
 
@@ -31,6 +32,10 @@ public record Pos3(int x, int y, int z) {
     public Pos3 plus(Pos3 p) {
         return new Pos3(x + p.x, y + p.y, z + p.z);
     }
+    
+    public Pos3 plus(int dx, int dy, int dz) {
+        return new Pos3(x + dx, y + dy, z + dz);
+    }
 
     public Pos3 minus(Pos3 p) {
         return new Pos3(x - p.x, y - p.y, z - p.z);
@@ -39,4 +44,14 @@ public record Pos3(int x, int y, int z) {
     public String toString() {
         return String.format("(%d,%d,%d)", x,y,z);
     }
+    
+    public List<Pos3> neighbors6() {
+        return List.of(plus(1,0,0), plus(-1,0,0), plus(0,1,0), plus(0,-1,0), plus(0,0,1), plus(0,0,-1));
+    }
+    
+    public static Pos3 parse(String s) {
+        var f = s.split("\\W+"); // non-word characters
+        return new Pos3(Integer.parseInt(f[0]), Integer.parseInt(f[1]), Integer.parseInt(f[2]));
+    }
+
 }

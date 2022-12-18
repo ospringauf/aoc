@@ -9,6 +9,7 @@ import io.vavr.collection.List;
 
 // --- Day 17: Pyroclastic Flow ---
 // https://adventofcode.com/2022/day/17
+// TODO too slow
 
 class Day17 extends AocPuzzle {
 

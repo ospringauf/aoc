@@ -133,6 +133,5 @@ public record Point(int x, int y) {
     	var f = s.split("\\W+"); // non-word characters
 //    	var f = s.split("[^\\+\\-0-9]+");
     	return new Point(Integer.parseInt(f[0]), Integer.parseInt(f[1]));
-		
 	}
 }

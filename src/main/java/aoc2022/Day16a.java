@@ -10,6 +10,7 @@ import io.vavr.collection.Set;
 
 // --- Day 16: Proboscidea Volcanium ---
 // https://adventofcode.com/2022/day/16
+// TODO too slow
 
 class Day16a extends AocPuzzle {
 

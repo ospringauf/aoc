@@ -17,7 +17,7 @@ class Day16 extends AocPuzzle {
         System.out.println("=== part 1"); // 2080 (1651)
         timed(() -> new Day16().part1());
         System.out.println("=== part 2"); // 2752 (1707)
-        System.out.println("=== please be patient");
+        System.out.println("=== please be patient (5 min)");
         timed(() -> new Day16().part2());
     }
 
