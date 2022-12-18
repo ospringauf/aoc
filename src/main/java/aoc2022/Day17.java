@@ -1,42 +1,47 @@
 package aoc2022;
 
-import java.io.PrintWriter;
-
 import common.AocPuzzle;
 import common.Point;
 import common.PointMap;
 import io.vavr.collection.List;
+import io.vavr.collection.Set;
 
 // --- Day 17: Pyroclastic Flow ---
 // https://adventofcode.com/2022/day/17
-// TODO too slow
 
 class Day17 extends AocPuzzle {
 
     public static void main(String[] args) {
         System.out.println("=== part 1"); // 3069
-//        new Day17().part1();
+        timed(() -> new Day17().part1(2022));
+
         System.out.println("=== part 2"); // 1523167155404
-        new Day17().part2();
+        var heights = new Day17().part1(10000);
+        new Day17().part2(heights);
     }
 
     private static final int WIDTH = 7;
 
-//    String data = example;
-    String data = file2string("input17.txt");
-    static PointMap<Character> cave = new PointMap<>();
+//    String jets = example;
+    String jets = file2string("input17.txt");
 
-    record Rock(Point pos, PointMap<Character> shape) {
+    PointMap<Character> cave = new PointMap<>();
+    int top = 0;
+    int jetIndex = 0;
 
+    record Rock(Point pos, Set<Point> shape) {
         static Rock parse(String a) {
             var s = new PointMap<Character>();
             s.read(a.split("\n"), c -> c);
-            s.findPoints('.').forEach(p -> s.remove(p));
-            return new Rock(Point.of(0, 0), s);
+            return new Rock(Point.of(0, 0), s.findPoints('#').toSet());
+        }
+
+        int height() {
+            return shape.map(p -> p.y()).max().get() + 1;
         }
 
         Rock move(Point p) {
-            return new Rock(p, shape);
+            return new Rock(p, shape.map(x -> x.translate(p.x() - pos.x(), p.y() - pos.y())));
         }
 
         Rock left() {
@@ -47,149 +52,116 @@ class Day17 extends AocPuzzle {
             return move(pos.east());
         }
 
-        boolean collision() {
-            for (var p : shape.keySet()) {
-                var t = p.translate(pos.x(), pos.y());
-                if (cave.containsKey(t))
-                    return true;
-            }
-            return false;
+        Rock down() {            
+            return move(pos.south());
+        }
+        
+        boolean collision(PointMap cave) {
+            return shape.exists(p -> cave.containsKey(p));
         }
 
-        boolean collision(java.util.Set<Point> s) {
-            for (var p : shape.keySet()) {
-                var t = p.translate(pos.x(), pos.y());
-                if (s.contains(t))
-                    return true;
-            }
-            return false;
+        void materialize(PointMap cave, char c) {
+            shape.forEach(p -> cave.put(p,  c));
         }
-
-        void materialize(char c) {
-            for (var p : shape.keySet()) {
-                var t = p.translate(pos.x(), pos.y());
-                cave.put(t, c);
-            }
-        }
-
     }
 
-    int topy = 0;
-    int jet = 0;
-
     void dropRock(Rock rock) {
-        var bb = rock.shape.boundingBox();
-        int y = topy - 3 - bb.height();
+        int y = top - 3 - rock.height();
         rock = rock.move(Point.of(3, y));
 
 //        print(rock);
         boolean falling = true;
         while (falling) {
 
-            java.util.HashSet<Point> m = new java.util.HashSet(cave.keySet());
-            var r0 = rock;
-            m.removeIf(p -> p.y() < r0.pos.y() - 0 || p.y() > r0.pos.y() + 4);
+            var dir = jets.charAt(jetIndex % jets.length());
 
-            var d = data.charAt(jet % data.length());
-            var h = (d == '<') ? rock.left() : rock.right();
-            if (!h.collision(m))
-                rock = h;
-            var n = rock.move(rock.pos.south());
-            falling = !n.collision(m);
+            var r = (dir == '<') ? rock.left() : rock.right();
+            if (!r.collision(cave))
+                rock = r;
+
+            r = rock.down();
+            falling = !r.collision(cave);
             if (falling)
-                rock = n;
-            jet++;
+                rock = r;
+
+            jetIndex++;
         }
-        rock.materialize('#');
-        topy = Math.min(topy, rock.pos.y());
+        rock.materialize(cave, '#');
+        top = Math.min(top, rock.pos.y());
     }
 
     void print(Rock r) {
         if (r != null)
-            r.materialize('@');
+            r.materialize(cave, '@');
         cave.print();
         System.out.println();
 
         cave.findPoints('@').forEach(p -> cave.remove(p));
     }
 
-    void drawWalls() {
-        int h = topy;
+    void addWalls() {
+        int h = top;
         List.rangeClosed(h - 6, h).forEach(y -> cave.put(Point.of(0, y), '|'));
         List.rangeClosed(h - 6, h).forEach(y -> cave.put(Point.of(WIDTH + 1, y), '|'));
         cave.put(Point.of(0, 0), '+');
     }
 
-    void part1() {
+    List<Integer> part1(int rounds) {
         var rocks = split(rockshapes, "\n\n").map(Rock::parse);
 
         List.range(1, WIDTH + 1).forEach(x -> cave.put(Point.of(x, 0), '-'));
         cave.put(Point.of(0, 0), '+');
-        drawWalls();
-        print(null);
+        addWalls();
+//        print(null);
 
-        List<Integer> tops = List.empty();
+        List<Integer> heights = List.empty();
 
-        int rounds = 20000;
         for (int i = 0; i < rounds; ++i) {
-            tops = tops.append(topy);
-            drawWalls();
+            heights = heights.append(-top);
+            addWalls();
             var rock = rocks.get(i % 5);
             dropRock(rock);
-            if (i % 100 == 0)
-                System.out.println(i);
+            if (i % 1000 == 0)
+                System.out.println(".. " + i);
         }
 //        print(null);
 
-        System.out.println(-topy);
+        System.out.println(-top);
 
-        save(tops);
-
+        return heights;
     }
 
-    void save(List<Integer> tops) {
-        try {
-            try (PrintWriter out = new PrintWriter("src/main/java/aoc2022/output17.txt")) {
-                var s = tops.mkString("\n");
-                out.println(s);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    void part2() {
+    void part2(List<Integer> height) {
         long rounds = 1_000_000_000_000L / 5;
-        var h = file2ints("output17.txt").map(x -> -x);
-        System.out.println(h.take(30));
+        System.out.println("height: " + height.take(30));
 
-        var delta = h.sliding(6, 5).map(l -> l.last()-l.head()).toList();
-        System.out.println("delta: " + delta.take(30));
-        
-        var max = delta.max().get();
+        var delta5 = height.sliding(6, 5).map(l -> l.last() - l.head()).toList();
+        System.out.println("delta5: " + delta5.take(30));
+
+        var max = delta5.max().get();
         System.out.println("max: " + max);
-        int initialrounds = delta.indexOf(max);
-        int initialh = delta.take(initialrounds).sum().intValue();
-        System.out.println("initial: " + initialrounds + " / " +initialh);
-        
-        var maxes = List.range(0, delta.size()).filter(i -> delta.get(i)==max);
-        System.out.println("maxes: " + maxes.take(20));
-        var periods = maxes.sliding(2).map(l -> l.last()-l.head()).toList();
-        System.out.println("periods: " + periods.take(10));
-        int period = periods.head();
-        
-        var repeat = delta.drop(initialrounds).take(period).toList();
-        var len = repeat.sum().intValue();
-        System.out.println("len: " + len);
-        
-        var y0 = initialh + ((rounds-initialrounds)/period)*len;
-        int rem = (int) ((rounds-initialrounds)%period);
+        int initialrounds = delta5.indexOf(max);
+        int initialh = delta5.take(initialrounds).sum().intValue();
+        System.out.println("initial: " + initialrounds + " / " + initialh);
+
+        var maxes = List.range(0, delta5.size()).filter(i -> delta5.get(i) == max);
+        System.out.println("maxima: " + maxes.take(20));
+
+        var maxDistances = maxes.sliding(2).map(l -> l.last() - l.head()).toList();
+        System.out.println("maxima distances: " + maxDistances.take(10));
+        int cycle = maxDistances.head();
+
+        var repeat = delta5.drop(initialrounds).take(cycle).toList();
+        var deltaCycle = repeat.sum().intValue();
+        System.out.println("delta/cycle: " + deltaCycle);
+
+        var y0 = initialh + ((rounds - initialrounds) / cycle) * deltaCycle;
+        int rem = (int) ((rounds - initialrounds) % cycle);
         var dy = repeat.take(rem).sum().longValue();
         System.out.println("y0 = " + y0);
-        System.out.println("y = " + (y0+dy));
+        System.out.println("y = " + (y0 + dy));
     }
-    
-    
+
     static String example = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>";
 
     static String rockshapes = """
