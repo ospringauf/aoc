@@ -43,8 +43,8 @@ class Day18 extends AocPuzzle {
             return xr.values().flatMap(x -> yr.values().flatMap(y -> zr.values().map(z -> new Pos3(x, y, z))));
         }
 
-        Set<Pos3> floodFill(Pos3 p, Set<Pos3> blocked) {
-            Set<Pos3> next = HashSet.of(p);
+        Set<Pos3> floodFill(Pos3 start, Set<Pos3> blocked) {
+            Set<Pos3> next = HashSet.of(start);
             Set<Pos3> filled = HashSet.empty();
             while (next.nonEmpty()) {
                 filled = filled.addAll(next);

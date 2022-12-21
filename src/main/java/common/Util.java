@@ -17,6 +17,10 @@ public class Util {
         return splitFields(input).map(Integer::valueOf);
     }
 
+    public static List<Long> string2longs(String input) {
+        return splitFields(input).map(Long::valueOf);
+    }
+
     public static List<Integer> strings2ints(String[] strings) {
         return List.of(strings).map(Integer::valueOf);
     }

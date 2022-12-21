@@ -5,12 +5,11 @@ import common.Util;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.HashSet;
 import io.vavr.collection.List;
-import io.vavr.collection.Map;
 import io.vavr.collection.Set;
 
 // --- Day 16: Proboscidea Volcanium ---
 // https://adventofcode.com/2022/day/16
-// TODO too slow
+// TODO too slow (part 2)
 
 class Day16 extends AocPuzzle {
 
@@ -85,9 +84,11 @@ class Day16 extends AocPuzzle {
         var next = todo.removeAll(s.open);
 
         if (!s.open.contains(s.pos) && s.pos.flowRate > 0) {
+            // we should open the current valve
             var x = new State(s.time - 1, s.pos, s.open.add(s.pos));
             best = best.append(solve(x, todo.remove(s.pos)) + s.flow());
         } else
+            // continue to next closed valve 
             for (var n : next) {
                 int d = dst.get(s.pos).get(n);
                 if (s.time - d > 1) {
@@ -96,6 +97,7 @@ class Day16 extends AocPuzzle {
                 }
             }
         if (best.isEmpty())
+            // no more valves in reach
             best = best.append((s.time) * s.flow());
 
         var r = best.max().get();
@@ -119,14 +121,14 @@ class Day16 extends AocPuzzle {
         List<Integer> bests = List.empty();
 
         for (int k = 0; k <= todo.size() / 2; ++k) {
-            for (var my : todo.combinations(k)) {
-                var ele = todo.removeAll(my);
+            for (var myValves : todo.combinations(k)) {
+                var elephantValves = todo.removeAll(myValves);
 
                 cache.clear();
-                var b1 = solve(new State(26, aa, HashSet.empty()), my);
+                var myFlow = solve(new State(26, aa, HashSet.empty()), myValves);
                 cache.clear();
-                var b2 = solve(new State(26, aa, HashSet.empty()), ele);
-                bests = bests.append(b1 + b2);
+                var elephantFlow = solve(new State(26, aa, HashSet.empty()), elephantValves);
+                bests = bests.append(myFlow + elephantFlow);
             }
             System.out.println("# " + k + " -> " + bests.max().get());
         }
