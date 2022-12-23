@@ -9,11 +9,11 @@ import io.vavr.collection.List;
 
 public record BoundingBox(int xMin, int xMax, int yMin, int yMax) {
 
-    static <T extends Point> BoundingBox of(Collection<T> points) {
+    public static <T extends Point> BoundingBox of(Collection<T> points) {
         return of(points.toArray(new Point[0]));
     }
 
-    static BoundingBox of(Point... points) {
+    public static BoundingBox of(Point... points) {
         return new BoundingBox(
 
         Stream.of(points).mapToInt(p -> p.x()).min().orElse(0),

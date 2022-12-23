@@ -78,4 +78,14 @@ public enum Direction {
 		default -> throw new IllegalArgumentException("Unexpected value: " + c);
 		};
 	}
+	
+	public char symbol() {
+	    return switch (this) {
+        case RIGHT, EAST -> '>';
+        case LEFT, WEST -> '<';
+        case UP, NORTH -> '^';
+        case DOWN, SOUTH -> 'v';
+        default -> throw new IllegalArgumentException("Unexpected value: " + this);
+        };
+	}
 }

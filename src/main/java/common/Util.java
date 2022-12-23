@@ -4,6 +4,8 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.function.Predicate;
 
+import javax.swing.text.html.HTMLDocument.HTMLReader.SpecialAction;
+
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 
@@ -73,7 +75,9 @@ public class Util {
     // split string and keep delimiters (single-character)
     // see https://www.baeldung.com/java-split-string-keep-delimiters
     public static List<String> splitWithDelimiters(String s, List<Character> delims) {
-    	var d = delims.map(c -> "\\" + c).mkString("|");
+        var special = "<([{\\^-=$!|]})?*+.>";
+        //var d = delims.map(c -> "\\" + c).mkString("|");
+        var d = delims.map(c -> (special.indexOf(c) >= 0)? "\\"+c : ""+c).mkString("|");
     	var re = String.format("((?<=%s)|(?=%s))", d, d);
     	return List.of(s.split(re));
     }
