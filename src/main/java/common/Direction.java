@@ -71,11 +71,11 @@ public enum Direction {
 		case 'S' -> SOUTH;
 		case 'E' -> EAST;
 		case 'W' -> WEST;
-		case 'U' -> UP;
-		case 'D' -> DOWN;
-		case 'L' -> LEFT;
-		case 'R' -> RIGHT;
-		default -> throw new IllegalArgumentException("Unexpected value: " + c);
+		case 'U', '^' -> UP;
+		case 'D', 'V' -> DOWN;
+		case 'L', '<' -> LEFT;
+		case 'R', '>' -> RIGHT;
+		default -> throw new IllegalArgumentException("Unexpected value: '" + c + "'");
 		};
 	}
 	
