@@ -1,7 +1,7 @@
 package aoc2022;
 
 import common.AocPuzzle;
-import common.Pos3;
+import common.Vec3;
 import common.Range;
 import common.Util;
 import io.vavr.collection.HashSet;
@@ -24,10 +24,10 @@ class Day18 extends AocPuzzle {
 //    List<String> data = Util.splitLines(example);
     List<String> data = file2lines("input18.txt");
 
-    Set<Pos3> lava = data.map(Pos3::parse).toSet();
+    Set<Vec3> lava = data.map(Vec3::parse).toSet();
 
     record Box(Range xr, Range yr, Range zr) {
-        boolean contains(Pos3 p) {
+        boolean contains(Vec3 p) {
             return xr.contains(p.x()) && yr.contains(p.y()) && zr.contains(p.z());
         }
 
@@ -35,20 +35,20 @@ class Day18 extends AocPuzzle {
             return xr.size() * yr.size() * zr.size();
         }
 
-        boolean isEdge(Pos3 p) {
+        boolean isEdge(Vec3 p) {
             return xr.isEdge(p.x()) || yr.isEdge(p.y()) || zr.isEdge(p.z());
         }
 
-        List<Pos3> points() {
-            return xr.values().flatMap(x -> yr.values().flatMap(y -> zr.values().map(z -> new Pos3(x, y, z))));
+        List<Vec3> points() {
+            return xr.values().flatMap(x -> yr.values().flatMap(y -> zr.values().map(z -> new Vec3(x, y, z))));
         }
 
-        Set<Pos3> floodFill(Pos3 start, Set<Pos3> blocked) {
-            Set<Pos3> next = HashSet.of(start);
-            Set<Pos3> filled = HashSet.empty();
+        Set<Vec3> floodFill(Vec3 start, Set<Vec3> blocked) {
+            Set<Vec3> next = HashSet.of(start);
+            Set<Vec3> filled = HashSet.empty();
             while (next.nonEmpty()) {
                 filled = filled.addAll(next);
-                next = filled.flatMap(Pos3::neighbors6);
+                next = filled.flatMap(Vec3::neighbors6);
                 next = next.filter(this::contains);
                 next = next.removeAll(blocked);
                 next = next.removeAll(filled);
@@ -56,7 +56,7 @@ class Day18 extends AocPuzzle {
             return filled;
         }
 
-        static Box around(Set<Pos3> s) {
+        static Box around(Set<Vec3> s) {
             var xr = Range.of(s.map(c -> c.x()));
             var yr = Range.of(s.map(c -> c.y()));
             var zr = Range.of(s.map(c -> c.z()));
@@ -68,7 +68,7 @@ class Day18 extends AocPuzzle {
         System.out.println(exposedSurface(lava));
     }
 
-    long exposedSurface(Set<Pos3> droplets) {
+    long exposedSurface(Set<Vec3> droplets) {
         System.out.println("checking exposed area of " + droplets.size() + " droplets");
 
         return droplets.toList().map(d -> 6 - d.neighbors6().count(n -> droplets.contains(n))).sum().longValue();
@@ -85,7 +85,7 @@ class Day18 extends AocPuzzle {
 
         var all = box.points();
         var todo = all.removeAll(lava);
-        List<Pos3> bubbles = List.empty();
+        List<Vec3> bubbles = List.empty();
 
         // check all "non-cube" points if they are in a bubble
         while (todo.nonEmpty()) {

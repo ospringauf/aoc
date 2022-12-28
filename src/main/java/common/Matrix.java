@@ -50,16 +50,16 @@ public class Matrix extends PointMap<Integer> {
         return Point.of(r.get(0), r.get(1));
     }
 
-    public Pos3 apply(Pos3 p) {
+    public Vec3 apply(Vec3 p) {
         var r = apply(List.of(p.x(), p.y(), p.z()));
-        return Pos3.of(r.get(0), r.get(1), r.get(2));
+        return Vec3.of(r.get(0), r.get(1), r.get(2));
     }
     
     Function1<Point, Point> toFunc2d() {
         return p -> this.apply(p);
     }
 
-    Function1<Pos3, Pos3> toFunc3d() {
+    Function1<Vec3, Vec3> toFunc3d() {
         return p -> this.apply(p);
     }
 

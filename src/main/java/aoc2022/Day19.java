@@ -139,7 +139,7 @@ class Day19 extends AocPuzzle {
 
     java.util.Map<State, Integer> cache = new java.util.HashMap<>();
 
-    int solve1(Blueprint b, Amounts rmax, State s) {
+    int geodes1(Blueprint b, Amounts rmax, State s) {
         if (s.time <= 0)
             return s.stock.geode;
 
@@ -161,7 +161,7 @@ class Day19 extends AocPuzzle {
         if (next.isEmpty())
             next = next.append(s.skip());
 
-        var res = next.map(n -> solve1(b, rmax, n)).max().get();
+        var res = next.map(n -> geodes1(b, rmax, n)).max().get();
         cache.put(s, res);
         return res;
     }
@@ -181,14 +181,14 @@ class Day19 extends AocPuzzle {
 //                    .map(c -> (c == 'c') ? Typ.clay : (c == 'o') ? Typ.obsidian : (c == 'g') ? Typ.geode : null);
 //            System.out.println(w);
 
-            var geodes = solve1(b, b.maxRobots(), s0);
+            var geodes = geodes1(b, b.maxRobots(), s0);
             System.out.println(geodes);
             q += b.id * geodes;
         }
         System.out.println(q);
     }
 
-    int solve2(Blueprint b, Amounts rmax, State s) {
+    int geodes2(Blueprint b, Amounts rmax, State s) {
         if (s.time <= 0)
             return s.stock.geode;
 
@@ -211,7 +211,7 @@ class Day19 extends AocPuzzle {
         if (next.isEmpty())
             next = next.append(s.skip());
 
-        var res = next.map(n -> solve2(b, rmax, n)).max().get();
+        var res = next.map(n -> geodes2(b, rmax, n)).max().get();
         cache.put(s, res);
         return res;
     }
@@ -225,7 +225,7 @@ class Day19 extends AocPuzzle {
             System.out.println("blueprint " + b.id);
             var s0 = new State(32, new Amounts(1, 0, 0, 0), new Amounts(0, 0, 0, 0));
 
-            var geodes = solve2(b, b.maxRobots(), s0);
+            var geodes = geodes2(b, b.maxRobots(), s0);
             System.out.println(geodes);
             q *= geodes;
         }
