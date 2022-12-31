@@ -80,7 +80,8 @@ public record Point(int x, int y) {
     }
 
     public Point modulo(int w, int h) {
-        return Point.of(x % w, y % h);
+        // return Point.of(x % w, y % h);
+        return Point.of((x % w + w) % w, (y % h + h) % h);
     }
 
     public Point rotLeft() {

@@ -17,7 +17,6 @@ import io.vavr.collection.Map;
 // --- Day 22: Monkey Map ---
 // https://adventofcode.com/2022/day/22
 // improved version, determines cube face orientation and rotation
-// TODO move some features to Point/Pose/Vec3 
 // TODO improve part 1
 
 class Day22 extends AocPuzzle {
@@ -55,15 +54,11 @@ class Day22 extends AocPuzzle {
         instr = Util.splitWithDelimiters(blocks[1].trim(), "RL");
     }
 
-    List<Point> rect() {
-        return List.range(0, A).flatMap(y -> List.range(0, A).map(x -> Point.of(x, y)));
-    }
-
     Function<Vec3, Vec3> id = p -> p;
-    static Function<Vec3, Vec3> td = Vec3::rotxr;
-    static Function<Vec3, Vec3> tu = Vec3::rotx;
-    static Function<Vec3, Vec3> tl = Vec3::rotyr;
-    static Function<Vec3, Vec3> tr = Vec3::roty;
+    static Function<Vec3, Vec3> rdown = Vec3::rotxr;
+    static Function<Vec3, Vec3> tup = Vec3::rotx;
+    static Function<Vec3, Vec3> rleft = Vec3::rotyr;
+    static Function<Vec3, Vec3> rright = Vec3::roty;
     static final Vec3 V1 = Vec3.of(0, 0, 1); // normal of face 1
     static final Vec3 N = Vec3.of(0, -1, 0);
     static final Vec3 S = Vec3.of(0, 1, 0);
@@ -71,46 +66,21 @@ class Day22 extends AocPuzzle {
     static final Vec3 W = Vec3.of(-1, 0, 0);
 
     /**
-     * represents the "ant" walking on the cube surface.
-     * origin is the position of the face in the original map.
-     * pos is relative to the face origin! (0..A-1)
+     * represents the "ant" walking on the cube surface. origin is the position of
+     * the face in the original map. pos is relative to the face origin! (0..A-1)
      */
-    record AntPose(Face face, Direction heading, Point pos) {
-        
-        AntPose absolute() {
-            return new AntPose(face, heading, pos.plus(face.origin));
-        }
+    record AntPose(Face face, Pose pose) {
 
-        AntPose wrap() {
-            var p = switch (heading) {
-            case NORTH -> Point.of(pos.x(), ((pos.y() - 1) % A + A) % A);
-            case SOUTH -> Point.of(pos.x(), (pos.y() + 1) % A);
-            case WEST -> Point.of(((pos.x() - 1) % A + A) % A, pos.y());
-            case EAST -> Point.of((pos.x() + 1) % A, pos.y());
-            default -> throw new IllegalArgumentException("Unexpected value: " + heading);
-            };
-            return new AntPose(face, heading, p);
-        }
-        
-        AntPose rot(Direction dir, Face next) {
-            var d = heading;
-            var p = pos;
-            var c = Point.of(0, A-1);
-
-            while (d != dir) {
-                p = p.rotLeft().plus(c);
-                d = d.left();
-            }
-            return new AntPose(next, d, p);
+        Point absolute() {
+            return pose.pos().plus(face.origin);
         }
 
         AntPose ahead() {
-            var p = new Pose(heading, pos).ahead();
-            return new AntPose(face, p.heading(), p.pos());
+            return new AntPose(face, pose.ahead());
         }
 
         boolean valid() {
-            return 0 <= pos.x() && pos.x() < A && 0 <= pos.y() && pos.y() < A;
+            return 0 <= pose.pos().x() && pose.pos().x() < A && 0 <= pose.pos().y() && pose.pos().y() < A;
         }
     }
 
@@ -118,7 +88,7 @@ class Day22 extends AocPuzzle {
         Vec3 normal() {
             return transform.apply(V1);
         }
-        
+
         public String toString() {
             return String.format("%d:%s", id, origin);
         }
@@ -146,41 +116,47 @@ class Day22 extends AocPuzzle {
                 return;
             Face f = new Face(n, t, Point.of(A * p.x(), A * p.y()));
             faces = faces.put(f.normal(), f);
-            buildFaces(p.south(), td.andThen(t));
-            buildFaces(p.north(), tu.andThen(t));
-            buildFaces(p.west(), tl.andThen(t));
-            buildFaces(p.east(), tr.andThen(t));
+            buildFaces(p.south(), rdown.andThen(t));
+            buildFaces(p.north(), tup.andThen(t));
+            buildFaces(p.west(), rleft.andThen(t));
+            buildFaces(p.east(), rright.andThen(t));
         }
 
         Face neighbor(Face f, Direction d) {
             var t = switch (d) {
-            case NORTH -> tu;
-            case SOUTH -> td;
-            case EAST -> tr;
-            case WEST -> tl;
+            case NORTH -> tup;
+            case SOUTH -> rdown;
+            case EAST -> rright;
+            case WEST -> rleft;
             default -> throw new IllegalArgumentException("Unexpected value: " + d);
             };
             var v = t.andThen(f.transform).apply(V1);
             return getFace(v);
         }
 
-        Direction wrap(Face f, Direction heading) {
-            // wrap direction vector to neighbor face, then transform to neighbor
-            // coordinates and compare to neighbor NWSE
-            var n = neighbor(f, heading);
-
+        Direction transformHeading(Direction heading, Face from, Face to) {
+            // transform current heading vector to neighbor face
 //            var v = switch (heading) { // Eclipse compiler bug!
             Vec3 v = switch (heading) {
-            case NORTH -> tu.andThen(f.transform).apply(N);
-            case SOUTH -> td.andThen(f.transform).apply(S);
-            case EAST -> tr.andThen(f.transform).apply(E);
-            case WEST -> tl.andThen(f.transform).apply(W);
+            case NORTH -> tup.andThen(from.transform).apply(N);
+            case SOUTH -> rdown.andThen(from.transform).apply(S);
+            case EAST -> rright.andThen(from.transform).apply(E);
+            case WEST -> rleft.andThen(from.transform).apply(W);
             default -> throw new IllegalArgumentException("Unexpected value: " + heading);
             };
 
-            var dn = List.of(N, W, S, E).find(dir -> n.transform.apply(dir).equals(v)).get();
-            return dirs.get(dn).get();
+            // find corresponding heading vector on target face
+            var d = List.of(N, W, S, E).find(dir -> to.transform.apply(dir).equals(v)).get();
+            return dirs.get(d).get();
         }
+
+        AntPose changeFace(AntPose p) {
+            var nextface = neighbor(p.face, p.pose.heading());
+            var nextheading = transformHeading(p.pose.heading(), p.face, nextface);
+            var a = p.pose.modulo(A, A).rotateTo(nextheading, A);
+            return new AntPose(nextface, a);
+        }
+
     }
 
     void analyzeFacemap() {
@@ -193,7 +169,7 @@ class Day22 extends AocPuzzle {
 
             for (var d : cube.dirs.values()) {
                 var n = cube.neighbor(f, d);
-                var dn = cube.wrap(f, d);
+                var dn = cube.transformHeading(d, f, n);
                 System.out.println("   " + d + ": " + n.id + ", " + dn);
             }
         }
@@ -209,7 +185,6 @@ class Day22 extends AocPuzzle {
         case LEFT -> k.filter(e -> e.y() == next.pos().y()).maxBy(e -> e.x());
         case DOWN -> k.filter(e -> e.x() == next.pos().x()).minBy(e -> e.y());
         case UP -> k.filter(e -> e.x() == next.pos().x()).maxBy(e -> e.y());
-
         default -> throw new IllegalArgumentException("Unexpected value: " + next.heading());
 
         };
@@ -217,14 +192,7 @@ class Day22 extends AocPuzzle {
         return new Pose(next.heading(), n.get());
     }
 
-    int face(Point p) {
-        if (!map.containsKey(p))
-            return 0;
-        return faceMap.getOrDefault(Point.of(p.x() / A, p.y() / A), 0);
-    }
-
     void part1() {
-
         var k = HashSet.ofAll(map.keySet());
 
         var p = new Pose(Direction.RIGHT, Point.of(0, 0));
@@ -236,12 +204,12 @@ class Day22 extends AocPuzzle {
                 var d = Integer.valueOf(i);
                 for (int s = 0; s < d; ++s) {
                     var a = ahead1(p, k);
-                    if (map.getOrDefault(a.pos(), '?') == '#')
-                        break;
-                    map.put(p.pos(), p.heading().symbol());
-                    p = a;
+                    boolean blocked = map.getOrDefault(a.pos(), '?') == '#';
+                    if (!blocked) {
+                        map.put(p.pos(), p.heading().symbol());
+                        p = a;
+                    }
                 }
-
             } else {
                 p = p.turn("R".equals(i));
             }
@@ -252,7 +220,7 @@ class Day22 extends AocPuzzle {
         System.out.println(password(p));
     }
 
-    int password(Pose p) {        
+    int password(Pose p) {
         var facing = switch (p.heading()) {
         case RIGHT, EAST -> 0;
         case LEFT, WEST -> 2;
@@ -261,11 +229,6 @@ class Day22 extends AocPuzzle {
         default -> throw new IllegalArgumentException("Unexpected value: " + p.heading());
         };
         return 1000 * (p.pos().y() + 1) + 4 * (p.pos().x() + 1) + facing;
-    }
-
-    Point origin(int face) {
-        var p = faceMap.findPoint(face);
-        return Point.of(A * p.x(), A * p.y());
     }
 
     void part2() {
@@ -277,7 +240,7 @@ class Day22 extends AocPuzzle {
         var cube = new Cube();
         cube.buildFaces(faceMap.findPoint(1), id);
 
-        var p = new AntPose(cube.getFace(1), Direction.EAST, Point.of(0, 0));
+        var p = new AntPose(cube.getFace(1), new Pose(Direction.EAST, Point.of(0, 0)));
         System.out.println("start: " + p);
 
         for (var i : instr) {
@@ -288,22 +251,18 @@ class Day22 extends AocPuzzle {
                 var a = p.ahead();
                 if (!a.valid()) {
                     // move to other face
-                    var nextface = cube.neighbor(p.face, p.heading);
-                    var nextheading = cube.wrap(p.face, p.heading);
-                    a = p.wrap();
-                    a = a.rot(nextheading, nextface);
+                    a = cube.changeFace(a);
                 }
-                if (map.getOrDefault(a.pos().plus(a.face.origin), '?') != '#') {
+                boolean blocked = map.getOrDefault(a.absolute(), '?') == '#';
+                if (!blocked) {
                     p = a;
-                } else {
-//                        System.out.println("blocked");
                 }
             } else {
-                p = new AntPose(p.face, p.heading.turn("R".equals(i)), p.pos);
+                p = new AntPose(p.face, p.pose.turn("R".equals(i)));
             }
         }
-        
-        Pose pose = new Pose(p.heading, p.pos.plus(p.face.origin));
+
+        Pose pose = new Pose(p.pose.heading(), p.absolute());
         System.out.print("password for " + pose + ": ");
         System.out.println(password(pose));
 

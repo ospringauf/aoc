@@ -26,6 +26,7 @@ class Day16 extends AocPuzzle {
 
     List<Valve> valves = data.map(Valve::parse);
     List<Valve> todo = valves.filter(v -> v.flowRate > 0);
+    int maxFlow = todo.map(v -> v.flowRate).sum().intValue();
 
     java.util.Map<String, Valve> m = valves.toMap(v -> v.id, v -> v).toJavaMap();
     java.util.Map<Valve, java.util.HashMap<Valve, Integer>> dst = valves.toMap(v -> v, v -> dists(v).toJavaMap())
@@ -64,15 +65,11 @@ class Day16 extends AocPuzzle {
         return d;
     }
 
-    record State(int time, Valve pos, Set<Valve> open) {
-        int flow() {
-            return open.map(v -> v.flowRate).sum().intValue();
-        }
-    }
+    record State(int time, Valve pos, Set<Valve> closed, int flow) {}
 
     java.util.HashMap<State, Integer> cache = new java.util.HashMap<>();
 
-    int solve(State s, List<Valve> todo) {
+    int solve(State s) {
 //      System.out.println(s + " / flow=" + s.flow());
         if (s.time <= 0)
             return 0;
@@ -81,24 +78,23 @@ class Day16 extends AocPuzzle {
             return cache.get(s);
 
         List<Integer> best = List.empty();
-        var next = todo.removeAll(s.open);
 
-        if (!s.open.contains(s.pos) && s.pos.flowRate > 0) {
+        if (s.closed.contains(s.pos) && s.pos.flowRate > 0) {
             // we should open the current valve
-            var x = new State(s.time - 1, s.pos, s.open.add(s.pos));
-            best = best.append(solve(x, todo.remove(s.pos)) + s.flow());
+            var x = new State(s.time - 1, s.pos, s.closed.remove(s.pos), s.flow+s.pos.flowRate);
+            best = best.append(solve(x) + s.flow);
         } else
             // continue to next closed valve 
-            for (var n : next) {
+            for (var n : s.closed) {
                 int d = dst.get(s.pos).get(n);
                 if (s.time - d > 1) {
-                    var x = new State(s.time - d, n, s.open);
-                    best = best.append(solve(x, todo.remove(s.pos)) + d * s.flow());
+                    var x = new State(s.time - d, n, s.closed, s.flow);
+                    best = best.append(solve(x) + d * s.flow);
                 }
             }
         if (best.isEmpty())
             // no more valves in reach
-            best = best.append((s.time) * s.flow());
+            best = best.append((s.time) * s.flow);
 
         var r = best.max().get();
         cache.put(s, r);
@@ -108,7 +104,7 @@ class Day16 extends AocPuzzle {
 
     void part1() {
         Valve aa = m.get("AA");
-        var r = solve(new State(30, aa, HashSet.empty()), todo);
+        var r = solve(new State(30, aa, todo.toSet(), 0));
         System.out.println(r);
     }
 
@@ -125,9 +121,9 @@ class Day16 extends AocPuzzle {
                 var elephantValves = todo.removeAll(myValves);
 
                 cache.clear();
-                var myFlow = solve(new State(26, aa, HashSet.empty()), myValves);
+                var myFlow = solve(new State(26, aa, myValves.toSet(), 0));
                 cache.clear();
-                var elephantFlow = solve(new State(26, aa, HashSet.empty()), elephantValves);
+                var elephantFlow = solve(new State(26, aa, elephantValves.toSet(), 0));
                 bests = bests.append(myFlow + elephantFlow);
             }
             System.out.println("# " + k + " -> " + bests.max().get());
