@@ -16,8 +16,8 @@ class Day00 extends AocPuzzle {
         timed(() -> new Day00().part2());
     }
 
-    List<String> data = file2lines("input00.txt");
-//	List<String> data = Util.splitLines(example);
+//    List<String> data = file2lines("input00.txt");
+	List<String> data = Util.splitLines(example);
 
     void part1() {
     }
@@ -26,5 +26,5 @@ class Day00 extends AocPuzzle {
     }
 
     static String example = """
-            			""";
+""";
 }
