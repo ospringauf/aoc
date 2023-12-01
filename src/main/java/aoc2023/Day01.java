@@ -38,13 +38,17 @@ class Day01 extends AocPuzzle {
         return 10 * l.head() + l.last();
     }
     
-    List<Integer> toTokens(String s, List<String> tokens) {
-        var f = List.range(0, s.length())
-                .map(i -> tokens.find(t -> s.substring(i).startsWith(t)))
-                .reject(Option<String>::isEmpty)
-                .map(Option<String>::get)
+    // depending on the allowed tokens, returns:
+    // eighttkbtzjz6nineeight --> List(6)
+    // eighttkbtzjz6nineeight --> List(8, 6, 9, 8)
+    List<Integer> toTokens(String line, List<String> tokens) {
+        var f = List.range(0, line.length())
+                .map(i -> line.substring(i))
+                .map(s -> tokens.find(t -> s.startsWith(t)))
+                .reject(Option::isEmpty)
+                .map(Option::get)
                 .map(tokens::indexOf)
-                .map(x -> x%10);
+                .map(x -> x % 10);
         return f;
     }
 
