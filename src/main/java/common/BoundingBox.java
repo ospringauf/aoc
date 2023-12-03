@@ -5,6 +5,8 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.jooq.lambda.Seq;
+
 import io.vavr.collection.List;
 
 public record BoundingBox(int xMin, int xMax, int yMin, int yMax) {
@@ -33,6 +35,11 @@ public record BoundingBox(int xMin, int xMax, int yMin, int yMax) {
     public Iterable<Point> generatePoints() {
         return List.ofAll(xRange()).crossProduct(List.ofAll(yRange())).map(Point::of);        
     }
+
+    public Iterable<Point> walkThrough() {
+        return Seq.rangeClosed(0, yMax).flatMap(y -> Seq.rangeClosed(0, xMax).map(x -> Point.of(x,y)));
+    }
+
     
     public BoundingBox expand(int dx, int dy) {
         return new BoundingBox(xMin-dx, xMax+dx, yMin-dy, yMax+dy);
