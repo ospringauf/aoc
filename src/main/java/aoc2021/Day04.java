@@ -30,7 +30,7 @@ class Day04 extends AocPuzzle {
 		}
 
 		static Board parse(String s) {
-			return new Board(Util.string2ints(s.trim()));			
+			return new Board(Util.string2ints(s));			
 		}
 	}
 	

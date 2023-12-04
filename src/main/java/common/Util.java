@@ -16,11 +16,11 @@ public class Util {
     }
 
     public static List<Integer> string2ints(String input) {
-        return splitFields(input).map(Integer::valueOf);
+        return splitFields(input.trim()).map(Integer::valueOf);
     }
 
     public static List<Long> string2longs(String input) {
-        return splitFields(input).map(Long::valueOf);
+        return splitFields(input.trim()).map(Long::valueOf);
     }
 
     public static List<Integer> strings2ints(String[] strings) {

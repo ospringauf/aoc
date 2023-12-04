@@ -21,7 +21,7 @@ class Day03 extends AocPuzzle {
 //	List<String> data = Util.splitLines(example);
     
     static class Num {
-        int val;
+        int val; // mutable!
     }
 
     PointMap<Num> toNumberMap(PointMap<Character> m) {
@@ -31,6 +31,7 @@ class Day03 extends AocPuzzle {
             Character c = m.get(p);
             if (Character.isDigit(c)) {
                 if (t.containsKey(p.west())) {
+                    // digit continues a number 
                     var num = t.get(p.west());
                     num.val = 10 * num.val + (c - '0');
                     t.put(p, num);
@@ -50,14 +51,13 @@ class Day03 extends AocPuzzle {
         m.read(data);
         
         var symbols = HashSet.ofAll(m.values()).reject(c -> Character.isDigit(c) || c =='.');
-                
         var num = toNumberMap(m);
-        
         var symPos = m.findPoints(symbols::contains);
         
-        List<Num> numbers = symPos.flatMap(p -> p.neighbors8().map(n -> num.getOrDefault(n, null)))
-            .reject(x -> x==null)
-            .distinct();
+        List<Num> numbers = symPos.flatMap(p -> p.neighbors8())
+                .filter(num::containsKey)
+                .map(num::get)
+                .distinct();
         
         var result = numbers.map(n -> n.val).sum();
         System.out.println(result);
@@ -69,13 +69,12 @@ class Day03 extends AocPuzzle {
         m.read(data);
 
         var num = toNumberMap(m);
-        
         long result = 0;
         
         for (var gear : m.findPoints('*')) {
             var factors = gear.neighbors8()
-                    .map(p -> num.getOrDefault(p, null))
-                    .reject(x -> x==null)
+                    .filter(num::containsKey)
+                    .map(num::get)
                     .distinct();
             if (factors.length() == 2) {
                 result += factors.map(n -> n.val).product().longValue();

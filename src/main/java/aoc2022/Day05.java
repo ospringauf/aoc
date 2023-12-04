@@ -36,7 +36,7 @@ class Day05 extends AocPuzzle {
         // look at the last line containing the stack numbers
         // find max stack number
         String stackNumbers = config.last();
-        var numStacks = Util.string2ints(stackNumbers.trim()).max().get();
+        var numStacks = Util.string2ints(stackNumbers).max().get();
         System.out.println("stacks: " + numStacks);
         
         // find stack column indexes in input (1, 5, 9, 13 ...)
