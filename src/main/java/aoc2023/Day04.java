@@ -25,7 +25,7 @@ class Day04 extends AocPuzzle {
             return new Card(Util.string2ints(f.s(1)), Util.string2ints(f.s(2)));
         }
 
-        int val() {
+        int points() {
             return (1 << matches()) / 2;
         }
 
@@ -36,7 +36,7 @@ class Day04 extends AocPuzzle {
 
     void part1() {
         var cards = data.map(Card::parse);
-        var points = cards.map(c -> c.val());
+        var points = cards.map(Card::points);
         System.out.println(points.sum());
     }
 

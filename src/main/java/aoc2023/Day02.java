@@ -22,14 +22,13 @@ class Day02 extends AocPuzzle {
 
     record Cubeset(Integer red, Integer green, Integer blue) {
 
-        // 5 green, 1 red
+        // "5 green, 1 red"
         public static Cubeset parse(String s) {
-            Integer blue = null;
-            Integer red = null;
-            Integer green = null;
+            Integer red=null, green=null, blue=null;
             for (var g : s.split(", ")) {
-                var n = split(g, " ").i(0);
-                var c = split(g, " ").s(1);
+                var split = split(g, " ");
+                var n = split.i(0);
+                var c = split.s(1);
                 switch (c) {
                 case "red" -> red = n;
                 case "blue" -> blue = n;
@@ -40,7 +39,9 @@ class Day02 extends AocPuzzle {
         }
 
         public boolean match(int r, int g, int b) {
-            return (red == null || red <= r) && (blue == null || blue <= b) && (green == null || green <= g);
+            return (red == null || red <= r) 
+                    && (blue == null || blue <= b) 
+                    && (green == null || green <= g);
         }
 
         int power() {
