@@ -22,7 +22,7 @@ class Day05 extends AocPuzzle {
 	List<Amap> chain;
 	List<Long> seeds;
 
-	record SeedsRange(long start, long len) {
+	record SeedRange(long start, long len) {
 
 		boolean contains(long p) {
 			return p >= start && p < (start + len);
@@ -54,6 +54,7 @@ class Day05 extends AocPuzzle {
 		}
 	}
 
+	// "almanac map"
 	record Amap(String from, String to, List<AmapRange> ranges) {
 		
 		static Amap parse(String s) {
@@ -91,11 +92,12 @@ class Day05 extends AocPuzzle {
 		seeds = Util.string2longs(blocks.head().split(": ")[1]);
 		
 		// build the chain of mappings from "seed" to "location"
-		var amaps = blocks.tail().map(Amap::parse);
-		chain = List.of(amaps.find(m -> m.from.equals("seed")).get());
+		// maps are already given in the right order, but let's order them anyway
+		var maps = blocks.tail().map(Amap::parse);
+		chain = List.of(maps.find(m -> m.from.equals("seed")).get());
 		while (!chain.last().to.equals("location")) {
 			var last = chain.last().to;
-			chain = chain.append(amaps.find(m -> m.from.equals(last)).get());
+			chain = chain.append(maps.find(m -> m.from.equals(last)).get());
 		}
 	}
 
@@ -105,22 +107,22 @@ class Day05 extends AocPuzzle {
 	}
 
 	void part2() {
-		var seeds = this.seeds.sliding(2, 2).map(x -> new SeedsRange(x.get(0), x.get(1))).toList();
+		var seedRanges = this.seeds.sliding(2, 2).map(x -> new SeedRange(x.get(0), x.get(1))).toList();
 
-		// calculate pivot points backwards along the map chain
+		// calculate pivot points *backwards* along the map chain
 		var pivots = chain.reverse().foldLeft(List.of(0L), (l, m) -> m.pivotPoints(l));
 		pivots = pivots.distinct().sorted();
 		
 		System.out.println("checking " + pivots.length() + " pivot points");
 
 		List<Long> location = List.empty();
-		for (var s : seeds) {
+		for (var s : seedRanges) {
 			// only pivot points in the seed range have to be considered
-			var points = pivots.filter(x -> s.contains(x))
+			var seeds = pivots.filter(x -> s.contains(x))
 					.append(s.start)
 //					.append(s.start + s.len - 1)
 					.distinct();
-			List<Long> locs = points.map(x -> Amap.chainMap(chain, x));
+			List<Long> locs = seeds.map(x -> Amap.chainMap(chain, x));
 			location = location.appendAll(locs);
 		}
 		System.out.println(location.min());
