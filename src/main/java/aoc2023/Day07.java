@@ -3,9 +3,7 @@ package aoc2023;
 import java.util.Comparator;
 
 import common.AocPuzzle;
-import io.vavr.Tuple2;
 import io.vavr.collection.List;
-import io.vavr.collection.Map;
 
 //--- Day 7: Camel Cards ---
 // https://adventofcode.com/2023/day/7
@@ -33,97 +31,102 @@ class Day07 extends AocPuzzle {
             return new Hand(List.ofAll(f[0].toCharArray()), Integer.parseInt(f[1]));
         }
 
-        int typePart1() {
-            Map<Character, Integer> cc = cards.distinct().toMap(c -> new Tuple2(c, cards.count(x -> x == c)));
-            return type0(cc);
+        int part1Type() {
+        	// number of each type of card:
+        	var counts = cards.distinct().map(c -> cards.count(x -> x==c));
+            return type0(counts);
         }
         
-        int typePart2() {
+        int part2Type() {
             int jokers = cards.count(x -> x == 'J');
-            Map<Character, Integer> cc = cards.removeAll('J').distinct().toMap(c -> new Tuple2(c, cards.count(x -> x == c)));
+            var counts = cards.removeAll('J').distinct().map(c -> cards.count(x -> x==c));
             
             return switch (jokers) {
-            case 1 -> type1(cc);
-            case 2 -> type2(cc);
-            case 3 -> type3(cc);
+            case 1 -> type1(counts);
+            case 2 -> type2(counts);
+            case 3 -> type3(counts);
             case 4 -> 7;
             case 5 -> 7;
-            default -> type0(cc);
+            default -> type0(counts);
             };
         }
 
         // 5 cards, no joker
-        static int type0(Map<Character, Integer> cc) {
+        static int type0(List<Integer> counts) {
             // five (7)
-            if (cc.exists(t -> t._2 == 5))
+            if (counts.contains(5))
                 return 7;
 
             // four (6)
-            if (cc.exists(t -> t._2 == 4))
+            if (counts.contains(4))
                 return 6;
 
             // full house (5)
-            if (cc.exists(t -> t._2 == 3) && cc.exists(t -> t._2 == 2))
+            if (counts.contains(3) && counts.contains(2))
                 return 5;
 
             // three (4)
-            if (cc.exists(t -> t._2 == 3))
+            if (counts.contains(3))
                 return 4;
 
             // two pair (3)
-            if (cc.count(t -> t._2 == 2) == 2)
+            if (counts.count(x -> x==2) == 2)
                 return 3;
 
             // one pair (2)
-            if (cc.exists(t -> t._2 == 2))
+            if (counts.contains(2))
                 return 2;
 
+            // high card (1)
             return 1;
         }
 
         // 4 cards, 1 joker
-        static int type1(Map<Character,Integer> cc) {
+        static int type1(List<Integer> counts) {
             
             // five (7)
-            if (cc.exists(t -> t._2 == 4))
+            if (counts.contains(4))
                 return 7;
 
             // four (6)
-            if (cc.exists(t -> t._2 == 3))
+            if (counts.contains(3))
                 return 6;
 
             // full house (5)
-            if (cc.count(t -> t._2 == 2) == 2)
+            if (counts.count(c -> c == 2) == 2)
                 return 5;
 
             // three (4)
-            if (cc.exists(t -> t._2 == 2))
+            if (counts.contains(2))
                 return 4;
 
+            // one pair
             return 2;
         }
 
         // 3 cards, 2 jokers
-        static int type2(Map<Character,Integer> cc) {
+        static int type2(List<Integer> counts) {
 
             // five (7)
-            if (cc.exists(t -> t._2 == 3))
+            if (counts.contains(3))
                 return 7;
 
             // four (6)
-            if (cc.exists(t -> t._2 == 2))
+            if (counts.contains(2))
                 return 6;
 
+            // three
             return 4;
         }
 
         // 2 cards, 3 jokers
-        static int type3(Map<Character,Integer> cc) {
+        static int type3(List<Integer> counts) {
 
             // five (7)
-            if (cc.exists(t -> t._2 == 2))
+            if (counts.contains(2))
                 return 7;
 
+            // four
             return 6;
         }
 
@@ -139,15 +142,11 @@ class Day07 extends AocPuzzle {
             }
             return 0;
         }
-
-        public String toString() {
-            return cards.mkString();
-        }
     }
 
     void part1() {
         Comparator<Hand> c2 = (h1,h2) -> h1.compareSameType(h2, VALUES_1);
-        Comparator<Hand> c = Comparator.comparing(Hand::typePart1).thenComparing(c2);
+        Comparator<Hand> c = Comparator.comparing(Hand::part1Type).thenComparing(c2);
         var hands = data.map(Hand::parse).sorted(c);
         var total = List.range(0, hands.length()).map(i -> (i + 1) * hands.get(i).bid);
         System.out.println(total.sum());
@@ -155,7 +154,7 @@ class Day07 extends AocPuzzle {
     
     void part2() {
         Comparator<Hand> c2 = (h1,h2) -> h1.compareSameType(h2, VALUES_2);
-        Comparator<Hand> c = Comparator.comparing(Hand::typePart2).thenComparing(c2);
+        Comparator<Hand> c = Comparator.comparing(Hand::part2Type).thenComparing(c2);
         var hands = data.map(Hand::parse).sorted(c);
         var total = List.range(0, hands.length()).map(i -> (i + 1) * hands.get(i).bid);
         System.out.println(total.sum());
