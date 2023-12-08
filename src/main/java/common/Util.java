@@ -4,8 +4,6 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.function.Predicate;
 
-import javax.swing.text.html.HTMLDocument.HTMLReader.SpecialAction;
-
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 
