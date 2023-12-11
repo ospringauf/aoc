@@ -1,16 +1,20 @@
 package aoc2023;
 
-import java.util.function.Function;
-
 import common.AocPuzzle;
 import common.Direction;
 import common.Point;
 import common.PointMap;
 import common.Util;
+import io.vavr.collection.HashMap;
+import io.vavr.collection.HashSet;
 import io.vavr.collection.List;
+import io.vavr.collection.Map;
+import io.vavr.collection.Set;
 
 //--- Day 10: Pipe Maze ---
 // https://adventofcode.com/2023/day/10
+
+// this is a more strictly typed solution
 
 class Day10 extends AocPuzzle {
 
@@ -18,118 +22,146 @@ class Day10 extends AocPuzzle {
         timed(() -> new Day10().solve()); // 6738, 579
     }
 
-//    List<String> data = file2lines("input10.txt"); boolean debug=false;
+    List<String> data = file2lines("input10.txt"); boolean debug=false;
 //    List<String> data = Util.splitLines(example3); boolean debug = true;
 //    List<String> data = Util.splitLines(example4); boolean debug = true;
-    List<String> data = Util.splitLines(example5); boolean debug = true;
+//    List<String> data = Util.splitLines(example5); boolean debug = true;
 //    List<String> data = Util.splitLines(example6); boolean debug = true;
 
 
-    static boolean canStep(PointMap<Character> m, Point a, Point b) {
-        var dir = dir(a, b);
-        var ca = m.get(a);
-        var cb = m.getOrDefault(b, '.');
-        return canStep(dir, ca, cb);
+    static record Pipe(Set<Direction> dirs, Character sym) {
+    	
+    	static Pipe S = new Pipe(HashSet.of(Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST), 's');
+    	static Pipe NONE = new Pipe(HashSet.empty(), '.');
+    	static Pipe INSIDE = new Pipe(HashSet.empty(), 'x');
+    	static Pipe EW = new Pipe(Direction.EAST, Direction.WEST, '─');
+    	static Pipe NS = new Pipe(Direction.NORTH, Direction.SOUTH, '│');
+    	
+    	static Map<Character, Pipe> pipes = HashMap.of(
+    			'-', Pipe.EW,
+    			'|', Pipe.NS,
+    			'L', new Pipe(Direction.NORTH, Direction.EAST, '└'),
+    			'J', new Pipe(Direction.NORTH, Direction.WEST, '┘'),
+    			'7', new Pipe(Direction.SOUTH, Direction.WEST, '┐'),
+    			'F', new Pipe(Direction.SOUTH, Direction.EAST, '┌'),
+    			'S', Pipe.S,
+    			'.', Pipe.NONE);
+    	
+    	Pipe(Direction d1, Direction d2, Character sym) {
+    		this(HashSet.of(d1,d2), sym);    	
+    	}
+    	
+    	boolean connectsTo(Direction d, Pipe to) {
+    		return dirs.contains(d) && to.dirs.contains(d.opposite());
+    	}    	
     }
-
-    static boolean canStep(Direction dir, Character ca, Character cb) {
-        return switch (dir) {
-        case EAST -> "S-LF".indexOf(ca) >= 0 && "S-7J".indexOf(cb) >= 0;
-        case WEST -> "S-J7".indexOf(ca) >= 0 && "S-FL".indexOf(cb) >= 0;
-        case SOUTH -> "S|7F".indexOf(ca) >= 0 && "S|JL".indexOf(cb) >= 0;
-        case NORTH -> "S|JL".indexOf(ca) >= 0 && "S|7F".indexOf(cb) >= 0;
-        default -> throw new IllegalArgumentException("Unexpected value: " + dir);
-        };
-    }
-
-    static Direction dir(Point a, Point b) {
-        if (b.equals(a.west()))
-            return Direction.WEST;
-        if (b.equals(a.east()))
-            return Direction.EAST;
-        if (b.equals(a.south()))
-            return Direction.SOUTH;
-        if (b.equals(a.north()))
-            return Direction.NORTH;
-        throw (new RuntimeException("not neighbors"));
-    }
-
-    static void prettyPrintMap(PointMap<Character> m) {
-        m.print(c -> switch (c) {
-        case '7' -> '┐';
-        case 'L' -> '└';
-        case 'J' -> '┘';
-        case 'F' -> '┌';
-        case '-' -> '─';
-        case '|' -> '│';
-        default -> c;
-        });
-    }
-
-    PointMap<List<Point>> buildStepMap(PointMap<Character> m) {
-        var n = new PointMap<List<Point>>();
-        for (var a : m.keySet()) {
-            n.put(a, a.neighbors().filter(b -> canStep(m, a, b)));
+    
+    		
+    
+    static class PipeMap extends PointMap<Pipe> {
+        
+    	void prettyPrint() {
+        	super.print(p -> p.sym);
         }
-        return n;
+    	
+		List<Point> neighbors(Point p) {
+			List<Direction> directions = List.of(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST);
+			var pipe = get(p);
+
+			return directions
+					.filter(d -> pipe.connectsTo(d, getOrDefault(p.translate(d), Pipe.NONE)))
+					.map(d -> p.translate(d));
+		}
+        
+        HashSet<Point> findLoop() {
+        	Point start = findPoint(Pipe.S);
+        	var loop = HashSet.of(start);
+        	var front = HashSet.of(start);
+        	
+        	boolean closed = false;
+        	while (! closed) {
+        		var next = front.flatMap(p -> neighbors(p)).removeAll(loop);
+        		closed = next.isEmpty();
+        		loop = loop.addAll(next);
+        		front = next;
+        	}
+        	
+        	return loop;
+        }
+
+		void floodFill(Point start, Pipe unfilled, Pipe filled) {
+			var area = HashSet.of(start);
+			var front = HashSet.of(start);
+			boolean cont = true;
+			while (cont) {
+				var next = front.flatMap(p -> p.neighbors()).filter(p -> getOrDefault(p, filled) == unfilled);
+				next = next.removeAll(area);
+				cont = next.nonEmpty();
+				front = next;
+				area = area.addAll(next);
+			}
+			area.forEach(p -> put(p, filled));
+		}
     }
+    
 
     static Point expand(Point p) {
         return Point.of(2 * p.x(), 2 * p.y());
     }
     
-    void solve() {
-        PointMap<Character> m = new PointMap<Character>();
-        m.read(data);
-        Point start = m.findPoint('S');
+	void solve() {
+		var m = new PipeMap();
+		m.read(data, c -> Pipe.pipes.get(c).get());
+		Point start = m.findPoint(Pipe.S);
 
-        System.out.println("=== part 1");
+		System.out.println("=== part 1");
+		System.out.println("-- input");
+		if (debug)
+			m.prettyPrint();
 
-        System.out.println("-- build neighbor map");
-        var nmap = buildStepMap(m);
-        m.neigbors = nmap::get;
-        System.out.println("-- find loop");
-        var dist = m.dijkstraAll(start, c -> true).distance;
-        System.out.println(List.ofAll(dist.values()).max().get());
+		System.out.println("-- find loop");
 
-        System.out.println("=== part 2");
-        var loop = dist.keySet();
+		var loop = m.findLoop();
+		System.out.println("loop length: " + loop.size());
+		System.out.println("max dist: " + loop.size() / 2);
 
-        System.out.println("-- expanding map");
-        var xm = new PointMap<Character>();
-        loop.forEach(p -> xm.put(expand(p), m.get(p)));
-        
-        // fill gaps between connected pipes
-        for (var p : xm.boundingBox().generatePoints()) {
-            var cw = xm.getOrDefault(p.west(), '?');
-            var ce = xm.getOrDefault(p.east(), '?');
-            if (canStep(Direction.EAST, cw, ce))
-                xm.put(p, '-');
+		System.out.println("=== part 2");
 
-            var cn = xm.getOrDefault(p.north(), '?');
-            var cs = xm.getOrDefault(p.south(), '?');
-            if (canStep(Direction.SOUTH, cn, cs))
-                xm.put(p, '|');
-        }
-        // add empty border to find paths from the outside
-        var inside = 'x';
-        var bb = xm.boundingBox().expand(1, 1);
-        bb.generatePoints().forEach(p -> xm.put(p, xm.getOrDefault(p, inside)));
-        if (debug)
-            prettyPrintMap(xm);
+		System.out.println("-- expanding map");
+		var xm = new PipeMap();
+		// draw the loop on the larger map
+		loop.forEach(p -> xm.put(expand(p), m.get(p)));
 
-        System.out.println("-- finding paths from outside");
-        dist = xm.dijkstraAll(Point.of(bb.xMin(), bb.yMin()), c -> c == inside).distance;
-        dist.keySet().forEach(p -> xm.put(p, 'O'));
+		// fill gaps between connected segments of the loop
+		for (var p : xm.boundingBox().generatePoints()) {
+			var cw = xm.getOrDefault(p.west(), Pipe.NONE);
+			var ce = xm.getOrDefault(p.east(), Pipe.NONE);
+			if (cw.connectsTo(Direction.EAST, ce))
+				xm.put(p, Pipe.EW);
 
-        System.out.println("-- shrinking map");
-        m.keySet().forEach(p -> m.put(p, xm.getOrDefault(expand(p), ' ')));
-        if (debug)
-            prettyPrintMap(m);
+			var cn = xm.getOrDefault(p.north(), Pipe.NONE);
+			var cs = xm.getOrDefault(p.south(), Pipe.NONE);
+			if (cn.connectsTo(Direction.SOUTH, cs))
+				xm.put(p, Pipe.NS);
+		}
 
-        System.out.println("-- enclosed points: " + m.findPoints(inside).size());
-    }
-    
+		// add empty border to find paths from the outside
+		// initially, treat all non-loop positions as "inside"
+		var bb = xm.boundingBox().expand(1, 1);
+		bb.generatePoints().forEach(p -> xm.put(p, xm.getOrDefault(p, Pipe.INSIDE)));
+		if (debug)
+			xm.prettyPrint();
+
+		System.out.println("-- flood filling");
+		xm.floodFill(Point.of(bb.xMin(), bb.yMin()), Pipe.INSIDE, Pipe.NONE);
+
+		System.out.println("-- shrinking map");
+		m.keySet().forEach(p -> m.put(p, xm.getOrDefault(expand(p), Pipe.NONE)));
+		if (debug)
+			m.prettyPrint();
+
+		System.out.println("enclosed points: " + m.findPoints(Pipe.INSIDE).size());
+	}
     
 
     static String example1 = """
