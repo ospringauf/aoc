@@ -56,7 +56,6 @@ class Day10 extends AocPuzzle {
 
     static void prettyPrintMap(PointMap<Character> m) {
         m.print(c -> switch (c) {
-        case null -> '?';
         case '7' -> '┐';
         case 'L' -> '└';
         case 'J' -> '┘';
@@ -69,12 +68,16 @@ class Day10 extends AocPuzzle {
 
     PointMap<List<Point>> buildStepMap(PointMap<Character> m) {
         var n = new PointMap<List<Point>>();
-        for (var p : m.keySet()) {
-            n.put(p, p.neighbors().filter(b -> canStep(m, p, b)));
+        for (var a : m.keySet()) {
+            n.put(a, a.neighbors().filter(b -> canStep(m, a, b)));
         }
         return n;
     }
 
+    static Point expand(Point p) {
+        return Point.of(2 * p.x(), 2 * p.y());
+    }
+    
     void solve() {
         PointMap<Character> m = new PointMap<Character>();
         m.read(data);
@@ -94,8 +97,7 @@ class Day10 extends AocPuzzle {
 
         System.out.println("-- expanding map");
         var xm = new PointMap<Character>();
-        Function<Point, Point> xpoint = p -> Point.of(2 * p.x(), 2 * p.y());
-        loop.forEach(p -> xm.put(xpoint.apply(p), m.get(p)));
+        loop.forEach(p -> xm.put(expand(p), m.get(p)));
         
         // fill gaps between connected pipes
         for (var p : xm.boundingBox().generatePoints()) {
@@ -110,7 +112,7 @@ class Day10 extends AocPuzzle {
                 xm.put(p, '|');
         }
         // add empty border to find paths from the outside
-        var inside = '·';
+        var inside = 'x';
         var bb = xm.boundingBox().expand(1, 1);
         bb.generatePoints().forEach(p -> xm.put(p, xm.getOrDefault(p, inside)));
         if (debug)
@@ -121,7 +123,7 @@ class Day10 extends AocPuzzle {
         dist.keySet().forEach(p -> xm.put(p, 'O'));
 
         System.out.println("-- shrinking map");
-        m.keySet().forEach(p -> m.put(p, xm.getOrDefault(xpoint.apply(p), ' ')));
+        m.keySet().forEach(p -> m.put(p, xm.getOrDefault(expand(p), ' ')));
         if (debug)
             prettyPrintMap(m);
 
