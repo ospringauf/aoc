@@ -240,4 +240,17 @@ public class PointMap<T> extends HashMap<Point, T> {
 		return null;
 	}
 
+	public void floodFill(Point start, Predicate<T> unfilled, T filled) {
+		var area = io.vavr.collection.HashSet.of(start);
+		var front = io.vavr.collection.HashSet.of(start);
+		boolean cont = true;
+		while (cont) {
+			var next = front.flatMap(neigbors).filter(p -> unfilled.test(getOrDefault(p, filled)));
+			next = next.removeAll(area);
+			cont = next.nonEmpty();
+			front = next;
+			area = area.addAll(next);
+		}
+		area.forEach(p -> put(p, filled));
+	}
 }
