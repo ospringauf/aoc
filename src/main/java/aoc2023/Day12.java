@@ -1,142 +1,159 @@
 package aoc2023;
 
+import java.util.HashMap;
+
 import common.AocPuzzle;
 import common.Util;
-import io.vavr.collection.*;
+import io.vavr.collection.List;
 
-//--- Day 12:  ---
+//--- Day 12: Hot Springs ---
 // https://adventofcode.com/2023/day/12
 
 class Day12 extends AocPuzzle {
 
     public static void main(String[] args) {
+        System.out.println("=== test");
+        new Day12().test();
         System.out.println("=== part 1");
-        timed(() -> new Day12().part1());
+        timed(() -> new Day12().part1()); // 7674
         System.out.println("=== part 2");
-//        timed(() -> new Day12().part2());
+        timed(() -> new Day12().part2()); // 4443895258186
     }
 
 //    List<String> data = file2lines("input12.txt");
     List<String> data = Util.splitLines(example);
+    boolean debug = data.size() < 10;
 
-	void part1() {
-		//var x = solve2("?###????????", List.of(3,2,1));
-		//var x = solve2("????????", List.of(2,1));
-//		var x = solve2(".", List.of());
-		var x = solve2("?????", List.of(2,1));
-		System.out.println(x);
-	}  
-	
-	int mind(String s) {
-		int r = 0;
-		for (int i=0; i<s.length(); ++i) {
-			if (s.charAt(i)=='#') r++;
-		}
-		return r;
-	}
+    record Problem(String s, List<Integer> l) {
+        static Problem parse(String x) {
+            var f = x.split(" ");
+            var s = f[0];
+            var dmg = Util.string2ints(f[1].replaceAll(",", " "));
+            return new Problem(s, dmg);
+        }
 
-    int solve2(String s, List<Integer> l) {
-    	System.out.println("s=" + s + "  l=" + l);
-    	if (s.length() == 0) {
-    		if (l.size() == 0) return 1;
-    		if (l.size() ==1 && l.head().intValue() == 0) return 1;
-    		return 0;
-    	}
-    	if (l.isEmpty()) {
-    		return mind(s) == 0? 1: 0;
-    	}
-    	var c = s.charAt(0);
-    	var s2 = s.substring(1);
-    	
-    	var h = l.head().intValue();
-    	if (h == 0) {
-    		if (c == '#') return 0;
-    		return solve2(s2, l.tail());
-    	} else {
-    		// #
-    		if (c == '#') 
-    			return solve2(s2, List.of(h-1).appendAll(l.tail()));
-    		// .
-    		if (c == '.')
-    			return 0;
-    		// ?
-    		var r1 = solve2(s2, l); //.
-    		var r2 = solve2(s2, List.of(h-1).appendAll(l.tail())); //#
-    		return r1+r2;
-    	}
-	}
+        Problem unfold() {
+            var s5 = s + "?" + s + "?" + s + "?" + s + "?" + s;
+            var l5 = l.appendAll(l).appendAll(l).appendAll(l).appendAll(l);
+            return new Problem(s5, l5);
+        }
 
-	void part2() {
-   	
-//    	var l = data.last();
-//    	var springs = l.split(" ")[0] + ".";
-//    	var dmg = Util.string2ints(l.split(" ")[1].replace(',', ' '));
-//    	
-//    	var r = solve(springs, dmg, "");
+        public Problem skip1() {
+            return new Problem(s.substring(1), l);
+        }
 
-//    	List<Integer> dmg = List.of(1); String springs = "????.";
-//    	List<Integer> dmg = List.of(2,1); String springs = "???????.";
-    	List<Integer> dmg = List.of(3,2,1); String springs = "?###????????.";
-		var r = solve(springs, dmg, "");
-    	
-    	System.out.println("=== " + r);
-    	System.out.println(springs + " (" + dmg.mkString(",") + ") -> " + r);
-    	
+        public Problem consumeGroup() {
+            var damaged = l.head();
+            var s2 = (damaged >= s.length()) ? "" : s.substring(damaged + 1); // also skip the trailing "."
+            return new Problem(s2, l.tail());
+        }
+
+        public boolean nextGroupMatches() {
+            var damaged = l.head();
+
+            // check if s starts with a group of damaged springs like "####."
+            for (int i = 0; i < damaged; ++i) {
+                if (i >= s.length() || s.charAt(i) == '.')
+                    return false;
+            }
+            return (damaged == s.length() || s.charAt(damaged) != '#');
+        }
     }
 
-    long solve(String s, List<Integer> dmg, String pref) {
-    	if (dmg.isEmpty())
-    		return 1;
-		var dmg1 = dmg.head();
-		var rem = dmg.tail().map(x -> x+1).sum().intValue();
-		
-		if (dmg.tail().isEmpty())
-			return ways(s, dmg1);
-		
-		var min = dmg1+1;
-		var max = s.length()-rem;
-		
-		
-		var r = 0L;
-		for (int i=min; i<=max; ++i) {
-			if (s.charAt(i-1) == '#') continue;
-			var s1 = s.substring(0, i-1) + ".";
-			var s2 = s.substring(i);
-			var p1 = ways(s1, dmg1);
-			var p2 = (p1 > 0) ? solve(s.substring(i), dmg.tail(), pref + "   ") : 0;
-			System.out.println(pref+"s1="+s1+ "  s2="+s2 + "  p1="+p1 + "  dmg1="+dmg1 + "  p2="+p2);
-			r += p2;
-		}
-		System.out.println(pref + r);
-		return r;
-	}
+    int minDamaged(String s) {
+        int r = 0;
+        for (int i = 0; i < s.length(); ++i) {
+            if (s.charAt(i) == '#')
+                r++;
+        }
+        return r;
+    }
 
-    // each block ends with .
-    
-    
-	long ways(String s, Integer dmg) {
-		int r = 0;
-		for (int i=0; i<=s.length()-dmg; ++i) {
-			// put ####. into s at position i
-			var d = 0;
-			for (int j=0; j<s.length(); ++j) {
-				var c = s.charAt(j);
-				if (j >= i && j < i+dmg) {
-					if (c == '.') {
-						d = -1;
-						break;
-					}
-						d++;
-				} else {
-					if (c == '#') d++;
-				}
-			}
-			if (d == dmg) r++;
-		}
-		return r;
-	}
+    HashMap<Problem, Long> cache = new HashMap<>();
 
-	static String example0 = """
+    // caching wrapper around "solve"
+    long csolve(Problem p) {
+//        var r = cache.computeIfAbsent(p, this::solve);
+//        return r;
+        var cr = cache.getOrDefault(p, null);
+        if (cr != null)
+            return cr;
+
+        var r = solve(p);
+        cache.put(p, r);
+        return r;
+    }
+
+    long solve(Problem p) {
+        // no more groups - all remaining positions must be "not damaged"
+        if (p.l.isEmpty()) {
+            return minDamaged(p.s) == 0 ? 1 : 0;
+        }
+        // no more positions
+        if (p.s.length() == 0) {
+            return 0;
+        }
+
+        var c = p.s.charAt(0);
+
+        // .
+        if (c == '.')
+            return csolve(p.skip1());
+
+        // next group of damaged springs like "####." matches the current position?
+        var match = p.nextGroupMatches();
+
+        // #
+        if (c == '#')
+            return match ? csolve(p.consumeGroup()) : 0;
+
+        // unknown, could be operational or damaged
+        // ? = .
+        var r1 = csolve(p.skip1());
+        // ? = #
+        var r2 = match ? csolve(p.consumeGroup()) : 0;
+        return r1 + r2;
+    }
+
+    long solve(String s, List<Integer> l) {
+        return solve(new Problem(s, l));
+    }
+
+    void test() {
+//      var x = solve("????????", List.of(2,1));
+//      var x = solve("##", List.of(1));
+//      var x = solve("????", List.of(1,1));
+//      var x = solve("?????", List.of(2,1));
+        var x = solve("?###????????", List.of(3, 2, 1));
+        System.out.println(x);
+    }
+
+    void part1() {
+        long sum = 0L;
+        for (var line : data) {
+            var p = Problem.parse(line);
+            var x = solve(p);
+            if (debug)
+                System.out.println(p + " --> " + x);
+            sum += x;
+        }
+        System.out.println(sum);
+    }
+
+    void part2() {
+        long sum = 0L;
+        for (var line : data) {
+            var p0 = Problem.parse(line);
+            var p = p0.unfold();
+            var x = solve(p);
+            if (debug)
+                System.out.println(p0 + " --> " + x);
+            sum += x;
+        }
+        System.out.println(sum);
+    }
+
+    static String example0 = """
             #.#.### 1,1,3
             .#...#....###. 1,1,3
             .#.###.#.###### 1,3,1,6
