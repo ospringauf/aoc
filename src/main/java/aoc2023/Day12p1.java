@@ -7,13 +7,13 @@ import io.vavr.collection.*;
 //--- Day 12:  ---
 // https://adventofcode.com/2023/day/12
 
-class Day12 extends AocPuzzle {
+class Day12p1 extends AocPuzzle {
 
     public static void main(String[] args) {
         System.out.println("=== part 1");
-        timed(() -> new Day12().part1());
+        timed(() -> new Day12p1().part1());
         System.out.println("=== part 2");
-        timed(() -> new Day12().part2());
+        timed(() -> new Day12p1().part2());
     }
 
     List<String> data = file2lines("input12.txt");
@@ -52,9 +52,7 @@ class Day12 extends AocPuzzle {
             // System.out.println(springs + " -> " + dmg);
 //            System.out.println(springs + " -> " + counts(springs) + " / " + dmg.eq(counts(springs)));
 
-            var unk = unknown(springs)*5;
-            springs=springs+springs+springs+springs+springs;
-            
+            var unk = unknown(springs);
             int match = 0;
             for (int x = 0; x < (1 << unk); ++x) {
                 var sx = fill(springs, x);
