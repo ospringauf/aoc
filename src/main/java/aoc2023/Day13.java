@@ -56,8 +56,8 @@ class Day13 extends AocPuzzle {
 
         int mirrorValue(int smudge) {
             var bb = boundingBox();
-            var c = List.range(0, bb.xMax()).filter(x -> isMirrorCol(x, smudge)).min();
-            var r = List.range(0, bb.yMax()).filter(y -> isMirrorRow(y, smudge)).min();
+            var c = List.range(0, bb.xMax()).find(x -> isMirrorCol(x, smudge));
+            var r = List.range(0, bb.yMax()).find(y -> isMirrorRow(y, smudge));
             if (debug) {
                 System.out.println("col: " + c);
                 System.out.println("row: " + r);

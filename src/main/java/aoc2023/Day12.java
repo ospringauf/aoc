@@ -52,18 +52,18 @@ class Day12 extends AocPuzzle {
             return (damaged == springs.length() || springs.charAt(damaged) != '#');
         }
 
-        Problem consumeGroup() {
-            // remove the first damaged group including the trailing "." (####.)
+        Problem dropGroup() {
+            // remove the first damaged group including one trailing "." (####.)
             var damaged = groups.head();
-            var s2 = (damaged >= springs.length()) ? "" : springs.substring(damaged + 1); // also skip the trailing "."
+            var s2 = (damaged >= springs.length()) ? "" : springs.substring(damaged + 1);
             return new Problem(s2, groups.tail());
         }
     }
 
-    int minDamaged(String s) {
+    int count(String s, char c) {
         int r = 0;
         for (int i = 0; i < s.length(); ++i) {
-            if (s.charAt(i) == '#')
+            if (s.charAt(i) == c)
                 r++;
         }
         return r;
@@ -86,9 +86,9 @@ class Day12 extends AocPuzzle {
 
     long solve(Problem p) {
         // no more groups
-    	// all remaining positions must be "not damaged", otherwise no solution
+    	// all known damaged springs must be matched (no more #), otherwise no solution
         if (p.groups.isEmpty()) {
-            return minDamaged(p.springs) == 0 ? 1 : 0;
+            return count(p.springs, '#') == 0 ? 1 : 0;
         }
         // no more positions (but still damaged groups left) -> no solution
         if (p.springs.length() == 0) {
@@ -97,22 +97,23 @@ class Day12 extends AocPuzzle {
 
         var c = p.springs.charAt(0);
 
-        // .
+        // operational, skip
         if (c == '.')
             return csolve(p.skip1());
 
+        // now it's # or ? - see if we can place a damaged group here
         // next group of damaged springs like (####.) matches the current position?
         var match = p.nextGroupMatches();
 
         // #
         if (c == '#')
-            return match ? csolve(p.consumeGroup()) : 0;
+            return match ? csolve(p.dropGroup()) : 0;
 
         // unknown, could be operational or damaged
         // ? = .
         var r1 = csolve(p.skip1());
         // ? = #
-        var r2 = match ? csolve(p.consumeGroup()) : 0;
+        var r2 = match ? csolve(p.dropGroup()) : 0;
         return r1 + r2;
     }
 
