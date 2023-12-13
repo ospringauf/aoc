@@ -24,7 +24,7 @@ class Day13 extends AocPuzzle {
 
     class MirrorMap extends PointMap<Character> {
 
-        public boolean isMirrorCol(int c, int smudge) {
+        boolean isMirrorCol(int c, int smudge) {
             var right = List.ofAll(keySet()).filter(p -> p.x() > c);
             var pairs = right.map(p -> Tuple.of(p, mirrorX(p, c))).filter(t -> containsKey(t._2));
             var vals = pairs.map(t -> Tuple.of(get(t._1), get(t._2)));
@@ -33,7 +33,7 @@ class Day13 extends AocPuzzle {
             return diff == smudge;
         }
 
-        public boolean isMirrorRow(int c, int smudge) {
+        boolean isMirrorRow(int c, int smudge) {
             var below = List.ofAll(keySet()).filter(p -> p.y() > c);
             var pairs = below.map(p -> Tuple.of(p, mirrorY(p, c))).filter(t -> containsKey(t._2));
             var vals = pairs.map(t -> Tuple.of(get(t._1), get(t._2)));
@@ -83,7 +83,7 @@ class Day13 extends AocPuzzle {
                 System.out.println();                
             }
         }
-        System.out.println(sum);
+        System.err.println(sum);
     }
 
     void part1() {

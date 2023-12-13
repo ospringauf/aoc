@@ -24,7 +24,7 @@ class Day12 extends AocPuzzle {
     List<String> data = Util.splitLines(example);
     boolean debug = data.size() < 10;
 
-    record Problem(String s, List<Integer> l) {
+    record Problem(String springs, List<Integer> groups) {
         static Problem parse(String x) {
             var f = x.split(" ");
             var s = f[0];
@@ -33,30 +33,30 @@ class Day12 extends AocPuzzle {
         }
 
         Problem unfold() {
-            var s5 = s + "?" + s + "?" + s + "?" + s + "?" + s;
-            var l5 = l.appendAll(l).appendAll(l).appendAll(l).appendAll(l);
-            return new Problem(s5, l5);
+            var s5 = springs + "?" + springs + "?" + springs + "?" + springs + "?" + springs;
+            var g5 = groups.appendAll(groups).appendAll(groups).appendAll(groups).appendAll(groups);
+            return new Problem(s5, g5);
         }
 
-        public Problem skip1() {
-            return new Problem(s.substring(1), l);
+        Problem skip1() {
+            return new Problem(springs.substring(1), groups);
         }
 
-        public boolean nextGroupMatches() {
-            // check if s starts with a group of damaged springs like "####."
-            var damaged = l.head();
+        boolean nextGroupMatches() {
+            // check if s starts with a group of damaged springs (####.)
+            var damaged = groups.head();
             for (int i = 0; i < damaged; ++i) {
-                if (i >= s.length() || s.charAt(i) == '.')
+                if (i >= springs.length() || springs.charAt(i) == '.')
                     return false;
             }
-            return (damaged == s.length() || s.charAt(damaged) != '#');
+            return (damaged == springs.length() || springs.charAt(damaged) != '#');
         }
 
-        public Problem consumeGroup() {
+        Problem consumeGroup() {
             // remove the first damaged group including the trailing "." (####.)
-            var damaged = l.head();
-            var s2 = (damaged >= s.length()) ? "" : s.substring(damaged + 1); // also skip the trailing "."
-            return new Problem(s2, l.tail());
+            var damaged = groups.head();
+            var s2 = (damaged >= springs.length()) ? "" : springs.substring(damaged + 1); // also skip the trailing "."
+            return new Problem(s2, groups.tail());
         }
     }
 
@@ -85,16 +85,17 @@ class Day12 extends AocPuzzle {
     }
 
     long solve(Problem p) {
-        // no more groups - all remaining positions must be "not damaged"
-        if (p.l.isEmpty()) {
-            return minDamaged(p.s) == 0 ? 1 : 0;
+        // no more groups
+    	// all remaining positions must be "not damaged", otherwise no solution
+        if (p.groups.isEmpty()) {
+            return minDamaged(p.springs) == 0 ? 1 : 0;
         }
-        // no more positions
-        if (p.s.length() == 0) {
+        // no more positions (but still damaged groups left) -> no solution
+        if (p.springs.length() == 0) {
             return 0;
         }
 
-        var c = p.s.charAt(0);
+        var c = p.springs.charAt(0);
 
         // .
         if (c == '.')
@@ -115,17 +116,14 @@ class Day12 extends AocPuzzle {
         return r1 + r2;
     }
 
-    long solve(String s, List<Integer> l) {
-        return solve(new Problem(s, l));
-    }
-
     void test() {
-//      var x = solve("????????", List.of(2,1));
-//      var x = solve("##", List.of(1));
-//      var x = solve("????", List.of(1,1));
-//      var x = solve("?????", List.of(2,1));
-        var x = solve("?###????????", List.of(3, 2, 1));
-        System.out.println(x);
+//    	var x = new Problem("#?", List.of(1));
+//      var x = new Problem("????????", List.of(2,1));
+//      var x = new Problem("????", List.of(1,1));
+//      var x = new Problem("?????", List.of(2,1));
+        var x = new Problem("?###????????", List.of(3, 2, 1));
+        System.out.println(x + " -> " + solve(x));
+        System.out.println();
     }
 
     void part1() {
@@ -137,7 +135,7 @@ class Day12 extends AocPuzzle {
                 System.out.println(p + " --> " + x);
             sum += x;
         }
-        System.out.println(sum);
+        System.err.println(sum);
     }
 
     void part2() {
@@ -150,7 +148,8 @@ class Day12 extends AocPuzzle {
                 System.out.println(p0 + " --> " + x);
             sum += x;
         }
-        System.out.println(sum);
+        System.err.println(sum);
+        System.out.println("(cached problems: " + cache.size() + ")");
     }
 
     static String example0 = """
