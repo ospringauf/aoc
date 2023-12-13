@@ -43,7 +43,8 @@ class Day12 extends AocPuzzle {
         }
 
         boolean nextGroupMatches() {
-            // check if s starts with a group of damaged springs (####.)
+            // check if pattern starts with a group of damaged springs (eg. ####.)
+            // could be "####." or "?????" or "#??#?" ...
             var damaged = groups.head();
             for (int i = 0; i < damaged; ++i) {
                 if (i >= springs.length() || springs.charAt(i) == '.')
@@ -84,6 +85,7 @@ class Day12 extends AocPuzzle {
         return r;
     }
 
+    // find the number of matching configurations
     long solve(Problem p) {
         // no more groups
     	// all known damaged springs must be matched (no more #), otherwise no solution
@@ -97,24 +99,24 @@ class Day12 extends AocPuzzle {
 
         var c = p.springs.charAt(0);
 
-        // operational, skip
-        if (c == '.')
-            return csolve(p.skip1());
-
-        // now it's # or ? - see if we can place a damaged group here
-        // next group of damaged springs like (####.) matches the current position?
-        var match = p.nextGroupMatches();
-
-        // #
-        if (c == '#')
-            return match ? csolve(p.dropGroup()) : 0;
-
-        // unknown, could be operational or damaged
-        // ? = .
-        var r1 = csolve(p.skip1());
-        // ? = #
-        var r2 = match ? csolve(p.dropGroup()) : 0;
-        return r1 + r2;
+        if (c == '.') {
+            // operational, skip
+            return csolve(p.skip1());            
+        }
+        if (c == '#') {
+            // must match next damaged group
+            return p.nextGroupMatches() ? csolve(p.dropGroup()) : 0;
+        }
+        if (c == '?') {
+            // unknown
+            // could be ".", then skip it 
+            var r1 = csolve(p.skip1()); 
+            // could be "#", then next group of damaged springs like (####.) must match
+            var r2 = p.nextGroupMatches() ? csolve(p.dropGroup()) : 0; 
+            return r1 + r2;
+        }
+        
+        throw new RuntimeException("unknown symbol: " + c);
     }
 
     void test() {
