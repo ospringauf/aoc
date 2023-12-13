@@ -42,21 +42,21 @@ class Day12 extends AocPuzzle {
             return new Problem(s.substring(1), l);
         }
 
-        public Problem consumeGroup() {
-            var damaged = l.head();
-            var s2 = (damaged >= s.length()) ? "" : s.substring(damaged + 1); // also skip the trailing "."
-            return new Problem(s2, l.tail());
-        }
-
         public boolean nextGroupMatches() {
-            var damaged = l.head();
-
             // check if s starts with a group of damaged springs like "####."
+            var damaged = l.head();
             for (int i = 0; i < damaged; ++i) {
                 if (i >= s.length() || s.charAt(i) == '.')
                     return false;
             }
             return (damaged == s.length() || s.charAt(damaged) != '#');
+        }
+
+        public Problem consumeGroup() {
+            // remove the first damaged group including the trailing "." (####.)
+            var damaged = l.head();
+            var s2 = (damaged >= s.length()) ? "" : s.substring(damaged + 1); // also skip the trailing "."
+            return new Problem(s2, l.tail());
         }
     }
 
@@ -73,7 +73,7 @@ class Day12 extends AocPuzzle {
 
     // caching wrapper around "solve"
     long csolve(Problem p) {
-//        var r = cache.computeIfAbsent(p, this::solve);
+//        var r = cache.computeIfAbsent(p, this::solve); // concurrent modification exception :-(
 //        return r;
         var cr = cache.getOrDefault(p, null);
         if (cr != null)
@@ -100,7 +100,7 @@ class Day12 extends AocPuzzle {
         if (c == '.')
             return csolve(p.skip1());
 
-        // next group of damaged springs like "####." matches the current position?
+        // next group of damaged springs like (####.) matches the current position?
         var match = p.nextGroupMatches();
 
         // #
