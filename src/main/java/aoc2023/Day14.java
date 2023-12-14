@@ -29,6 +29,10 @@ class Day14 extends AocPuzzle {
 
         final BoundingBox bb;
         final Function<Point, Point> rotCw;
+        
+        static final char ROCK = 'O';
+        static final char CUBE = '#';
+        static final char FREE = '.';
 
         public RockMap(List<String> data) {
             super();
@@ -39,12 +43,12 @@ class Day14 extends AocPuzzle {
         }
 
         int northLoad() {
-            var rocks = findPoints('O');
+            var rocks = findPoints(ROCK);
             var y = bb.yMax();
             return rocks.map(p -> y - p.y() + 1).sum().intValue();
         }
 
-        void rollNorth() {
+        void slideNorth() {
             var h = bb.height();
             var w = bb.width();
 
@@ -52,17 +56,17 @@ class Day14 extends AocPuzzle {
                 var to = Point.of(x, 0);
                 var from = to.south();
                 while (from.y() < h) {
-                    while (to.y() < h && get(to) != '.')
+                    while (to.y() < h && get(to) != FREE)
                         to = to.south();
                     from = to.south();
-                    while (from.y() < h && get(from) == '.')
+                    while (from.y() < h && get(from) == FREE)
                         from = from.south();
                     if (from.y() < h) {
-                        if (get(from) == 'O') {
-                            put(from, '.');
-                            put(to, 'O');
+                        if (get(from) == ROCK) {
+                            put(from, FREE);
+                            put(to, ROCK);
                             to = to.south();
-                        } else if (get(from) == '#') {
+                        } else if (get(from) == CUBE) {
                             to = from.south();
                         }
                     }
@@ -70,34 +74,17 @@ class Day14 extends AocPuzzle {
             }
         }
 
-        // naive, too slow for part 2
-        void rollNorth0() {
-            boolean rolling = true;
-            var rocks = findPoints('O').toSet();
-            do {
-                var r = rocks.filter(p -> getOrDefault(p.north(), '?') == '.');
-                r.forEach(p -> {
-                    put(p, '.');
-                    put(p.north(), 'O');
-                });
-                rocks = rocks.removeAll(r);
-                rocks = rocks.addAll(r.map(p -> p.north()));
-                rolling = r.nonEmpty();
-            } while (rolling);
-        }
-
-        void rollCycle() {
+        void spinCycle() {
             for (int i = 0; i < 4; ++i) {
-                rollNorth();
+                slideNorth();
                 transformPoints(rotCw);
-//                shiftToOrigin();
             }
         }
     }
 
     void part1() {
         var m = new RockMap(data);
-        m.rollNorth();
+        m.slideNorth();
 //        m.print();
         System.err.println(m.northLoad());
     }
@@ -106,13 +93,13 @@ class Day14 extends AocPuzzle {
         var m = new RockMap(data);
 
         int sim = 300;
-        var seq = new CyclicSequence();
+        var northLoads = new CyclicSequence();
 
-        System.out.println("simulating " + sim + " cycles ...");
+        System.out.println("simulating " + sim + " cycles, please wait ...");
         for (int c = 1; c < sim; ++c) {
-            m.rollCycle();
-            var nl = m.northLoad();
-            seq.add(nl);
+            m.spinCycle();
+            int nl = m.northLoad();
+            northLoads.add(nl);
             System.out.print(".");
             if (c % 80 == 0)
                 System.out.println();
@@ -120,10 +107,10 @@ class Day14 extends AocPuzzle {
         }
         System.out.println();
 
-        var cycles = seq.findCycles();
+        var cycles = northLoads.findCycles();
         System.out.println("cycle length: " + cycles);
         int cycleLen = cycles.head();
-        int result = seq.extrapolate(1_000_000_000, cycleLen);
+        int result = northLoads.extrapolate(1_000_000_000, cycleLen);
         System.err.println(result);
     }
 

@@ -2,6 +2,11 @@ package common;
 
 import io.vavr.collection.List;
 
+/**
+ * A sequence of numbers that evolves into a cyclic sequence after an initial non-cyclic section.
+ * Give enough numbers, this class can determine the cycle length and extrapolate the value
+ * at any point in the future. 
+ */
 public class CyclicSequence {
 
     List<Integer> vals = List.empty();
@@ -19,10 +24,10 @@ public class CyclicSequence {
         return r1;
     }
 
-    public int extrapolate(int tgt, int cycleLen) {
+    public int extrapolate(long tgt, int cycleLen) {
         var l = vals.size();
         var r = tgt - l;
-        var d = r % cycleLen;
+        int d = (int) (r % cycleLen);
         return vals.get(l - cycleLen + d - 1);
     }
 
