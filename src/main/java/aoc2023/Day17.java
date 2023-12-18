@@ -36,7 +36,7 @@ class Day17 extends AocPuzzle {
             return new Crucible(heading.left(), pos, 0);
         }
         
-        public List<Crucible> next() {
+        public List<Crucible> next1() {
             if (steps == 3)
                 return List.of(turnLeft().ahead(), turnRight().ahead());
             else
@@ -76,7 +76,7 @@ class Day17 extends AocPuzzle {
                 
                 for (var p : poses) {
                     var dp = dist.get(p);
-                    var next = (part == 1) ? p.next() : p.next2();
+                    var next = (part == 1) ? p.next1() : p.next2();
                     next = next.filter(x -> containsKey(x.pos()));
                     for (var n : next) {
                         var c = get(n.pos());
@@ -88,8 +88,9 @@ class Day17 extends AocPuzzle {
                     }
                 }
                 poses = poses2;
+//                var p1 = List.ofAll(poses);
 //                poses = poses2.removeAll(seen);
-//                seen = seen.addAll(poses);
+//                seen = seen.addAll(p1);
             }
             
             // TODO: part 2, can't stop before 4 blocks
