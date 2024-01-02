@@ -93,8 +93,12 @@ public class PointMap<T> extends HashMap<Point, T> {
 	}
 
 	public void print() {
-		boundingBox().print(p -> containsKey(p) ? String.valueOf(get(p)).charAt(0) : '·');
+		print('·');
 	}
+
+    public void print(char empty) {
+        boundingBox().print(p -> containsKey(p) ? String.valueOf(get(p)).charAt(0) : empty);
+    }
 
 	public void print(Function<T, Character> val2Text) {
 		// boundingBox().print(p -> val2Text.apply(get(p)));

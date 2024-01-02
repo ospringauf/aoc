@@ -22,10 +22,10 @@ class Day10 extends AocPuzzle {
 		timed(() -> new Day10().solve()); // 6738, 579
 	}
 
-	List<String> data = file2lines("input10.txt"); 	boolean debug = false;
+//	List<String> data = file2lines("input10.txt"); 	boolean debug = false;
 //    List<String> data = Util.splitLines(example3); boolean debug = true;
 //    List<String> data = Util.splitLines(example4); boolean debug = true;
-//    List<String> data = Util.splitLines(example5); boolean debug = true;
+    List<String> data = Util.splitLines(example5); boolean debug = true;
 //    List<String> data = Util.splitLines(example6); boolean debug = true;
 
 	static record Pipe(Set<Direction> dirs, Character symbol) {
@@ -56,11 +56,9 @@ class Day10 extends AocPuzzle {
 	}
 
 	static class PipeMap extends PointMap<Pipe> {
-
 		void prettyPrint() {
 			super.print(p -> p.symbol);
 		}
-
 		List<Point> connectedNeighbors(Point p) {
 			List<Direction> directions = List.of(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST);
 			var pipe = get(p);

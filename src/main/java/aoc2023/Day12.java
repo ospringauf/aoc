@@ -20,8 +20,8 @@ class Day12 extends AocPuzzle {
         timed(() -> new Day12().part2()); // 4443895258186
     }
 
-//    List<String> data = file2lines("input12.txt");
-    List<String> data = Util.splitLines(example);
+    List<String> data = file2lines("input12.txt");
+//    List<String> data = Util.splitLines(example);
     boolean debug = data.size() < 10;
 
     record Problem(String springs, List<Integer> groups) {

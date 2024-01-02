@@ -18,10 +18,10 @@ public record BoundingBox(int xMin, int xMax, int yMin, int yMax) {
     public static BoundingBox of(Point... points) {
         return new BoundingBox(
 
-        Stream.of(points).mapToInt(p -> p.x()).min().orElse(0),
-        Stream.of(points).mapToInt(p -> p.x()).max().orElse(0),
-        Stream.of(points).mapToInt(p -> p.y()).min().orElse(0),
-        Stream.of(points).mapToInt(p -> p.y()).max().orElse(0));
+                Stream.of(points).mapToInt(p -> p.x()).min().orElse(0),
+                Stream.of(points).mapToInt(p -> p.x()).max().orElse(0),
+                Stream.of(points).mapToInt(p -> p.y()).min().orElse(0),
+                Stream.of(points).mapToInt(p -> p.y()).max().orElse(0));
     }
 
     public Iterable<Integer> xRange() {
@@ -31,18 +31,17 @@ public record BoundingBox(int xMin, int xMax, int yMin, int yMax) {
     public Iterable<Integer> yRange() {
         return IntStream.rangeClosed(yMin, yMax).boxed()::iterator;
     }
-    
+
     public Iterable<Point> generatePoints() {
-        return List.ofAll(xRange()).crossProduct(List.ofAll(yRange())).map(Point::of);        
+        return List.ofAll(xRange()).crossProduct(List.ofAll(yRange())).map(Point::of);
     }
 
     public Iterable<Point> walkThrough() {
-        return Seq.rangeClosed(0, yMax).flatMap(y -> Seq.rangeClosed(0, xMax).map(x -> Point.of(x,y)));
+        return Seq.rangeClosed(0, yMax).flatMap(y -> Seq.rangeClosed(0, xMax).map(x -> Point.of(x, y)));
     }
 
-    
     public BoundingBox expand(int dx, int dy) {
-        return new BoundingBox(xMin-dx, xMax+dx, yMin-dy, yMax+dy);
+        return new BoundingBox(xMin - dx, xMax + dx, yMin - dy, yMax + dy);
     }
 
     public void print(Function<Point, Character> point2String) {
@@ -53,7 +52,7 @@ public record BoundingBox(int xMin, int xMax, int yMin, int yMax) {
             System.out.println();
         }
     }
-    
+
     public void printS(Function<Point, String> point2String) {
         for (int y : yRange()) {
             for (int x : xRange()) {
@@ -63,27 +62,31 @@ public record BoundingBox(int xMin, int xMax, int yMin, int yMax) {
         }
     }
 
-	public Point center() {
-		return new Point((xMin+xMax)/2, (yMin+yMax)/2);
-	}
+    public Point center() {
+        return new Point((xMin + xMax) / 2, (yMin + yMax) / 2);
+    }
 
-	public int height() {		
-		return yMax-yMin+1;
-	}
-	
-	public int width() {		
-		return xMax-xMin+1;
-	}
-	
-	public Point wrapX(Point p) {
-		return new Point(((p.x()-xMin) % width()) + xMin, p.y());
-	}
+    public int height() {
+        return yMax - yMin + 1;
+    }
 
-	public Point wrapY(Point p) {
-		return new Point(p.x(), ((p.y()-yMin) % height()) + yMin);
-	}
+    public int width() {
+        return xMax - xMin + 1;
+    }
 
-	public boolean contains(Point p) {		
-		return p.x() >= xMin && p.x() <= xMax && p.y() >= yMin && p.y() <= yMax;
-	}
+    public Point wrapX(Point p) {
+        return new Point(((p.x() - xMin) % width()) + xMin, p.y());
+    }
+
+    public Point wrapY(Point p) {
+        return new Point(p.x(), ((p.y() - yMin) % height()) + yMin);
+    }
+
+    public Point wrap(Point p) {
+        return new Point(((p.x() - xMin) % width()) + xMin, ((p.y() - yMin) % height()) + yMin);
+    }
+
+    public boolean contains(Point p) {
+        return p.x() >= xMin && p.x() <= xMax && p.y() >= yMin && p.y() <= yMax;
+    }
 }

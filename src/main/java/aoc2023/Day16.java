@@ -21,7 +21,7 @@ class Day16 extends AocPuzzle {
     }
 
     List<String> data = file2lines("input16.txt");
-//    List<String> data = file2lines("input16_1.txt");
+//    List<String> data = file2lines("input16_example.txt");
 
     class BeamMap extends PointMap<Character> {
 
