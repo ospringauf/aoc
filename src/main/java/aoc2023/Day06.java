@@ -38,15 +38,20 @@ class Day06 extends AocPuzzle {
     }
     
     void part1() {
-        System.out.println(
-                ways2win(62, 553) 
-                * ways2win(64, 1010) 
-                * ways2win(91, 1473) 
-                * ways2win(90, 1074));
+//        System.out.println(
+//                ways2win(62, 553) 
+//                * ways2win(64, 1010) 
+//                * ways2win(91, 1473) 
+//                * ways2win(90, 1074));
+    	 System.out.println(
+                 ways2win(58, 434) 
+                 * ways2win(81, 1041) 
+                 * ways2win(96, 2219) 
+                 * ways2win(76, 1218));
     }
 
     void part2() {
-        System.out.println(ways2win(62649190L, 553101014731074L));
+        System.out.println(ways2win(58819676L, 434104122191218L));
     }
 
     static String example = """
@@ -54,8 +59,13 @@ Time:      7  15   30
 Distance:  9  40  200            
 """;
     
+//    static String input = """
+//Time:        62     64     91     90
+//Distance:   553   1010   1473   1074            
+//            """;
+    
     static String input = """
-Time:        62     64     91     90
-Distance:   553   1010   1473   1074            
-            """;
+Time:        58     81     96     76
+Distance:   434   1041   2219   1218
+            """;    
 }
