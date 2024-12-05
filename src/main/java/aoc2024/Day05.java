@@ -2,8 +2,7 @@ package aoc2024;
 
 import common.AocPuzzle;
 import common.Util;
-import io.vavr.Tuple2;
-import io.vavr.collection.*;
+import io.vavr.collection.List;
 
 //--- Day 5: Print Queue ---
 // https://adventofcode.com/2024/day/5
@@ -28,45 +27,57 @@ class Day05 extends AocPuzzle {
             var x = s.split("\\|");
             return new Rule(Integer.valueOf(x[0]), Integer.valueOf(x[1]));
         }
+
+		boolean fulfilled(Integer n, List<Integer> printed) {
+			return p2 != n || printed.contains(p1);
+		}
+
+		boolean fulfilled(List<Integer> u) {
+			return u.indexOf(p1) < u.indexOf(p2);
+		}
+
+		boolean applies(List<Integer> u) {
+			return  u.contains(p1) && u.contains(p2);
+		}
     }
 
     Day05() {
-        var block = data.split("\\n\\n");
+        var block = data.split("\n\n");
         rules = Util.splitLines(block[0]).map(Rule::parse);
-        updates = Util.splitLines(block[1]).map(s -> s.replace(',', ' ')).map(s -> Util.string2ints(s));
+        updates = Util.splitLines(block[1]).map(s -> s.replace(',', ' ')).map(Util::string2ints);
     }
 
     void part1() {
-        var correct = updates.filter(u -> checkUpdate(u));
-        System.out.println(middles(correct));
+        var correct = updates.filter(this::checkUpdate);
+        System.out.println(middlePages(correct));
     }
 
     boolean checkUpdate(List<Integer> u) {
-        var apply = rules.filter(r -> u.contains(r.p1) && u.contains(r.p2));
-        return apply.forAll(r -> u.indexOf(r.p1) < u.indexOf(r.p2));
+        var apply = rules.filter(r -> r.applies(u));
+        return apply.forAll(r -> r.fulfilled(u));
     }
 
-    Number middles(List<List<Integer>> correct) {
+    Number middlePages(List<List<Integer>> correct) {
         return correct.map(u -> u.get(u.length() / 2)).sum();
     }
 
     
     
     void part2() {
-        var wrong = updates.reject(x -> checkUpdate(x));
-        var correct = wrong.map(u -> fixUpdate(u));
-        System.out.println(middles(correct));
+        var wrong = updates.reject(this::checkUpdate);
+        var correct = wrong.map(this::fixUpdate);
+        System.out.println(middlePages(correct));
     }
 
     List<Integer> fixUpdate(List<Integer> u0) {
         List<Integer> fixed = List.empty();
-        var relevant = rules.filter(r -> u0.contains(r.p1) && u0.contains(r.p2));
+        var relevant = rules.filter(r -> r.applies(u0));
 
         var u = u0;
         while (u.nonEmpty()) {
             var f0 = fixed;
-            // pick the page where all rules are fulfilled (fixed contains preceding pages) 
-            var next = u.filter(n -> relevant.filter(t -> t.p2.equals(n)).forAll(t -> f0.contains(t.p1))).single();
+            // pick the page where all relevant rules are fulfilled (fixed contains preceding pages) 
+            var next = u.filter(n -> relevant.forAll(r -> r.fulfilled(n, f0))).single();
             fixed = fixed.append(next);
             u = u.remove(next);
         }
