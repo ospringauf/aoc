@@ -35,7 +35,7 @@ class Day04 extends AocPuzzle {
     void part1() {
         m.read(data);        
         var x = m.findPoints('X');
-        var r = x.map(p -> xmas(p)).sum();
+        var r = x.map(this::xmas).sum();
                 
         System.out.println(r);
     }
@@ -55,7 +55,7 @@ class Day04 extends AocPuzzle {
     void part2() {
         m.read(data);        
         var a = m.findPoints('A');
-        var r = a.count(p -> mas(p));
+        var r = a.count(this::mas);
         
         System.out.println(r);
     }
