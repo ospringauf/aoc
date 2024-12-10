@@ -13,6 +13,7 @@ import java.util.function.Predicate;
 
 import io.vavr.Tuple2;
 import io.vavr.collection.List;
+import io.vavr.collection.Set;
 
 public class PointMap<T> extends HashMap<Point, T> {
 
@@ -151,7 +152,7 @@ public class PointMap<T> extends HashMap<Point, T> {
 			for (var current : points) {
 				if (!allowed.test(get(current)))
 					continue;
-
+				
 				// best neighbor distance?
 				var bestNeighbor = neigbors.apply(current)
 						.filter(x -> via.test(get(x), get(current)))
@@ -257,4 +258,24 @@ public class PointMap<T> extends HashMap<Point, T> {
 		}
 		area.forEach(p -> put(p, filled));
 	}
+	
+    Set<List<Point>> nextPaths(List<Point> p, BiPredicate<Point, Point> via) {        
+        Point head = p.head();
+        var nextHead = head.neighbors().filter(this::containsKey).filter(n -> via.test(head, n));
+        nextHead = nextHead.reject(x -> p.contains(x)); // cycle check
+        return nextHead.map(p::prepend).toSet();
+    }
+
+    // paths are returned in reverse order (head = last point)!
+	public Set<List<Point>> allPaths(Point start, Predicate<Point> until, BiPredicate<Point, Point> via) {
+        var paths = io.vavr.collection.HashSet.of(List.of(start));
+        boolean more = true;
+        while (more) {
+            var notDone = paths.filter(p -> ! until.test(p.head()));
+            var next = notDone.flatMap(p -> nextPaths(p, via));
+            paths = paths.removeAll(notDone).addAll(next);
+            more = next.nonEmpty();
+        }
+        return paths;        
+    }
 }

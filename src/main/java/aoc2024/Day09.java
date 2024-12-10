@@ -56,7 +56,7 @@ class Day09 extends AocPuzzle {
 	}
 
 	void part1() {
-		var diskSize = files.map(f -> f.total()).sum().intValue();
+		var diskSize = files.map(File::total).sum().intValue();
 		var disk = new Integer[diskSize];
 
 		if (diskSize < 100) {
@@ -100,7 +100,7 @@ class Day09 extends AocPuzzle {
 	}
 
 	void part2() {
-		var diskSize = files.map(f -> f.total()).sum().intValue();
+		var diskSize = files.map(File::total).sum().intValue();
 		var order = files.map(b -> b.id).sorted().reverse();
 
 		// TODO this could be much faster on a real mutable linked list
