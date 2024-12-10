@@ -43,9 +43,10 @@ class Day10 extends AocPuzzle {
     }
 
     int score(Point s) {
-        var r = m.dijkstraAll(s, x -> true, (a, b) -> (a != null) && (b == a + 1));
-        var peaks = m.findPoints(9).filter(r.distance::containsKey);
-        return peaks.size();
+        Predicate<Point> until = p -> m.get(p) == 9;
+        BiPredicate<Point, Point> via = (a, b) -> m.get(b) == m.get(a) + 1;
+        var ap = m.allPaths(s, until, via);
+        return ap.map(p -> p.head()).distinct().size();
     }
 
     int rating(Point s) {
