@@ -40,22 +40,22 @@ class Day11 extends AocPuzzle {
         return List.of(stone * 2024);
     }
 
-    Function2<Long, Integer, Long> calcMem;
 
-    long calc(long stone, int blinks) {
+    long stoneCount(long stone, int blinks) {
         if (blinks == 0)
             return 1;
 
-        var next = blink(stone);
-        var r = next.map(s -> calcMem.apply(s, blinks - 1)).sum();
+        var blinkOnce = blink(stone);
+        var r = blinkOnce.map(s -> stoneCountMem.apply(s, blinks - 1)).sum();
         return r.longValue();
     }
+    
+    Function2<Long, Integer, Long> stoneCountMem  = Function2.of(this::stoneCount).memoized();
 
     void part2() {
         System.out.println(stones);
-        calcMem = Function2.of(this::calc).memoized();
 
-        var r = stones.map(s -> calcMem.apply(s, 75)).sum();
+        var r = stones.map(s -> stoneCountMem.apply(s, 75)).sum();
         System.out.println(r);
     }
 

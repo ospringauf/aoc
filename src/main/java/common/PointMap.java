@@ -252,12 +252,12 @@ public class PointMap<T> extends HashMap<Point, T> {
 		area.forEach(p -> put(p, filled));
 	}
 	
-	public Set<Point> connectedArea(Point start, Predicate<T> unfilled) {
+	public Set<Point> connectedArea(Point start, Predicate<T> include) {
         var area = io.vavr.collection.HashSet.of(start);
         var front = io.vavr.collection.HashSet.of(start);
         boolean cont = true;
         while (cont) {
-            var next = front.flatMap(neigbors).filter(this::containsKey).filter(p -> unfilled.test(get(p)));
+            var next = front.flatMap(neigbors).filter(this::containsKey).filter(p -> include.test(get(p)));
             next = next.removeAll(area);
             cont = next.nonEmpty();
             front = next;

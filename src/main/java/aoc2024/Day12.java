@@ -64,7 +64,7 @@ class Day12 extends AocPuzzle {
                 continue;
 
             var a = map.connectedArea(p, c -> c == plant);
-            var f = fronts(a);
+            var f = countFronts(a);
             
             a.forEach(x -> map.put(x, '.'));
 
@@ -74,7 +74,7 @@ class Day12 extends AocPuzzle {
         System.out.println(price);
     }
 
-    int fronts(Set<Point> plots) {
+    int countFronts(Set<Point> plots) {
         var l = front(front(plots, Direction.WEST), Direction.NORTH).size();
         var r = front(front(plots, Direction.EAST), Direction.NORTH).size();
         var t = front(front(plots, Direction.NORTH), Direction.WEST).size();
