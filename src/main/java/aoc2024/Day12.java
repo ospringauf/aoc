@@ -12,97 +12,93 @@ import io.vavr.collection.*;
 
 class Day12 extends AocPuzzle {
 
-    public static void main(String[] args) {
-        System.out.println("=== part 1"); // 1387004
-        timed(() -> new Day12().part1());
-        System.out.println("=== part 2"); // 844198
-        timed(() -> new Day12().part2());
-    }
+	public static void main(String[] args) {
+		System.out.println("=== part 1"); // 1387004
+		timed(() -> new Day12().part1());
+		System.out.println("=== part 2"); // 844198
+		timed(() -> new Day12().part2());
+	}
 
-    List<String> data = file2lines("input12.txt");
+	List<String> data = file2lines("input12.txt");
 //    List<String> data = Util.splitLines(example); // 140 / 80
 //    List<String> data = Util.splitLines(example3); // 1930 / 1206
 
-    PointMap<Character> map = new PointMap<>();
+	PointMap<Character> map = new PointMap<>();
 
-    void part1() {
-        map.read(data);
+	void part1() {
+		map.read(data);
+		var regions = findRegions();
+		var price = regions.map(this::price1).sum();
+		System.out.println(price);
+	}
 
-        int price = 0;
-        var plots = HashSet.ofAll(map.keySet());
-        
-        for (var p : plots) {
-            var plant = map.get(p);
-            if (plant == '.')
-                continue;
+	List<Set<Point>> findRegions() {
+		List<Set<Point>> regions = List.empty();
+		var plots = HashSet.ofAll(map.keySet());
+		Set<Point> done = HashSet.empty();
+		
+		for (var p : plots) {
+			if (done.contains(p))
+				continue;
 
-            var a = map.connectedArea(p, c -> c == plant).toList();
-            var f = a.map(x -> fence(x, plant)).sum().intValue();
+			var plant = map.get(p);
+			var region = map.connectedArea(p, c -> c == plant);
+			regions = regions.append(region);
+			done = done.addAll(region);
+		}
+		return regions;
+	}
 
-            a.forEach(x -> map.put(x, '.'));
+	int perimeter(Point p) {
+		var plant = map.get(p);
+		return p.neighbors().count(n -> map.getOrDefault(n, null) != plant);
+	}
 
-            price += (a.size() * f);
-//            System.out.println(plant + " -> " + (a.size() * f));
-        }
-        System.out.println(price);
-    }
+	int price1(Set<Point> region) {
+		var perim = region.toList().map(this::perimeter).sum().intValue();
+		return region.size() * perim;
+	}
 
-    int fence(Point x, Character plant) {
-        return x.neighbors().count(n -> map.getOrDefault(n, null) != plant);
-    }
+	void part2() {
+		map.read(data);
+		var regions = findRegions();
+		var price = regions.map(this::price2).sum();
+		System.out.println(price);
+	}
 
-    
-    void part2() {
-        map.read(data);
+	int price2(Set<Point> region) {
+		return region.size() * countFronts(region);
+	}
 
-        int price = 0;
-        var plots = HashSet.ofAll(map.keySet());
-        
-        for (var p : plots) {
-            var plant = map.get(p);
-            if (plant == '.')
-                continue;
+	int countFronts(Set<Point> region) {
+		var west = front(front(region, Direction.WEST), Direction.NORTH).size();
+		var east = front(front(region, Direction.EAST), Direction.NORTH).size();
+		var north = front(front(region, Direction.NORTH), Direction.WEST).size();
+		var south = front(front(region, Direction.SOUTH), Direction.WEST).size();
+		return west + east + north + south;
+	}
 
-            var a = map.connectedArea(p, c -> c == plant);
-            var f = countFronts(a);
-            
-            a.forEach(x -> map.put(x, '.'));
+	Set<Point> front(Set<Point> region, Direction d) {
+		return region.reject(x -> region.contains(x.translate(d)));
+	}
 
-            price += (a.size() * f);
-//            System.out.println(plant + " -> " + (a.size() * f));
-        }
-        System.out.println(price);
-    }
+	static String example = """
+			AAAA
+			BBCD
+			BBCC
+			EEEC
+			""";
 
-    int countFronts(Set<Point> plots) {
-        var l = front(front(plots, Direction.WEST), Direction.NORTH).size();
-        var r = front(front(plots, Direction.EAST), Direction.NORTH).size();
-        var t = front(front(plots, Direction.NORTH), Direction.WEST).size();
-        var b = front(front(plots, Direction.SOUTH), Direction.WEST).size();
-        return l + r + t + b;
-    }
-    
-    Set<Point> front(Set<Point> plots, Direction d) {
-        return plots.reject(x -> plots.contains(x.translate(d)));
-    }
-    
-    static String example = """
-            AAAA
-            BBCD
-            BBCC
-            EEEC
-            """;
-
-    static String example3 = """
-            RRRRIICCFF
-            RRRRIICCCF
-            VVRRRCCFFF
-            VVRCCCJFFF
-            VVVVCJJCFE
-            VVIVCCJJEE
-            VVIIICJJEE
-            MIIIIIJJEE
-            MIIISIJEEE
-            MMMISSJEEE
-            """;
+	static String example3 = """
+			RRRRIICCFF
+			RRRRIICCCF
+			VVRRRCCFFF
+			VVRCCCJFFF
+			VVVVCJJCFE
+			VVIVCCJJEE
+			VVIIICJJEE
+			MIIIIIJJEE
+			MIIISIJEEE
+			MMMISSJEEE
+			""";
 }
