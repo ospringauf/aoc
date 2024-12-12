@@ -11,6 +11,8 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import javax.lang.model.type.NullType;
+
 import io.vavr.Tuple2;
 import io.vavr.collection.List;
 import io.vavr.collection.Set;
@@ -246,18 +248,23 @@ public class PointMap<T> extends HashMap<Point, T> {
 	}
 
 	public void floodFill(Point start, Predicate<T> unfilled, T filled) {
-		var area = io.vavr.collection.HashSet.of(start);
-		var front = io.vavr.collection.HashSet.of(start);
-		boolean cont = true;
-		while (cont) {
-			var next = front.flatMap(neigbors).filter(p -> unfilled.test(getOrDefault(p, filled)));
-			next = next.removeAll(area);
-			cont = next.nonEmpty();
-			front = next;
-			area = area.addAll(next);
-		}
+		var area = connectedArea(start, unfilled);
 		area.forEach(p -> put(p, filled));
 	}
+	
+	public Set<Point> connectedArea(Point start, Predicate<T> unfilled) {
+        var area = io.vavr.collection.HashSet.of(start);
+        var front = io.vavr.collection.HashSet.of(start);
+        boolean cont = true;
+        while (cont) {
+            var next = front.flatMap(neigbors).filter(this::containsKey).filter(p -> unfilled.test(get(p)));
+            next = next.removeAll(area);
+            cont = next.nonEmpty();
+            front = next;
+            area = area.addAll(next);
+        }
+        return area;
+    }
 	
     Set<List<Point>> nextPaths(List<Point> p, BiPredicate<Point, Point> via) {        
         Point head = p.head();
