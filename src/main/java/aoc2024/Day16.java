@@ -36,8 +36,9 @@ class Day16 extends AocPuzzle {
         System.out.println("=== part 1"); // 73432
         var r = new Pose(Direction.EAST, S);
         System.out.println("paths from " + r);
-        var ds = reindeer(r);
-        var best = List.ofAll(ds.keySet()).filter(p -> p.pos().equals(E)).minBy(ds::get).get();
+        var ds = minDistances(r);
+        var allPoses = List.ofAll(ds.keySet());
+        var best = allPoses.filter(p -> E.equals(p.pos())).minBy(ds::get).get();
 
         var bestCost = ds.get(best);
         System.out.println(best + " -> cost " + bestCost);
@@ -46,11 +47,10 @@ class Day16 extends AocPuzzle {
         System.out.println("=== part 2"); // 496
         r = best.opposite();
         System.out.println("opposite paths from " + r);
-        var de = reindeer(r);
+        var de = minDistances(r);
         
         System.out.println("tiles on best paths");
-        var p = List.ofAll(ds.keySet());
-        var tiles = p.filter(x -> ds.get(x) + de.get(x.opposite()) == bestCost);
+        var tiles = allPoses.filter(x -> ds.get(x) + de.get(x.opposite()) == bestCost);
         var bestSeats = tiles.map(t -> t.pos()).distinct();
         System.out.println(bestSeats.size());
         
@@ -60,17 +60,16 @@ class Day16 extends AocPuzzle {
     }
 
     // shortest paths search
-    // stripped down version onf PointMap.dijkstraAll, but with Poses instead of Points
-    HashMap<Pose, Integer> reindeer(Pose start) {
+    // stripped down version of PointMap.dijkstraAll, but with Poses instead of Points
+    HashMap<Pose, Integer> minDistances(Pose start) {
         final int INF = Integer.MAX_VALUE / 2;
 
         var dist = new HashMap<Pose, Integer>(map.size());
         dist.put(start, 0);
 
-        var dirs = List.of(Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST);
-        var poses = map.findPoints('.').flatMap(p -> dirs.map(d -> new Pose(d,p)));
+        var allDirs = List.of(Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST);
+        var poses = map.findPoints('.').flatMap(p -> allDirs.map(d -> new Pose(d,p)));
         
-        Function1<Pose, List<Pose>> predecessor = p -> List.of(p.behind(), p.turnLeft(), p.turnRight());
         BiFunction<Pose, Pose, Integer> cost = (a,b) -> (a.pos().equals(b.pos())) ? 1000 : 1;
         
         boolean better = true;
@@ -78,7 +77,8 @@ class Day16 extends AocPuzzle {
             better = false;
             for (var current : poses) {
                 // best neighbor distance?
-                var bestPred = predecessor.apply(current).minBy(n -> dist.getOrDefault(n, INF)); 
+            	var predecessors = List.of(current.behind(), current.turnLeft(), current.turnRight());
+                var bestPred = predecessors.minBy(n -> dist.getOrDefault(n, INF)); 
 
                 if (bestPred.isEmpty())
                     continue;
