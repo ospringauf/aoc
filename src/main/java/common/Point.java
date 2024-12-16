@@ -83,6 +83,10 @@ public record Point(int x, int y) {
         // return Point.of(x % w, y % h);
         return Point.of((x % w + w) % w, (y % h + h) % h);
     }
+    
+    public Point times(int n) {
+        return  Point.of(n*x, n*y);
+    }
 
     public Point rotLeft() {
         return new Point(y, -x);

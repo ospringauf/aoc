@@ -58,6 +58,10 @@ public record Pose(Direction heading, Point pos) {
     public Pose behind() {
         return new Pose(heading, pos.translate(heading, -1));
     }
+    
+    public Pose opposite() {
+        return new Pose(heading.opposite(), pos);
+    }
 
     public boolean equalsPos(Pose p) {
         return pos.equals(p.pos);

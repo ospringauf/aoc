@@ -86,12 +86,15 @@ class Day13 extends AocPuzzle {
 
 			var dp = px - py;
 
+			// find initial combinations of A/B button counts that result in the desired x/y distance
 			var c = List.range(0, 1500).crossProduct().filter(s -> (dp == s._1 * (ax - ay) + s._2 * (bx - by))).take(5)
 					.toList();
 			if (c.isEmpty()) {
 				System.err.println(this);
 				throw new RuntimeException("no initial solution");
 			}
+			
+			// turns out that after the first solution, all other solutions are at regular intervals of A/B counts
 			System.out.println(c);
 			var c0 = c.get(0);
 			var c1 = c.get(1);
