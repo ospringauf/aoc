@@ -1,16 +1,22 @@
 package aoc2024;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import common.AocPuzzle;
 import common.Direction;
 import common.Point;
 import common.PointMap;
 import common.Util;
+import io.vavr.Function1;
 import io.vavr.Function2;
 import io.vavr.Tuple2;
-import io.vavr.collection.*;
+import io.vavr.collection.List;
 
 //--- Day 21: Keypad Conundrum ---
 // https://adventofcode.com/2024/day/21
+// 
+// It works, don't ask my why
 
 class Day21 extends AocPuzzle {
 
@@ -26,51 +32,42 @@ class Day21 extends AocPuzzle {
 
     static class Robot {
         PointMap<Character> kb;
-        Point pos;
 
-        Map<Tuple2<Character, Character>, List<String>> paths = HashMap.empty();
+        Map<Tuple2<Character, Character>, List<String>> maneuvers = new HashMap<>();
 
         Robot(PointMap<Character> kb) {
             this.kb = kb;
-            this.pos = kb.findPoint('A');
 
-            var keys = List.ofAll(kb.values()).remove('x');
+            var keys = List.ofAll(kb.values());
             for (var t : keys.crossProduct()) {
-                var p = paths(t);
-                paths = paths.put(t, p);
+                maneuvers.put(t, allManeuvers(t));
             }
         }
 
-        List<String> paths(Tuple2<Character, Character> t) {
+        List<String> allManeuvers(Tuple2<Character, Character> t) {
             Point k1 = kb.findPoint(t._1);
             Point k2 = kb.findPoint(t._2);
             var dist = k1.manhattan(k2);
             var options = List.of(Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT).crossProduct(dist)
                     .toList();
 
+            // find the [^<>v]* sequences that start at k1, stay on allowed keys and end at
+            // k2
             List<String> r = List.empty();
-            for (var p : options) {
-                var keys = walk(k1, p);
-                if (keys.last().equals(t._2) && !keys.contains('x'))
-                    r = r.append(p.map(d -> d.symbol()).mkString());
+            for (var seq : options) {
+                var points = seq.scanLeft(k1, (k, d) -> k.translate(d));
+                if (points.forAll(kb::containsKey) && points.last().equals(k2))
+                    r = r.append(seq.map(Direction::symbol).mkString() + "A");
             }
             return r;
         }
 
-        List<Character> walk(Point k1, List<Direction> dirs) {
-            var l = dirs.foldLeft(List.of(k1), (k, d) -> k.append(k.last().translate(d)));
-            return l.map(x -> kb.getOrDefault(x, 'x'));
-        }
-
+        // all possible combinations of pairwise key maneuvers for the given key
+        // sequence (s)
         List<String> sequences(String s) {
-            var x = pairs(s).map(t -> paths.get(t).get()).toList();
-            var y = expand(x);
-            return y;
-        }
+            var pwm = pairs(s).map(maneuvers::get);
+            var r = pwm.reduceLeft((l1, l2) -> l1.flatMap(s1 -> l2.map(s2 -> s1 + s2)));
 
-        List<String> expand(List<List<String>> x) {
-            var r = x.reduceLeft((l1, l2) -> l1.flatMap(s1 -> l2.map(s2 -> s1 + "A" + s2)));
-            r = r.map(si -> si + 'A');
             return r;
         }
 
@@ -82,14 +79,19 @@ class Day21 extends AocPuzzle {
             } else {
                 if (keys._1 == keys._2)
                     return 1; // just press A
+
+                Function1<Tuple2<Character, Character>, Long> cost = t -> memCost.apply(t, nrobots-1);
                 
-                var min = Long.MAX_VALUE;
-                var options = paths.get(keys).get();
-                for (var p : options) {
-                    var pairs = pairs("A" + p + "A");
-                    var c = pairs.map(t -> memCost.apply(t, nrobots - 1)).sum().longValue();
-                    min = (c < min) ? c : min;
-                }
+                var options = maneuvers.get(keys);
+                var c = options.map(seq -> pairs("A" + seq).map(cost));
+                var min = c.map(x -> x.sum().longValue()).min().get();
+                
+//                var min = Long.MAX_VALUE;
+//                for (var m : maneuvers.get(keys)) {
+//                    var pairs = pairs("A" + m);
+//                    var c = pairs.map(t -> memCost.apply(t, nrobots - 1)).sum().longValue();
+//                    min = (c < min) ? c : min;
+//                }
                 return min;
             }
         }
@@ -102,35 +104,41 @@ class Day21 extends AocPuzzle {
     }
 
     static List<Tuple2<Character, Character>> pairs(String s) {
-        return List.ofAll(s.toCharArray())
-                .sliding(2)
-                .map(l -> new Tuple2<Character, Character>(l.get(0), l.get(1)))
+        return List.ofAll(s.toCharArray()).sliding(2).map(l -> new Tuple2<Character, Character>(l.get(0), l.get(1)))
                 .toList();
     }
 
     void solve(int nrobots) {
         PointMap<Character> kb0 = new PointMap<>();
         kb0.read(Util.splitLines(KEY0));
+        kb0.findPoints('g').forEach(kb0::remove);
 
         PointMap<Character> kb1 = new PointMap<>();
         kb1.read(Util.splitLines(KEY1));
+        kb1.findPoints('g').forEach(kb1::remove);
 
         var r0 = new Robot(kb0);
         var r1 = new Robot(kb1);
+        Function1<Tuple2<Character, Character>, Long> cost = t -> r1.memCost.apply(t, nrobots);
 
         long result = 0;
 
         for (String input : Util.splitLines(real)) {
 //            System.out.println(pairs(input));
 
-            var s0 = r0.sequences("A" + input);
-//            System.out.println(s0);
+            var options = r0.sequences("A" + input);
+            System.out.println(input + " sequences: " + options);
+
+
+//            var c = options.map(seq -> pairs("A" + seq).map(cost));
+//            System.out.println(c);
+//            var min = c.map(x -> x.sum().longValue()).min().get();
 
             long min = Long.MAX_VALUE;
-            for (var s : s0) {
-                s = "A" + s;
-                var c = pairs(s).map(t -> r1.memCost.apply(t, nrobots));
-//                System.out.println(s + " -> " + c + " -> " + c.sum());
+            for (var seq : options) {
+                seq = "A" + seq;
+                var c = pairs(seq).map(t -> r1.memCost.apply(t, nrobots));
+                System.out.println("   " + seq + " -> " + c + " -> " + c.sum());
                 var sum = c.sum().longValue();
                 min = (sum < min) ? sum : min;
             }
@@ -144,11 +152,11 @@ class Day21 extends AocPuzzle {
             789
             456
             123
-            x0A
+            g0A
             """;
 
     static String KEY1 = """
-            x^A
+            g^A
             <v>
             """;
 
