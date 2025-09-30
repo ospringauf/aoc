@@ -5,7 +5,7 @@ import common.Util;
 import io.vavr.collection.*;
 
 //--- Day 01: Historian Hysteria ---
-// https://adventofcode.com/2024/day/01
+// https://adventofcode.com/2024/day/1
 
 class Day01 extends AocPuzzle {
 
