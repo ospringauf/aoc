@@ -9,10 +9,17 @@ public record Vec3(int x, int y, int z) {
     public static final Function1<Vec3, Vec3> ROTY = b -> new Vec3(b.z, b.y, -b.x);
     public static final Function1<Vec3, Vec3> ROTZ = b -> new Vec3(b.y, -b.x, b.z);
 
-    int manhattan(Vec3 b) {
+    public int manhattan(Vec3 b) {
         return Math.abs(b.x - x) + Math.abs(b.y - y) + Math.abs(b.z - z);
     }
-
+    
+    public double euclidean(Vec3 b) {
+    	double dx = b.x-x;
+    	double dy = b.y-y;
+    	double dz = b.z-z;
+    	return Math.sqrt(dx*dx + dy*dy + dz*dz);
+    }
+    
     public static Vec3 of(int x, int y, int z) {
         return new Vec3(x, y, z);
     }
