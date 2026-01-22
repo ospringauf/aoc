@@ -1,13 +1,11 @@
 package aoc2025;
 
-import java.util.HashMap;
-
 import common.AocPuzzle;
 import common.Util;
 import io.vavr.collection.Array;
 import io.vavr.collection.List;
 
-//--- Day 10:  ---
+//--- Day 10: Factory  ---
 // https://adventofcode.com/2025/day/10
 
 class Day10 extends AocPuzzle {
@@ -16,136 +14,145 @@ class Day10 extends AocPuzzle {
 		System.out.println("=== part 1");
 		timed(() -> new Day10().part1()); // 385
 		System.out.println("=== part 2");
-		timed(() -> new Day10().part2());
+		timed(() -> new Day10().part2()); // 16757
 	}
 
 	List<String> data = file2lines("input10.txt");
 //	List<String> data = Util.splitLines(example);
 
-	record Machine(int lights, List<Integer> buttons, Array<Integer> joltage, int size) {
+	record Machine(List<Integer> lights, Array<Boolean> lightsOn, Array<Array<Integer>> buttons, Array<Integer> joltage,
+			List<List<Integer>> powerSet) {
+
+		// [.##.] (3) (1,3) (2) (2,3) (0,2) (0,1) {3,5,4,7}
 		static Machine parse(String s) {
 			var s1 = s.substring(1, s.indexOf(']'));
-			int lights = 0;
-			var chars = List.ofAll(s1.toCharArray()).reverse();
-			while (chars.nonEmpty()) {
-				lights *= 2;
-				if (chars.head() == '#')
-					lights = lights + 1;
-				chars = chars.tail();
-			}
+			List<Integer> lights = List.empty();
+			Array<Boolean> lightsOn = Array.fill(s1.length(), Boolean.FALSE);
+			for (int i = 0; i < s1.length(); ++i)
+				if (s1.charAt(i) == '#') {
+					lights = lights.append(i);
+					lightsOn = lightsOn.update(i, Boolean.TRUE);
+				}
 
 			var s2 = s.substring(s.indexOf(']') + 2, s.indexOf('{') - 1);
-			List<Integer> buttons = List.empty();
+			Array<Array<Integer>> buttons = Array.empty();
 			s2 = s2.replace("(", "").replace(")", "");
 			for (var b : List.of(s2.split(" "))) {
-				var bi = Util.string2ints(b.replace(',', ' '));
-				int x = 0;
-				for (var bii : bi)
-					x |= (1 << bii);
-				buttons = buttons.append(x);
+				var bi = Util.string2ints(b.replace(',', ' ')).toArray();
+				buttons = buttons.append(bi);
 			}
 
 			var s3 = s.substring(s.indexOf('{') + 1);
 			var sj = s3.replace("}", "").replace(',', ' ');
 			var joltage = Util.string2ints(sj).toArray();
 
-			return new Machine(lights, buttons, joltage, joltage.size());
+			List<Integer> elements = List.range(0, buttons.size());
+			List<Integer> s0 = List.empty();
+			var powerSet = elements.foldLeft(List.of(s0),
+					(acc, e) -> acc.appendAll(acc.map(subset -> subset.append(e))));
+
+			return new Machine(lights, lightsOn, buttons, joltage, powerSet);
 		}
 
-		int minLights() {
-			var dist = new HashMap<Integer, Integer>();
-			dist.put(0, 0);
-			var todo = List.of(0);
-			while (todo.nonEmpty()) {
-				var state = todo.head();
-				for (var b : buttons) {
-					var next = state ^ b;
-					var d0 = dist.getOrDefault(next, Integer.MAX_VALUE);
-					var d1 = dist.get(state) + 1;
-					if (d1 < d0) {
-						dist.put(next, d1);
-						todo = todo.append(next);
-					}
-				}
-				todo = todo.tail();
-			}
-
-			return dist.get(lights);
-		}
-
-		Array<Integer> incJoltages(Array<Integer> j, int button) {
-			for (int i = 0; i < size; ++i) {
-				if ((button & (1 << i)) != 0) {
-					j = j.update(i, j.get(i) + 1);
+		List<Integer> lights(List<Integer> but) {
+			List<Integer> l = List.empty();
+			for (var b : but) {
+				for (var bl : buttons.get(b)) {
+					if (l.contains(bl))
+						l = l.remove(bl);
+					else
+						l = l.append(bl);
 				}
 			}
-			return j;
+			return l;
 		}
 
-		boolean exceeds(Array<Integer> j) {
-			return List.range(0, joltage.size()).exists(i -> j.get(i) > joltage.get(i));
-		}
-
-		Array<Integer> buttonJoltages(int button) {
-			var j = joltage.map(x -> 0).toArray();
-			for (int i = 0; i < size; ++i) {
-				if ((button & (1 << i)) != 0) {
-					j = j.update(i, 1);
+		Array<Boolean> pushLightButtons(List<Integer> p) {
+			var a = Array.fill(lightsOn.size(), Boolean.FALSE);
+			for (var b : p) {
+				var bl = buttons.get(b);
+				for (var l : bl) {
+					a = a.update(l, !a.get(l));
 				}
 			}
-			return j;
+			return a;
 		}
 
-		int minJoltage() {
-			var j0 = joltage.map(x -> 0).toArray();
-			var dist = new HashMap<Array<Integer>, Integer>();
-			dist.put(j0, 0);
-			var todo = List.of(j0);
-
-			while (todo.nonEmpty()) {
-				var state = todo.head();
-				for (var b : buttons) {
-					var next = incJoltages(state, b);
-					if (!exceeds(next)) {
-						var d0 = dist.getOrDefault(next, Integer.MAX_VALUE);
-						var d1 = dist.get(state) + 1;
-						if (d1 < d0) {
-							dist.put(next, d1);
-							if (!todo.tail().contains(next))
-								todo = todo.append(next);
-						}
-
-					}
+		Array<Integer> pushJoltageButtons(List<Integer> p) {
+			var a = Array.fill(lightsOn.size(), 0);
+			for (var b : p) {
+				var bl = buttons.get(b);
+				for (var l : bl) {
+					a = a.update(l, a.get(l) + 1);
 				}
-				if (dist.size() % 1000 == 0)
-					System.out.println(dist.size());
-				todo = todo.tail();
 			}
-
-			return dist.get(joltage);
+			return a;
 		}
+
+		int solve1() {
+			var onSet = lightsOn;
+//			System.out.println("\tsolve1: " + onSet);
+
+			var ps1 = findButtons(onSet);
+//			System.out.println("\tmatch: " + ps1);
+			var min = ps1.map(x -> x.length()).min().get();
+			var best = ps1.filter(x -> x.length() == min).head();
+//			System.out.println("\tbest: " + best);
+			return best.size();
+		}
+
+		List<List<Integer>> findButtons(Array<Boolean> onSet) {
+			return powerSet.filter(s -> pushLightButtons(s).eq(onSet));
+		}
+
+		int solve2(Array<Integer> j) {
+//			System.out.println("solve2: " + j);
+
+			if (j.exists(x -> x < 0))
+				return 1000;
+
+			if (j.sum().intValue() == 0)
+				return 0;
+
+			var even = j.forAll(x -> x % 2 == 0);
+			if (even)
+				return 2 * solve2(j.map(x -> x / 2));
+
+			var odds = j.map(x -> x % 2 == 1);
+
+			var ra = findButtons(odds);
+			if (ra.isEmpty())
+				return 1000;
+//			var min = ra.map(x -> x.length()).min().get();
+//			ra = ra.filter(x -> x.length()==min);
+			return ra.map(r -> r.length() + solve2(minus(j, pushJoltageButtons(r)))).min().get();
+		}
+
+		Array<Integer> minus(Array<Integer> a, Array<Integer> b) {
+			var r = a;
+			for (int i = 0; i < a.size(); ++i)
+				r = r.update(i, r.get(i) - b.get(i));
+			return r;
+		}
+
 	}
 
 	void part1() {
 		var machines = data.map(Machine::parse);
-		var r = 0;
-		for (var m : machines) {
-			var p = m.minLights();
-			System.out.println(m + " -> " + p);
-			r += p;
-		}
+		var r = machines.map(m -> m.solve1()).sum();
 		System.err.println(r);
 	}
-
 
 	void part2() {
 		var machines = data.map(Machine::parse);
 		var r = 0;
+//		machines = List.of(machines.get(0));
 		for (var m : machines) {
-			var p = m.minJoltage();
-			System.out.println(m + " -> " + p);
-			r += p;
+			var rm = m.solve2(m.joltage);
+			r += rm;
+			System.out.println(rm + " <== " + m);
 		}
+
 		System.err.println(r);
 	}
 

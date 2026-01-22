@@ -65,6 +65,10 @@ class Day09 extends AocPuzzle {
 		System.out.println("candidates: " + red.combinations(2).size());
 		System.out.println("red: " + red.size());
 		System.out.println("green: " + green.size());
+		
+		var sx = red.map(p -> p.x()).distinct();
+		var sy = red.map(p -> p.y()).distinct();
+		System.out.println("boxes: " + sx.size() + " * " + sy.size() + " -> " + (sx.size()*sy.size()));
 	}
 
 	static String example = """
